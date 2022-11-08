@@ -1,63 +1,104 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { View, Text } from "react-native";
 import { TextInput, Switch, Button } from "react-native-paper";
 import { useProfile } from "../Store/Store";
-import { useForm, Controller } from "react-hook-form";
-import axios from "axios";
-import NetInfo from "@react-native-community/netinfo";
+import axios from "../hooks/useAxios";
+import * as SecureStore from 'expo-secure-store';
 
 const HomeScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState({
+  const [loginStatus, setLoginStatus] = useState({
     message: "",
-    show: false,
+    error: false,
+  });
+  const [formError, setFormError] = useState({
+    message: "",
+    email: false,
+    password: false,
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const setProfile = useProfile((state) => state.setProfile);
+  const accessToken = useProfile((state) => state.profile.accessToken);
   const [persist, setPersist] = useProfile((state) => [
     state.persist,
     state.setPersist,
   ]);
-  const {
-    handleSubmit,
-    reset,
-    register,
-    formState: { errors },
-  } = useForm({
-    mode: "onBlur",
-    reValidateMode: "onSubmit",
-  });
+
+  const emailRegex =
+    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
   const onToggleSwitch = () => setPersist(!persist);
+
+  const loadJWT = useCallback(async () => {
+    try {
+      const userInfo = await SecureStore.getItemAsync('profile');
+      if (userInfo) {
+      setProfile(JSON.parse(userInfo));
+      }
+    } catch (error) {
+      console.log(`Keychain Error: ${error.message}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (persist) {
+      console.log("Loading Profile");
+      loadJWT();
+    }
+  }, [loadJWT, persist]);
 
   const onSubmit = async () => {
     let data = { email, password };
-    console.log(data);
+    if (!email || !password) {
+      email?.length > 0
+        ? setFormError({
+            ...formError,
+            email: false,
+            password: true,
+            message: "Password is required",
+          })
+        : setFormError({
+            ...formError,
+            email: true,
+            password: false,
+            message: "Please Enter a email",
+          });
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      setFormError({ email: true, message: "Please enter a valid email" });
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await axios.post("http://app.getfit.us:9000/https://app.getfit.us:8000/login", data, {
+      const response = await axios.post("/login", data, {
         headers: {
           "Content-Type": "application/json",
-         
         },
-        
+        withCredentials: true,
       });
 
-      // const response = await axios.get("http://app.getfit.us:9000/login", {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     "Target-URL": " https://httpbin.org",
-      //   },
-      //   withCredentials: true,
-      // });
-     
-
+    
+      //save refresh token to keychain
+      if (response.headers["set-cookie"]) {
+        console.log('Saving refresh token to keychain');
+        const refreshToken = response.headers["set-cookie"][0].split(';')[0].split('=')[1];
+        await SecureStore.setItemAsync('refreshToken', refreshToken);
+      }
       setProfile(response.data);
-      reset();
+      if (persist) {
+        console.log("Saving Profile");
+        const profile = await SecureStore.setItemAsync(
+          "profile",
+          JSON.stringify(response.data)
+        );
+      }
+
+      setLoginStatus({ message: "Login Successful", error: false });
       setLoading(false);
-      console.log(response.data);
-      //   navigate("/dashboard/overview", { replace: true });
     } catch (err) {
       //if email unverified show error message for 6seconds
       setLoading(false);
@@ -65,41 +106,41 @@ const HomeScreen = ({ navigation }) => {
 
       if (err?.response?.status === 403)
         // Unauthorized email not verified
-        setLoginError((prev) => ({
+        setLoginStatus((prev) => ({
           ...prev,
           message: "Please verify your email address",
-          show: true,
+          error: true,
         }));
       setTimeout(() => {
-        setLoginError((prev) => ({
+        setLoginStatus((prev) => ({
           ...prev,
           message: "",
-          show: false,
+          error: false,
         }));
       }, 6000);
 
       if (err?.response?.status === 401)
-        setLoginError((prev) => ({
+        setLoginStatus((prev) => ({
           ...prev,
           message: "Unauthorized",
-          show: true,
+          error: true,
         }));
       setTimeout(() => {
-        setLoginError((prev) => ({
+        setLoginStatus((prev) => ({
           ...prev,
           message: "",
-          show: false,
+          error: false,
         }));
       }, 6000);
 
       if (err?.response?.status === 423)
-        setLoginError((prev) => ({
+        setLoginStatus((prev) => ({
           ...prev,
           message: "Account Disabled",
-          show: true,
+          error: true,
         }));
       setTimeout(() => {
-        setLoginError((prev) => ({
+        setLoginStatus((prev) => ({
           ...prev,
           message: "",
           show: false,
@@ -141,11 +182,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // showNetInfo();
-    // const unsubscribeNetInfo = NetInfo.addEventListener((connectionInfo) => {
-    //   handleConnectivityChange(connectionInfo);
-    // });
-    // return unsubscribeNetInfo;
+    //need to implement a check for persist and then use stored accessToken to login
   }, []);
 
   return (
@@ -167,32 +204,30 @@ const HomeScreen = ({ navigation }) => {
           <TextInput
             label="Email Address"
             value={email}
-            {...register("email")}
             mode="outlined"
             left={<TextInput.Icon icon="email" />}
             onChangeText={(email) => setEmail(email)}
-            error={errors.email}
+            error={formError.email}
             autoFocus
             name="email"
           />
-          {errors.email && <Text>{errors.email.message}</Text>}
+          {formError.email && <Text>{formError.message}</Text>}
 
           <TextInput
             value={password}
             secureTextEntry={showPassword}
             mode="outlined"
-            {...register("password")}
             right={
               <TextInput.Icon
                 onPress={() => setShowPassword(!showPassword)}
                 icon={showPassword ? "eye-off" : "eye"}
               />
             }
-            error={errors.password}
+            error={formError.password}
             onChangeText={(password) => setPassword(password)}
             label="Password"
           />
-          {errors.password && <Text>{errors.password.message}</Text>}
+          {formError.password && <Text>{formError.message}</Text>}
         </View>
         <View style={{ alignItems: "center" }}>
           <Text>Remember Me</Text>
@@ -201,12 +236,13 @@ const HomeScreen = ({ navigation }) => {
         <Button
           icon="login"
           mode="contained"
+          buttonColor={loginStatus.error ? "red" : "#03A9F4"}
           style={{
             margin: 20,
           }}
           onPress={onSubmit}
         >
-          Login
+          {loginStatus.error ? loginStatus.message : "Login"}
         </Button>
       </View>
     </>

@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Image, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -6,7 +7,8 @@ import HomeScreen from "./components/HomeScreen";
 import AboutScreen from "./components/AboutScreen";
 import { Provider as PaperProvider, Text } from "react-native-paper";
 import { useTheme } from "react-native-paper";
-import Header from "./components/Header";
+import { useProfile } from "./Store/Store";
+import OverView from "./components/OverView";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,7 @@ function LogoTitle() {
 }
 
 export default function App() {
+  const accessToken = useProfile((state) => state.profile?.accessToken);
   const theme = useTheme({
     colors: {
       primary: "rgb(8, 97, 164)",
@@ -75,14 +78,18 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
          
-          <Stack.Screen
+          {!accessToken ? (<Stack.Screen
             name="Home"
             options={{
               headerTitle: (props) => <LogoTitle {...props} />,
               headerStyle: { backgroundColor: "rgb(8, 97, 164)" },
             }}
             component={HomeScreen}
-          />
+          />) : (
+            <Stack.Screen name='Overview' component={OverView} />
+
+           )
+          }
           <Stack.Screen name="About" component={AboutScreen} />
         </Stack.Navigator>
       </NavigationContainer>
