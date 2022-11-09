@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text } from "react-native";
-import { TextInput, Switch, Button } from "react-native-paper";
+import { TextInput, Switch, Button, ActivityIndicator } from "react-native-paper";
 import { useProfile } from "../Store/Store";
-import axios from "../hooks/useAxios";
+import useAxios from "../hooks/useAxios";
 import * as SecureStore from 'expo-secure-store';
 
 const HomeScreen = ({ navigation }) => {
+  const axiosPrivate = useAxios();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginStatus, setLoginStatus] = useState({
@@ -31,8 +32,9 @@ const HomeScreen = ({ navigation }) => {
 
   const onToggleSwitch = () => setPersist(!persist);
 
-  const loadJWT = useCallback(async () => {
+  const loadProfile = useCallback(async () => {
     try {
+     
       const userInfo = await SecureStore.getItemAsync('profile');
       if (userInfo) {
       setProfile(JSON.parse(userInfo));
@@ -45,9 +47,9 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     if (persist) {
       console.log("Loading Profile");
-      loadJWT();
+      loadProfile();
     }
-  }, [loadJWT, persist]);
+  }, [loadProfile, persist]);
 
   const onSubmit = async () => {
     let data = { email, password };
@@ -74,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post("/login", data, {
+      const response = await axiosPrivate.post("/login", data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -233,7 +235,7 @@ const HomeScreen = ({ navigation }) => {
           <Text>Remember Me</Text>
           <Switch value={persist} onValueChange={onToggleSwitch} />
         </View>
-        <Button
+        {loading ? <ActivityIndicator animating={true} color={'blue'} /> :  <Button
           icon="login"
           mode="contained"
           buttonColor={loginStatus.error ? "red" : "#03A9F4"}
@@ -243,7 +245,7 @@ const HomeScreen = ({ navigation }) => {
           onPress={onSubmit}
         >
           {loginStatus.error ? loginStatus.message : "Login"}
-        </Button>
+        </Button>}
       </View>
     </>
   );

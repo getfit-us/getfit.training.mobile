@@ -1,9 +1,38 @@
-
 import axios from 'axios';
-const BASE_URL = 'http://app.getfit.us:8080';
-//const BASE_URL = 'http://localhost:8000';
+import { useProfile } from '../Store/Store';
+const BASE_URL = 'https://app.getfit.us:8000';
 
-export default axios.create({
-    baseURL: BASE_URL
-});
+const useAxios = () => {
+    const accessToken = useProfile((state) => state.profile.accessToken);
+    const axiosPrivate = axios.create({
+        baseURL: BASE_URL,
+        headers: {
+            "Content-Type": "application/json",
+            withCredentials: true,
+            Authorization: "Bearer " + accessToken,
+        },
+    });
+    return axiosPrivate;
 
+}
+
+
+export default useAxios;
+
+
+// const refreshAuthLogic = (failedRequest) => {
+//   axios
+//     .post("/refresh", {
+//       headers: {
+//         "Content-Type": "application/json",
+//         withCredentials: true,
+//       },
+//     })
+//     .then((tokenRefreshResponse) => {
+//       failedRequest.response.config.headers["Authorization"] =
+//         "Bearer " + tokenRefreshResponse.data.accessToken;
+//       return Promise.resolve();
+//     });
+// };
+
+// createAuthRefreshInterceptor(axiosPrivate, refreshAuthLogic);

@@ -1,4 +1,4 @@
-import axios from "../hooks/useAxios";
+import useAxios from "../hooks/useAxios";
 import React from "react";
 import * as SecureStore from "expo-secure-store";
 import { useProfile, useWorkouts } from "../Store/Store";
@@ -8,12 +8,12 @@ import { useProfile, useWorkouts } from "../Store/Store";
 const Logout = () => {
   const resetProfileState = useProfile((state) => state.resetProfileState);
   const resetWorkoutState = useWorkouts((state) => state.resetWorkoutState);
-  
+   const axiosPrivate = useAxios();
   const onLogout = async () => {
     let isMounted = true;
     const controller = new AbortController();
     try {
-      const response = await axios.get("/logout", {
+      const response = await axiosPrivate.get("/logout", {
         signal: controller.signal,
       });
       // console.log(response.data);
