@@ -1,7 +1,39 @@
 // goinng to be zustand store
 
 import create from "zustand";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const initialProfileState = {
+  profile: {},
+  measurements: [],
+  notifications: [],
+  activeNotifications: [],
+  messages: [],
+  clients: [],
+  trainer: {},
+  calendar: [],
+  status: {
+    loading: false,
+    error: false,
+    message: "",
+  },
+  persist: false,
+};
+
+const initialWorkoutState = {
+  completedWorkouts: [],
+  customWorkouts: [],
+  assignedCustomWorkouts: [],
+  currentWorkout: {},
+  newWorkout: {},
+  manageWorkout: [],
+  exercises: [],
+  status: {
+    loading: false,
+    error: false,
+    message: "",
+  },
+};
 
 export const useProfile = create((set, get) => ({
   profile: {}, // going to contain the profile data and auth data (token , roles, etc)
@@ -10,13 +42,14 @@ export const useProfile = create((set, get) => ({
   clients: [],
   activeNotifications: [],
   viewMeasurement: {},
-  
+
   messages: [],
   trainer: {},
-  persist: async () => await AsyncStorage.getItem("persist") === "true" ? true : false,
+  persist: async () =>
+    (await AsyncStorage.getItem("persist")) === "true" ? true : false,
   setPersist: async (persist) => {
     persist
-      ? await AsyncStorage.setItem("persist", 'true')
+      ? await AsyncStorage.setItem("persist", "true")
       : await AsyncStorage.removeItem("persist");
     set({ persist });
   },
@@ -38,7 +71,7 @@ export const useProfile = create((set, get) => ({
         m._id === measurement._id ? measurement : m
       ),
     })),
-    setViewMeasurement: (measurement) => set({ viewMeasurement: measurement }),
+  setViewMeasurement: (measurement) => set({ viewMeasurement: measurement }),
 
   setNotifications: (notifications) => {
     set({ notifications });
@@ -52,7 +85,7 @@ export const useProfile = create((set, get) => ({
     });
     set({
       messages: get().notifications.filter((n) => {
-        if (n.type === "message" && n.receiver.id === get().profile.clientId) {
+        if (n.type === "message" && (n.receiver.id === get().profile.clientId || n.sender.id === get().profile.clientId)) {
           return true;
         }
       }),
@@ -146,21 +179,7 @@ export const useProfile = create((set, get) => ({
     });
   },
   resetProfileState: () => {
-    set({
-      profile: {},
-      measurements: [],
-      notifications: [],
-      activeNotifications: [],
-      messages: [],
-      clients: [],
-      trainer: {},
-      calendar: [],
-      status: {
-        loading: false,
-        error: false,
-        message: "",
-      },
-    });
+    set(initialProfileState);
   },
 }));
 
@@ -211,7 +230,7 @@ export const useWorkouts = create((set, get) => ({
         assignedCustomWorkout,
       ],
     })),
-    setViewWorkout: (workout) => set({ viewWorkout: workout }),
+  setViewWorkout: (workout) => set({ viewWorkout: workout }),
   setNewWorkout: (newWorkout) => set({ newWorkout }),
   setManageWorkout: (manageWorkout) => set({ manageWorkout }),
   setExercises: (exercises) => set({ exercises }),
@@ -229,19 +248,6 @@ export const useWorkouts = create((set, get) => ({
     })),
   setStatus: (status) => set({ status }),
   resetWorkoutState: () => {
-    set({
-      completedWorkouts: [],
-      customWorkouts: [],
-      assignedCustomWorkouts: [],
-      currentWorkout: {},
-      newWorkout: {},
-      manageWorkout: [],
-      exercises: [],
-      status: {
-        loading: false,
-        error: false,
-        message: "",
-      },
-    });
+    set(initialWorkoutState);
   },
 }));

@@ -3,19 +3,24 @@ import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useProfile, useWorkouts } from "../../Store/Store";
 import { IconButton, List } from "react-native-paper";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { ProgressBar, MD2Colors } from 'react-native-paper';
+import { ProgressBar, MD2Colors } from "react-native-paper";
 
-const ActivityFeed = ({navigation}) => {
+const ActivityFeed = ({ navigation }) => {
   const notifications = useProfile((store) => store.notifications);
-  const [viewWorkout, setViewWorkout] =  useWorkouts((state) => [state.viewWorkout, state.setViewWorkout]);
-  const [viewMeasurement, setViewMeasurement] =  useProfile((state) => [state.viewMeasurement, state.setViewMeasurement]);
+  const [viewWorkout, setViewWorkout] = useWorkouts((state) => [
+    state.viewWorkout,
+    state.setViewWorkout,
+  ]);
+  const [viewMeasurement, setViewMeasurement] = useProfile((state) => [
+    state.viewMeasurement,
+    state.setViewMeasurement,
+  ]);
   const axiosPrivate = useAxiosPrivate();
   const updateNotificationState = useProfile(
     (store) => store.updateNotification
   );
   const delNotificationState = useProfile((store) => store.deleteNotification);
   const profile = useProfile((store) => store.profile);
-
 
   let [page, setPage] = useState(1);
 
@@ -60,7 +65,7 @@ const ActivityFeed = ({navigation}) => {
       });
       setViewWorkout(response.data);
       setStatus({ loading: false, error: false, success: true });
-      navigation.navigate('View Activity', {status})
+      navigation.navigate("View Activity", { status });
       // console.log(workouts)
     } catch (err) {
       console.log(err);
@@ -79,9 +84,7 @@ const ActivityFeed = ({navigation}) => {
         signal: controller.signal,
       });
       setViewWorkout(response.data);
-      navigation.navigate('View Activity', {status})
-
-     
+      navigation.navigate("View Activity", { status });
 
       setStatus({ loading: false, error: false, success: true });
 
@@ -113,14 +116,22 @@ const ActivityFeed = ({navigation}) => {
     };
   };
 
-  const getMeasurement = async (id) => {
+  const getMeasurement = async (id, item) => {
     setStatus({ loading: true, error: false, success: false });
     const controller = new AbortController();
     try {
       const response = await axiosPrivate.get(`/measurements/${id}`, {
         signal: controller.signal,
       });
-      setViewMeasurement(response.data);
+      const split = response?.data?.date.split("-");
+      const year = split.splice(0, 1);
+      let newDate = [...split, ...year].join("-");
+      setViewMeasurement({
+        ...response.data,
+        message: item.message,
+        date: newDate,
+      });
+      navigation.navigate("View Activity", { status });
       setStatus({ loading: false, error: false, success: true });
     } catch (err) {
       console.log(err);
@@ -131,10 +142,10 @@ const ActivityFeed = ({navigation}) => {
     };
   };
 
- useEffect(() => {
-  setViewMeasurement(null);
-  setViewWorkout(null);
-  }, [])
+  useEffect(() => {
+    setViewMeasurement(null);
+    setViewWorkout(null);
+  }, []);
 
   const listItem = ({ item }) => (
     <View style={styles.list}>
@@ -155,7 +166,7 @@ const ActivityFeed = ({navigation}) => {
         titleStyle={{ flex: 1, flexWrap: "wrap", flexShrink: 1 }}
         onPress={() => {
           if (item.message.includes("measurement")) {
-            getMeasurement(item.activityID);
+            getMeasurement(item.activityID, item);
 
             if (!item.is_read) updateNotification(item);
           } // checks for created custom workouts
@@ -184,10 +195,13 @@ const ActivityFeed = ({navigation}) => {
 
   return (
     <>
-
       <View>
-      <ProgressBar indeterminate color={MD2Colors.blue500} visible={status.loading ? true : false} />
- 
+        <ProgressBar
+          indeterminate
+          color={MD2Colors.blue500}
+          visible={status.loading ? true : false}
+        />
+
         <FlatList
           data={userActivity}
           keyExtractor={(userActivity) => userActivity._id}

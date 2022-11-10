@@ -12,11 +12,13 @@ import {List } from "react-native-paper";
 
 const Drawer = createDrawerNavigator();
 
-const Dashboard = () => {
-  const profile = useProfile((state) => state.profile);
+const Dashboard = ({navigation}) => {
+ const accessToken = useProfile((state) => state.profile?.accessToken);
   const setCalendar = useProfile((state) => state.setCalendar);
   const viewWorkout = useWorkouts((state) => state.viewWorkout);
   const viewMeasurement = useProfile((state) => state.viewMeasurement);
+
+  if (!accessToken) navigation.navigate('Home');
 
 
   return (
@@ -38,6 +40,8 @@ const Dashboard = () => {
           drawerIcon: () => (
             <List.Icon icon="message-text" />
           ),
+          headerVisible: false,
+      headerShown: false,
 
         }} 
        

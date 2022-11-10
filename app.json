@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "getfit.training.mobile",
-    "slug": "getfit.training.mobile",
+    "slug": "GetFit Personal Training",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

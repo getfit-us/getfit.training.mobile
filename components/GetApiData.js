@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useProfile, useWorkouts } from "../Store/Store";
-import useAxios  from "../hooks/useAxios";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const GetApiData = () => {
