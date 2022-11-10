@@ -12,6 +12,7 @@ const useRefreshToken = () => {
     const response = await axiosPrivate.get("/refresh", {
       headers: {
         "Content-Type": "application/json",
+        Cookie: `jwt=${await SecureStore.getItemAsync("refreshToken")}`,
       },
       withCredentials: true,
     });

@@ -2,32 +2,48 @@ import 'react-native-gesture-handler';
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Image, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer , useNavigation} from "@react-navigation/native";
 import HomeScreen from "./components/HomeScreen";
 import AboutScreen from "./components/AboutScreen";
-import { Provider as PaperProvider, Text } from "react-native-paper";
+import { IconButton, Provider as PaperProvider, Text , MD3Colors, Button} from "react-native-paper";
 import { useTheme } from "react-native-paper";
 import { useProfile } from "./Store/Store";
-import OverView from "./components/OverView";
+import Dashboard from "./components/Dashboard";
+
 
 const Stack = createNativeStackNavigator();
 
-function LogoTitle() {
-  return (
-    <View style={styles.container}>
-      <Image
-        style={{ width: 50, height: 50 }}
-        source={require("./assets/GETFIT-LOGO.png")}
-      />
-      <Text style={styles.title} variant="titleMedium">
-        GETFIT Personal Training
-      </Text>
-    </View>
-  );
-}
+
 
 export default function App() {
   const accessToken = useProfile((state) => state.profile?.accessToken);
+  const activeNotifications = useProfile((state) => state.activeNotifications);
+  const messages = useProfile((state) => state.messages);
+
+  function LogoTitle() {
+    const navigation = useNavigation();
+
+    return (
+      <View style={styles.container}
+      
+      > 
+        <Image
+          style={{ width: 50, height: 50 }}
+          source={require("./assets/GETFIT-LOGO.png")}
+         
+        />
+        <Text style={styles.title} variant="titleMedium">
+          GETFIT Personal Training
+        </Text>
+        {accessToken && 
+        <IconButton icon="bell" 
+        iconColor={activeNotifications.length > 0 ? MD3Colors.error50 : '#fff'}
+        size={25}
+        onPress={() => navigation.navigate("Messages")}
+        />}
+      </View>
+    );
+  }
   const theme = useTheme({
     colors: {
       primary: "rgb(8, 97, 164)",
@@ -73,6 +89,8 @@ export default function App() {
     },
   });
 
+  console.log(accessToken)
+
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
@@ -86,7 +104,11 @@ export default function App() {
             }}
             component={HomeScreen}
           />) : (
-            <Stack.Screen name='Overview' component={OverView} />
+            <Stack.Screen name='Dashboard' component={Dashboard}
+              options={{ headerTitle: ({navigation, ...props}) => <LogoTitle {...props} />,
+              headerStyle: { backgroundColor: "rgb(8, 97, 164)" },}}
+
+            />
 
            )
           }
@@ -104,6 +126,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     flexDirection: "row",
+    marginBottom: 10,
   },
   title: {
     marginLeft: 10,

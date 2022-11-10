@@ -1,23 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useProfile } from "../../Store/Store";
+import { useProfile, useWorkouts } from "../../Store/Store";
 import { IconButton, List } from "react-native-paper";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { ProgressBar, MD2Colors } from 'react-native-paper';
 
-const ActivityFeed = () => {
+const ActivityFeed = ({navigation}) => {
   const notifications = useProfile((store) => store.notifications);
+  const [viewWorkout, setViewWorkout] =  useWorkouts((state) => [state.viewWorkout, state.setViewWorkout]);
+  const [viewMeasurement, setViewMeasurement] =  useProfile((state) => [state.viewMeasurement, state.setViewMeasurement]);
   const axiosPrivate = useAxiosPrivate();
   const updateNotificationState = useProfile(
     (store) => store.updateNotification
   );
   const delNotificationState = useProfile((store) => store.deleteNotification);
   const profile = useProfile((store) => store.profile);
-  const [openWorkout, setOpenWorkout] = useState(false);
-  const [openMeasurement, setOpenMeasurement] = useState(false);
-  const handleWorkoutModal = () => setOpenWorkout((prev) => !prev);
-  const handleMeasurementModal = () => setOpenMeasurement((prev) => !prev);
-  const [viewWorkout, setViewWorkout] = useState([]);
-  const [viewMeasurement, setViewMeasurement] = useState([]);
+
+
   let [page, setPage] = useState(1);
 
   const [status, setStatus] = useState({
@@ -36,24 +35,106 @@ const ActivityFeed = () => {
     if (new Date(a.createdAt) > new Date(b.createdAt)) return -1;
   });
 
- 
-    const delNotification = async (id) => {
-      const controller = new AbortController();
-      try {
-        const response = await axiosPrivate.delete(`/notifications/${id}`, {
-          signal: controller.signal,
-        });
-        delNotificationState({ _id: id });
-      } catch (err) {
-        console.log(err);
-        //   setError(err.message);
-      }
-      return () => {
-        controller.abort();
-      };
+  const delNotification = async (id) => {
+    const controller = new AbortController();
+    try {
+      const response = await axiosPrivate.delete(`/notifications/${id}`, {
+        signal: controller.signal,
+      });
+      delNotificationState({ _id: id });
+    } catch (err) {
+      console.log(err);
+      //   setError(err.message);
+    }
+    return () => {
+      controller.abort();
     };
+  };
+  //apu call to get users completed workouts
+  const getCompletedWorkout = async (id) => {
+    setStatus({ loading: true, error: false, success: false });
+    const controller = new AbortController();
+    try {
+      const response = await axiosPrivate.get(`/completed-workouts/${id}`, {
+        signal: controller.signal,
+      });
+      setViewWorkout(response.data);
+      setStatus({ loading: false, error: false, success: true });
+      navigation.navigate('View Activity', {status})
+      // console.log(workouts)
+    } catch (err) {
+      console.log(err);
+      setStatus({ loading: false, error: true, success: false });
+    }
+    return () => {
+      controller.abort();
+    };
+  };
+  const getCustomWorkout = async (id) => {
+    setStatus({ loading: true, error: false, success: false });
 
+    const controller = new AbortController();
+    try {
+      const response = await axiosPrivate.get(`/custom-workout/${id}`, {
+        signal: controller.signal,
+      });
+      setViewWorkout(response.data);
+      navigation.navigate('View Activity', {status})
 
+     
+
+      setStatus({ loading: false, error: false, success: true });
+
+      // reset();
+    } catch (err) {
+      console.log(err);
+      setStatus({ loading: false, error: true, success: false });
+    }
+    return () => {
+      controller.abort();
+    };
+  };
+  const updateNotification = async (message, liked) => {
+    message.is_read = true;
+    //if liked set to true
+    message.liked = liked;
+    const controller = new AbortController();
+    try {
+      const response = await axiosPrivate.put("/notifications", message, {
+        signal: controller.signal,
+      });
+      updateNotificationState(response.data);
+    } catch (err) {
+      console.log(err);
+      //   setError(err.message);
+    }
+    return () => {
+      controller.abort();
+    };
+  };
+
+  const getMeasurement = async (id) => {
+    setStatus({ loading: true, error: false, success: false });
+    const controller = new AbortController();
+    try {
+      const response = await axiosPrivate.get(`/measurements/${id}`, {
+        signal: controller.signal,
+      });
+      setViewMeasurement(response.data);
+      setStatus({ loading: false, error: false, success: true });
+    } catch (err) {
+      console.log(err);
+      setStatus({ loading: false, error: true, success: false });
+    }
+    return () => {
+      controller.abort();
+    };
+  };
+
+ useEffect(() => {
+  setViewMeasurement(null);
+  setViewWorkout(null);
+  }, [])
 
   const listItem = ({ item }) => (
     <View style={styles.list}>
@@ -63,23 +144,50 @@ const ActivityFeed = () => {
         title={item.message}
         left={(props) => <List.Icon {...props} icon="account" />}
         right={(props) => (
-          <IconButton {...props} icon="delete" onPress={() => delNotification(item._id)} />
-          
-          
+          <IconButton
+            {...props}
+            icon="delete"
+            onPress={() => delNotification(item._id)}
+          />
         )}
         description={item.createdAt}
         centered
         titleStyle={{ flex: 1, flexWrap: "wrap", flexShrink: 1 }}
-        // onPress={() => {
-        //   if (item.type === "workout") {
-        //     setViewWorkout(item);
+        onPress={() => {
+          if (item.message.includes("measurement")) {
+            getMeasurement(item.activityID);
+
+            if (!item.is_read) updateNotification(item);
+          } // checks for created custom workouts
+          if (
+            item.message.includes("created") ||
+            item.message.includes("assigned")
+          ) {
+            getCustomWorkout(item.activityID);
+
+            if (!item.is_read) updateNotification(item);
+          }
+
+          if (
+            !item.message.includes("goal") &&
+            !item.message.includes("task") &&
+            item.message.includes("completed")
+          ) {
+            getCompletedWorkout(item.activityID);
+
+            if (!item.is_read) updateNotification(item);
+          }
+        }}
       />
     </View>
   );
 
   return (
     <>
+
       <View>
+      <ProgressBar indeterminate color={MD2Colors.blue500} visible={status.loading ? true : false} />
+ 
         <FlatList
           data={userActivity}
           keyExtractor={(userActivity) => userActivity._id}

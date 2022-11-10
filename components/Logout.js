@@ -2,12 +2,18 @@ import useAxios from "../hooks/useAxios";
 import React from "react";
 import * as SecureStore from "expo-secure-store";
 import { useProfile, useWorkouts } from "../Store/Store";
+import { useNavigation } from "@react-navigation/native";
 
 
 
 const Logout = () => {
   const resetProfileState = useProfile((state) => state.resetProfileState);
   const resetWorkoutState = useWorkouts((state) => state.resetWorkoutState);
+  const navigation = useNavigation();
+  const [persist, setPersist] = useProfile((state) => [
+    state.persist,
+    state.setPersist,
+  ]);
    const axiosPrivate = useAxios();
   const onLogout = async () => {
     let isMounted = true;
@@ -20,7 +26,10 @@ const Logout = () => {
       
       resetProfileState();
       resetWorkoutState();
+      setPersist(false);
       const remove = await SecureStore.deleteItemAsync("profile");
+      navigation.navigate('Home');
+      
         // console.log(remove);
     } catch (err) {
 

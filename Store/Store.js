@@ -9,6 +9,8 @@ export const useProfile = create((set, get) => ({
   notifications: [],
   clients: [],
   activeNotifications: [],
+  viewMeasurement: {},
+  
   messages: [],
   trainer: {},
   persist: async () => await AsyncStorage.getItem("persist") === "true" ? true : false,
@@ -36,6 +38,7 @@ export const useProfile = create((set, get) => ({
         m._id === measurement._id ? measurement : m
       ),
     })),
+    setViewMeasurement: (measurement) => set({ viewMeasurement: measurement }),
 
   setNotifications: (notifications) => {
     set({ notifications });
@@ -165,6 +168,7 @@ export const useWorkouts = create((set, get) => ({
   completedWorkouts: [],
   customWorkouts: [],
   currentWorkout: {},
+  viewWorkout: {},
   assignedCustomWorkouts: [],
   newWorkout: {},
   manageWorkout: [],
@@ -207,6 +211,7 @@ export const useWorkouts = create((set, get) => ({
         assignedCustomWorkout,
       ],
     })),
+    setViewWorkout: (workout) => set({ viewWorkout: workout }),
   setNewWorkout: (newWorkout) => set({ newWorkout }),
   setManageWorkout: (manageWorkout) => set({ manageWorkout }),
   setExercises: (exercises) => set({ exercises }),
