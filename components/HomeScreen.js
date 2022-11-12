@@ -183,12 +183,8 @@ const HomeScreen = ({ navigation }) => {
       : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
   };
 
-  useEffect(() => {
-    //need to implement a check for persist and then use stored accessToken to login
-  }, []);
 
   return (
-    <>
       <View
         style={{
           flex: 1,
@@ -246,8 +242,17 @@ const HomeScreen = ({ navigation }) => {
         >
           {loginStatus.error ? loginStatus.message : "Login"}
         </Button>}
+        <View style={{ alignItems: "center", marginTop: 3 }}>
+          <Text style={{marginTop: 3, marginBottom: 10,}}>Don't have an account?</Text>
+          <Button
+          
+            mode="text"
+            
+            onPress={() => navigation.navigate("Sign Up")}
+          >Sign Up</Button>
+          <Button mode="text" onPress={() => navigation.navigate("Forgot Password")}>Forgot Password</Button>
       </View>
-    </>
+    </View>
   );
 };
 

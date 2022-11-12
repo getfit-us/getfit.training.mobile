@@ -2,12 +2,12 @@ import React from 'react'
 import { View, Text,  } from 'react-native'
 
 
-const AboutScreen = () => {
+const ResetPassword = () => {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>About Screen</Text>
+      <Text>resetPassword Screen</Text>
     </View>
   )
 }
 
-export default AboutScreen
+export default ResetPassword

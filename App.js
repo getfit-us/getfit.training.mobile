@@ -1,19 +1,23 @@
-import 'react-native-gesture-handler';
+import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Image, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer , useNavigation} from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import HomeScreen from "./components/HomeScreen";
-import AboutScreen from "./components/AboutScreen";
-import { IconButton, Provider as PaperProvider, Text , MD3Colors, Button} from "react-native-paper";
+import {
+  IconButton,
+  Provider as PaperProvider,
+  Text,
+  MD3Colors,
+  Button,
+} from "react-native-paper";
 import { useTheme } from "react-native-paper";
 import { useProfile } from "./Store/Store";
 import Dashboard from "./components/Dashboard";
-
+import SignUp from "./components/SignUp";
+import ResetPassword from "./components/ResetPassword";
 
 const Stack = createNativeStackNavigator();
-
-
 
 export default function App() {
   const accessToken = useProfile((state) => state.profile?.accessToken);
@@ -24,23 +28,24 @@ export default function App() {
     const navigation = useNavigation();
 
     return (
-      <View style={styles.container}
-      
-      > 
+      <View style={styles.container}>
         <Image
           style={{ width: 50, height: 50 }}
           source={require("./assets/GETFIT-LOGO.png")}
-         
         />
         <Text style={styles.title} variant="titleMedium">
           GETFIT Personal Training
         </Text>
-        {accessToken && 
-        <IconButton icon="bell" 
-        iconColor={activeNotifications.length > 0 ? MD3Colors.error50 : '#fff'}
-        size={25}
-        onPress={() => navigation.navigate("Messages")}
-        />}
+        {accessToken && (
+          <IconButton
+            icon="bell"
+            iconColor={
+              activeNotifications.length > 0 ? MD3Colors.error50 : "#fff"
+            }
+            size={25}
+            onPress={() => navigation.navigate("Messages")}
+          />
+        )}
       </View>
     );
   }
@@ -89,30 +94,38 @@ export default function App() {
     },
   });
 
-  console.log(accessToken)
+  console.log(accessToken);
 
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
-         
-          {!accessToken ? (<Stack.Screen
-            name="Home"
-            options={{
-              headerTitle: (props) => <LogoTitle {...props} />,
-              headerStyle: { backgroundColor: "rgb(8, 97, 164)" },
-            }}
-            component={HomeScreen}
-          />) : (
-            <Stack.Screen name='Dashboard' component={Dashboard}
-              options={{ headerTitle: ({navigation, ...props}) => <LogoTitle {...props} />,
-              headerStyle: { backgroundColor: "rgb(8, 97, 164)" },}}
+          {!accessToken ? (
+            <>
+              <Stack.Screen
+                name="Home"
+                options={{
+                  headerTitle: (props) => <LogoTitle {...props} />,
+                  headerStyle: { backgroundColor: "rgb(8, 97, 164)" },
+                }}
+                component={HomeScreen}
+              />
+              <Stack.Screen name="Sign Up" component={SignUp} />
+              <Stack.Screen name="Forgot Password" component={ResetPassword} />
 
+            </>
+          ) : (
+            <Stack.Screen
+              name="Dashboard"
+              component={Dashboard}
+              options={{
+                headerTitle: ({ navigation, ...props }) => (
+                  <LogoTitle {...props} />
+                ),
+                headerStyle: { backgroundColor: "rgb(8, 97, 164)" },
+              }}
             />
-
-           )
-          }
-          <Stack.Screen name="About" component={AboutScreen} />
+          )}
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
