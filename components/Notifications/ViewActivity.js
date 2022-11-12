@@ -22,11 +22,11 @@ const ViewActivity = ({ route, navigation }) => {
           <Paragraph>{viewWorkout?.feedback}</Paragraph>
         </>
       )}
-      {viewWorkout?.exercises.map((exercise) => {
+      {viewWorkout?.exercises.map((exercise, ei) => {
         //check if its a superset
 
         return Array.isArray(exercise) ? (
-          <View style={styles.superSet}>
+          <View style={styles.superSet} key={ei}>
             <Text
               variant="titleLarge"
               style={{
@@ -40,7 +40,7 @@ const ViewActivity = ({ route, navigation }) => {
               Super Set
             </Text>
             {exercise.map((superSet, superSetIndex) => {
-              return (
+              return ( //superset exercise
                 <View key={superSet._id}>
                   <Text variant="titleMedium" style={styles.exercise}>
                     {superSet.name}
@@ -76,7 +76,7 @@ const ViewActivity = ({ route, navigation }) => {
               );
             })}
           </View>
-        ) : exercise.type === "cardio" ? (
+        ) : exercise.type === "cardio" ? ( //cardio exercise
           <View key={exercise._id}>
             <Text variant="titleMedium" style={styles.exercise}>
               {exercise.name}
@@ -110,7 +110,7 @@ const ViewActivity = ({ route, navigation }) => {
               </Text>
             </View>
           </View>
-        ) : (
+        ) : ( //regular exercise
           <View key={exercise._id}>
             <Text variant="titleMedium" style={styles.exercise}>
               {exercise.name}
@@ -121,6 +121,7 @@ const ViewActivity = ({ route, navigation }) => {
                 style={{
                   flexDirection: "row",
                   marginBottom: 3,
+                  justifyContent: 'center'
                 }}
               >
                 <Text style={styles.setLabel}>
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   exercise: {
-    marginBottom: 3,
+    marginBottom: 4,
     marginTop: 3,
     textAlign: "center",
     color: "#243A37",

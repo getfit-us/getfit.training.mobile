@@ -22,19 +22,19 @@ const Chat = ({ route }) => {
   const [chat, setChat] = useState([]);
   const flatList = useRef();
 
-
-
   useEffect(() => {
     if (user) {
       const filteredMessages = messages.filter(
-        (msg) => msg.sender.id === user.sender.id || (msg.sender.id === clientId && msg.receiver.id === user.sender.id)
+        (msg) =>
+          msg.sender.id === user.sender.id ||
+          (msg.sender.id === clientId && msg.receiver.id === user.sender.id)
       );
       setChat(filteredMessages);
     }
   }, [messages, user]);
 
   const sendMessage = async (reply) => {
-    if (!reply) return
+    if (!reply) return;
     let message = {};
     //set type to message
     message.type = "message";
@@ -74,38 +74,8 @@ const Chat = ({ route }) => {
     };
   };
 
-  //going to check if user is trainer, if so going to list clients to chat with, if not going to just show their trainer
-  return (
-    <>
-      <View style={styles.container}>
-        <FlatList 
-            data={chat}
-            ref={flatList}
-            keyExtractor={(item) => item._id}
-            renderItem={({item}) => {
-                return (
-                    <View
-                    style={
-                      clientId === item.sender.id
-                        ? styles.messageSent
-                        : styles.messageReceived
-                    }
-                  >
-                    <Text style={styles.sender}>
-                      {clientId !== item.sender.id ? item.sender.name : null}
-                    </Text>
-                    <Text style={styles.date}>{item.createdAt}</Text>
-                    <Text style={styles.msg}>{item.message}</Text>
-                    
-                  </View>
-                )
-            }}
-            onContentSizeChange={() => flatList.current.scrollToEnd()}
-        />
-
-      
-        
-      </View>
+  const Footer = () => {
+    return (
       <View style={styles.input}>
         <TextInput
           placeholder="Type a message"
@@ -114,15 +84,41 @@ const Chat = ({ route }) => {
           style={{ width: "80%" }}
         />
 
-        <Button
-         
-         
-          compact
-          style={styles.button}
-          onPress={() => sendMessage(reply)}
-        >
+        <Button style={styles.button} onPress={() => sendMessage(reply)}>
           Send
         </Button>
+      </View>
+    );
+  };
+
+  //going to check if user is trainer, if so going to list clients to chat with, if not going to just show their trainer
+  return (
+    <>
+      <View style={styles.container}>
+        <FlatList
+          data={chat}
+          ref={flatList}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => {
+            return (
+              <View
+                style={
+                  clientId === item.sender.id
+                    ? styles.messageSent
+                    : styles.messageReceived
+                }
+              >
+                <Text style={styles.sender}>
+                  {clientId !== item.sender.id ? item.sender.name : null}
+                </Text>
+                <Text style={styles.date}>{item.createdAt}</Text>
+                <Text style={styles.msg}>{item.message}</Text>
+              </View>
+            );
+          }}
+          onContentSizeChange={() => flatList.current.scrollToEnd()}
+        />
+        <Footer />
       </View>
     </>
   );
@@ -132,19 +128,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "grey",
-
   },
   chatContainer: {
     flex: 1,
   },
   messageSent: {
     backgroundColor: "rgb(8, 97, 164)",
-    
+
     padding: 10,
     margin: 10,
     borderRadius: 20,
     alignSelf: "flex-end",
-   
   },
   messageReceived: {
     backgroundColor: "white",
@@ -163,18 +157,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
   },
-    sender: {
+  sender: {
     fontWeight: "bold",
     fontSize: 12,
-    },
-    msg: {
+  },
+  msg: {
     fontSize: 18,
-    textAlign: 'left'
-    },
-    date: {
+    textAlign: "left",
+  },
+  date: {
     fontSize: 12,
-    },
-
+  },
 });
 
 export default Chat;

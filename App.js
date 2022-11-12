@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, Image, View, TouchableHighlight } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import HomeScreen from "./components/HomeScreen";
@@ -29,14 +29,21 @@ export default function App() {
 
     return (
       <View style={styles.container}>
+        <TouchableHighlight
+        underlayColor={"rgb(8, 97, 164)"}
+        onPress={() => accessToken ? navigation.navigate("Activity Feed"): null}
+        >
+        
         <Image
-          style={{ width: 50, height: 50 }}
+          
+          style={{ width: 50, height: 50 }} 
           source={require("./assets/GETFIT-LOGO.png")}
         />
+          </TouchableHighlight>       
         <Text style={styles.title} variant="titleMedium">
           GETFIT Personal Training
         </Text>
-        {accessToken && (
+        {accessToken &&  activeNotifications?.length > 0 && (
           <IconButton
             icon="bell"
             iconColor={
@@ -94,7 +101,6 @@ export default function App() {
     },
   });
 
-  console.log(accessToken);
 
   return (
     <PaperProvider theme={theme}>

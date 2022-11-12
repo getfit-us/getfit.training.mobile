@@ -28,7 +28,6 @@ const Logout = () => {
       resetWorkoutState();
       setPersist(false);
       const remove = await SecureStore.deleteItemAsync("profile");
-      navigation.navigate('Home');
       
         // console.log(remove);
     } catch (err) {

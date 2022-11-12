@@ -23,7 +23,7 @@ const SignUp = ({navigation}) => {
     lastName: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    password2: "",
     trainerId: "",
     phoneNum: "",
   });
@@ -79,7 +79,7 @@ const SignUp = ({navigation}) => {
       valid = false;
       setStatus({
 
-        confirmPassword: true,
+        password2: true,
         message: "Passwords do not match",
       });
     }
@@ -88,7 +88,7 @@ const SignUp = ({navigation}) => {
       valid = false;
       setStatus({
 
-        phone: true,
+        phoneNum: true,
         message: "Phone number must be 10 digits",
       });
     }
@@ -120,9 +120,8 @@ const SignUp = ({navigation}) => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-      console.log(response.data);
-      setStatus((prev) => ({ ...prev, success: true }));
-      setTimeout(() => navigation.navigate.goBack(), 60000);
+      setStatus((prev) => ({  success: true, message: response.data.message }));
+      setTimeout(() => navigation.navigate('Home'), 3000);
     } catch (err) {
       console.log(err);
       setStatus((prev) => {
@@ -285,10 +284,11 @@ const SignUp = ({navigation}) => {
         </Text>
       )}
       <Button style={styles.button} mode="contained" 
-      buttonColor={status.error ? "red" : "#2780B8"}
+      buttonColor={status.error ? "red" : status.success ? 'green' : '#2780B8'}
       onPress={onSubmit}>
        {status.error ? status.message : status.success ? 'SignUp SuccessFul' : 'GetFit!'}
       </Button>
+     {status.success && <Text style={{ color: 'green', textAlign: 'center' }}>{status.message}</Text>}
     </ScrollView>
   );
 };

@@ -9,6 +9,7 @@ const initialProfileState = {
   notifications: [],
   activeNotifications: [],
   messages: [],
+  activeChat: [],
   clients: [],
   trainer: {},
   calendar: [],
@@ -28,11 +29,7 @@ const initialWorkoutState = {
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
-  status: {
-    loading: false,
-    error: false,
-    message: "",
-  },
+  
 };
 
 export const useProfile = create((set, get) => ({
@@ -42,9 +39,9 @@ export const useProfile = create((set, get) => ({
   clients: [],
   activeNotifications: [],
   viewMeasurement: {},
-
   messages: [],
   trainer: {},
+  activeChat: [],
   persist: async () =>
     (await AsyncStorage.getItem("persist")) === "true" ? true : false,
   setPersist: async (persist) => {
@@ -192,11 +189,6 @@ export const useWorkouts = create((set, get) => ({
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
-  status: {
-    loading: false,
-    error: false,
-    message: "",
-  },
   setCurrentWorkout: (workout) => set({ currentWorkout: workout }),
   setCompletedWorkouts: (completedWorkouts) => set({ completedWorkouts }),
   addCompletedWorkout: (completedWorkout) =>
@@ -246,7 +238,6 @@ export const useWorkouts = create((set, get) => ({
     set((state) => ({
       exercises: state.exercises.filter((e) => e._id !== exercise._id),
     })),
-  setStatus: (status) => set({ status }),
   resetWorkoutState: () => {
     set(initialWorkoutState);
   },

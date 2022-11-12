@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { useProfile, useWorkouts } from "../../Store/Store";
-import { IconButton, List } from "react-native-paper";
+import { ActivityIndicator, IconButton, List } from "react-native-paper";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ProgressBar, MD2Colors } from "react-native-paper";
+import NoNotifications from "./NoNotifications";
 
 const ActivityFeed = ({ navigation }) => {
   const notifications = useProfile((store) => store.notifications);
@@ -21,7 +22,7 @@ const ActivityFeed = ({ navigation }) => {
   );
   const delNotificationState = useProfile((store) => store.deleteNotification);
   const profile = useProfile((store) => store.profile);
-
+  const statusProfile = useProfile(state => state.status) 
   let [page, setPage] = useState(1);
 
   const [status, setStatus] = useState({
@@ -148,7 +149,7 @@ const ActivityFeed = ({ navigation }) => {
   }, []);
 
   const listItem = ({ item }) => (
-    <View style={styles.list}>
+    <View style={styles.list} key={item._id}>
       <List.Item
         key={item._id}
         titleNumberOfLines={2}
@@ -194,21 +195,27 @@ const ActivityFeed = ({ navigation }) => {
   );
 
   return (
-    <>
+    <SafeAreaView>
       <View>
-        <ProgressBar
+        {(status.loading || statusProfile.loading) ? (
+          <ProgressBar
           indeterminate
           color={MD2Colors.blue500}
           visible={status.loading ? true : false}
         />
-
+        ) : (
         <FlatList
           data={userActivity}
           keyExtractor={(userActivity) => userActivity._id}
           renderItem={listItem}
-        />
+          contentContainerStyle={{ flexGrow: 1 }}
+          onEndReached={() => setPage(page + 1)}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={NoNotifications}
+
+        />)}
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 

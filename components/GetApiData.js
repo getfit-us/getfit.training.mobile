@@ -21,20 +21,21 @@ const GetApiData = () => {
 
   const getCalendar = async () => {
     console.log("getting calendar");
+    state.setStatus({ loading: true });
     const controller = new AbortController();
     try {
       const response = await axiosPrivate.get(
         `/users/calendar/${state.profile.clientId}`
       );
       state.setCalendar(response.data);
-      // state.setStatus({ loading: false });
+      state.setStatus({ loading: false });
     } catch (error) {
       console.log(error.message);
-      // state.setStatus({
-      //   loading: false,
-      //   error: true,
-      //   message: error.message,
-      // });
+      state.setStatus({
+        loading: false,
+        error: true,
+        message: error.message,
+      });
     }
     return () => {
       controller.abort();
@@ -138,7 +139,6 @@ const GetApiData = () => {
 
   //get notifications from api for current user
   const getNotifications = async () => {
-    state.setStatus({ loading: true });
     const controller = new AbortController();
     try {
       const response = await axiosPrivate.get(
@@ -150,7 +150,6 @@ const GetApiData = () => {
         if (state.notifications?.length !== response.data.length) {
       state?.setNotifications(response.data);
         }
-      state?.setStatus({ loading: false });
     } catch (err) {
       console.log(err);
       state?.setStatus({
