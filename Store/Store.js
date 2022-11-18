@@ -13,11 +13,7 @@ const initialProfileState = {
   clients: [],
   trainer: {},
   calendar: [],
-  status: {
-    loading: false,
-    error: false,
-    message: "",
-  },
+
   persist: false,
 };
 
@@ -29,7 +25,6 @@ const initialWorkoutState = {
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
-  
 };
 
 export const useProfile = create((set, get) => ({
@@ -37,6 +32,13 @@ export const useProfile = create((set, get) => ({
   measurements: [],
   notifications: [],
   clients: [],
+  themeType: async () => {
+    const theme = await AsyncStorage.getItem("theme");
+    if (!theme) {
+      await AsyncStorage.setItem("theme", false);
+      return false;
+    }
+  },
   activeNotifications: [],
   viewMeasurement: {},
   messages: [],
@@ -50,14 +52,10 @@ export const useProfile = create((set, get) => ({
       : await AsyncStorage.removeItem("persist");
     set({ persist });
   },
+  setThemeType: (themeType) => set({ themeType }),
 
   calendar: [], // going to contain the calendar data events tasks goals
-  status: {
-    // api status for global loading indicator
-    loading: false,
-    error: false,
-    message: "",
-  },
+
   setProfile: (profile) => set({ profile: profile }),
   setMeasurements: (measurements) => set({ measurements }),
   addMeasurement: (measurement) =>
@@ -71,44 +69,61 @@ export const useProfile = create((set, get) => ({
   setViewMeasurement: (measurement) => set({ viewMeasurement: measurement }),
 
   setNotifications: (notifications) => {
-    set({ notifications });
     set({
-      activeNotifications: get().notifications.filter(
+      activeNotifications: notifications.filter(
         (notification) =>
           notification.receiver.id === get().profile.clientId &&
           notification.is_read === false &&
-          notification.type !== "activity"
-      ),
-    });
-    set({
-      messages: get().notifications.filter((n) => {
-        if (n.type === "message" && (n.receiver.id === get().profile.clientId || n.sender.id === get().profile.clientId)) {
-          return true;
-        }
-      }),
+          notification.type !== "activity" && notification.type !== "message"
+      ), // set active notifications
+      messages: notifications
+        .filter((n) => n.type === "message")
+        .sort((m1, m2) => {
+          return new Date(m1.createdAt) - new Date(m2.createdAt);
+        }), // set messages sorted by date
+      notifications: notifications.filter((notification) => {
+        //add if it is not a activity notification
+        if (
+          notification.receiver.id === get().profile.clientId &&
+          notification.is_read === false &&
+          notification.type !== "activity" &&
+          notification.type !== "message"
+        )
+          return false;
+        else return true;
+      }), // set notifications
     });
   },
   addNotification: (notification) => {
-    set((state) => ({ notifications: [...state.notifications, notification] }));
-    set({
-      activeNotifications: get().notifications.filter(
-        (notification) =>
-          notification.receiver.id === get().profile.clientId &&
-          notification.is_read === false &&
-          notification.type !== "activity"
-      ),
-    });
-    set({
-      messages: get().notifications.filter((n) => {
-        if (n.type === "message" && n.receiver.id === get().profile.clientId) {
-          return true;
-        }
-      }),
-    });
+    set((state) => ({
+      notifications:
+        notification.receiver.id === get().profile.clientId &&
+        notification.is_read === false &&
+        notification.type !== "activity" &&
+        notification.type !== "message"
+          ? state.notifications
+          : [...state.notifications, notification],
+      activeNotifications:
+        notification.receiver.id === get().profile.clientId &&
+        notification.is_read === false &&
+        notification.type !== "activity" && notification.type !== "message"
+          ? [...state.activeNotifications, notification]
+          : state.activeNotifications,
+      messages:
+        notification.type === "message"
+          ? [...state.messages, notification]
+          : state.messages,
+    }));
   },
   updateNotification: (notification) =>
     set((state) => ({
       notifications: state.notifications.map((n) =>
+        n._id === notification._id ? notification : n
+      ),
+      activeNotifications: state.activeNotifications.map((n) =>
+        n._id === notification._id ? notification : n
+      ),
+      messages: state.messages.map((n) =>
         n._id === notification._id ? notification : n
       ),
     })),
@@ -117,13 +132,9 @@ export const useProfile = create((set, get) => ({
       notifications: state.notifications.filter(
         (n) => n._id !== notification._id
       ),
-    }));
-    set((state) => ({
       activeNotifications: state.activeNotifications.filter(
         (n) => n._id !== notification._id
       ),
-    }));
-    set((state) => ({
       messages: state.messages.filter((n) => n._id !== notification._id),
     }));
   },

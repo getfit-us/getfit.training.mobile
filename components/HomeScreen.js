@@ -26,11 +26,14 @@ const HomeScreen = ({ navigation }) => {
     state.persist,
     state.setPersist,
   ]);
+  const themeType = useProfile((state) => state.themeType);
+  const setThemeType = useProfile((state) => state.setThemeType);
 
   const emailRegex =
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
   const onToggleSwitch = () => setPersist(!persist);
+  const onToggleTheme = () =>  themeType === false ? setThemeType(true) : setThemeType(false);
 
   const loadProfile = useCallback(async () => {
     try {
@@ -42,6 +45,8 @@ const HomeScreen = ({ navigation }) => {
     } catch (error) {
       console.log(`Keychain Error: ${error.message}`);
     }
+   
+
   }, []);
 
   useEffect(() => {
@@ -49,6 +54,8 @@ const HomeScreen = ({ navigation }) => {
       console.log("Loading Profile");
       loadProfile();
     }
+
+
   }, [loadProfile, persist]);
 
   const onSubmit = async () => {
@@ -65,12 +72,12 @@ const HomeScreen = ({ navigation }) => {
             ...formError,
             email: true,
             password: false,
-            message: "Please Enter a email",
+            message: "Please enter a valid email",
           });
       return;
     }
     if (!emailRegex.test(email)) {
-      setFormError({ email: true, message: "Please enter a valid email" });
+      setFormError({ email: true, message: "Please enter a valid email address" });
       return;
     }
 
@@ -183,6 +190,7 @@ const HomeScreen = ({ navigation }) => {
       : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
   };
 
+console.log(themeType)
 
   return (
       <View
@@ -192,7 +200,9 @@ const HomeScreen = ({ navigation }) => {
         }}
       >
         <View style={{ alignItems: "center" }}>
-          <Text>Welcome to GetFit Personal Training</Text>
+          <Text
+          style={{fontFamily: 'Roboto', fontSize: 20, color: '#000'}}
+          >Welcome to GETFIT Personal Training</Text>
         </View>
         <View
           style={{
@@ -227,9 +237,11 @@ const HomeScreen = ({ navigation }) => {
           />
           {formError.password && <Text>{formError.message}</Text>}
         </View>
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", flex:1 , flexDirection: 'row', justifyContent: 'center' }}>
           <Text>Remember Me</Text>
           <Switch value={persist} onValueChange={onToggleSwitch} />
+          <Text>{themeType === 'light' ? 'Light Mode' : 'Dark Mode'}</Text>
+          <Switch value={themeType} onValueChange={onToggleTheme} />
         </View>
         {loading ? <ActivityIndicator animating={true} color={'blue'} /> :  <Button
           icon="login"

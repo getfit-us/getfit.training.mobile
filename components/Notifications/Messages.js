@@ -10,19 +10,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const Tab = createBottomTabNavigator();
 
 const Messages = () => {
-  const messages = useProfile((state) => state.messages);
   return (
   <Tab.Navigator
   screenOptions={({ route }) => ({
     tabBarIcon: ({ focused, color, size }) => {
       let iconName;
 
-      if (route.name === 'Home') {
-        iconName = focused
-          ? 'ios-information-circle'
-          : 'ios-information-circle-outline';
-      } else if (route.name === 'Settings') {
-        iconName = focused ? 'ios-list' : 'ios-list-outline';
+      if (route.name === 'Inbox') {
+        iconName = 'mail';
+        
+      } else if (route.name === 'Chat') {
+        iconName ='chatbox' 
       }
 
       // You can return any component that you like here!

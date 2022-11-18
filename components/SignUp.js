@@ -47,17 +47,28 @@ const SignUp = ({navigation}) => {
       valid = false;
       setStatus({
         firstName: true,
-        message: "First name must only contain letters",
+        message: "Please enter a valid first name",
       });
+      return valid;
     }
     if (!lastNameRegex.test(lastName)) {
       valid = false;
 
       setStatus({
         lastName: true,
-        message: "Last name must only contain letters",
+        message: "Please enter a valid last name",
       });
+      return valid;
     } 
+    if (!phoneRegex.test(phoneNum)) {
+      valid = false;
+      setStatus({
+
+        phoneNum: true,
+        message: "Phone number must be 10 digits",
+      });
+      return valid;
+    }
     if (!emailRegex.test(email)) {
       valid = false;
       setStatus({
@@ -65,6 +76,7 @@ const SignUp = ({navigation}) => {
         email: true,
         message: "Please enter a valid email address",
       });
+      return valid;
     } 
     if (!passwordRegex.test(password)) {
       valid = false;
@@ -74,6 +86,7 @@ const SignUp = ({navigation}) => {
         message:
           "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number",
       });
+      return valid;
     } 
     if (password !== password2) {
       valid = false;
@@ -82,16 +95,10 @@ const SignUp = ({navigation}) => {
         password2: true,
         message: "Passwords do not match",
       });
+      return valid;
     }
   
-    if (!phoneRegex.test(phoneNum)) {
-      valid = false;
-      setStatus({
-
-        phoneNum: true,
-        message: "Phone number must be 10 digits",
-      });
-    }
+    
     if (trainerId === "") {
       valid = false;
       setStatus({
@@ -182,9 +189,10 @@ const SignUp = ({navigation}) => {
           padding: 5,
           backgroundColor: "#2780B8",
           borderRadius: 20,
-          marginLeft: 5,
-          marginRight: 5,
+          marginLeft: 10,
+          marginRight: 10,
           color: "white",
+          fontFamily: "Roboto",
         }}
       >
         Sign Up Form
@@ -199,6 +207,7 @@ const SignUp = ({navigation}) => {
           style={styles.input}
           error={status.firstName}
           label="First Name"
+          mode="outlined"
          
         />
         {status.firstName && (
@@ -212,6 +221,7 @@ const SignUp = ({navigation}) => {
           style={styles.input}
           error={status.lastName}
           label="Last Name"
+          mode="outlined"
          
 
         />
@@ -226,6 +236,8 @@ const SignUp = ({navigation}) => {
           style={styles.input}
           error={status.phoneNum}
           label="Phone Number"
+          mode="outlined"
+
         />
         {status.phoneNum && (
           <Text style={styles.error}>{status.message}</Text>
@@ -235,6 +247,8 @@ const SignUp = ({navigation}) => {
           onChangeText={(text) =>
             setFormValues((prev) => ({ ...prev, email: text }))
           }
+          mode="outlined"
+          
           placeholder="Email"
           style={styles.input}
           error={status.email}
@@ -251,6 +265,8 @@ const SignUp = ({navigation}) => {
           placeholder="Password"
           error={status.password}
           style={styles.input}
+          mode="outlined"
+          
           label="Password"
         />
         {status.password && (
@@ -264,6 +280,8 @@ const SignUp = ({navigation}) => {
           secureTextEntry
           style={styles.input}
           error={status.password2}
+          mode="outlined"
+          
           label="Confirm Password"
         />
         {status.password2 && (
@@ -275,6 +293,8 @@ const SignUp = ({navigation}) => {
           }
           placeholder="Trainer ID"
           error={status.trainerId}
+          mode="outlined"
+          
           label="Trainer ID"
         />
       </View>
@@ -296,7 +316,7 @@ const SignUp = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -309,14 +329,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   form: {
-    marginLeft: 10,
-    marginRight: 10,
+    marginLeft: 20,
+    marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
     elevation: 5,
   },
   input: {
     marginBottom: 10,
+    marginTop: 5,
   },
   button: {
     marginBottom: 10,

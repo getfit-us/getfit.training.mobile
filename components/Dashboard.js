@@ -31,8 +31,19 @@ const Dashboard = ({navigation}) => {
           drawerIcon: () => (
             <List.Icon icon="bell-ring" />
           ),
+          title: 'Activity Feed',
+          titleStyle: {
+            color: 'red',
+            backgroundColor: 'blue',
+          },
+          headerVisible: false,
+          headerShown: false,
+
+          
+
 
         }}
+        
         
         />
         <Drawer.Screen name="Messages" component={Messages}
@@ -55,10 +66,13 @@ const Dashboard = ({navigation}) => {
               display:
                "none",
             },
-        
+            headerVisible: false,
+            headerShown: false,
+  
           }}
           name="View Activity"
           component={ViewActivity}
+          
         />
 
         {/* <Drawer.Screen name="Measurements" component={Measurements} /> */}
@@ -67,6 +81,9 @@ const Dashboard = ({navigation}) => {
           drawerIcon: () => (
             <List.Icon icon="account-circle" />
           ),
+          headerVisible: false,
+          headerShown: false,
+
 
         }} />
         {/* <Drawer.Screen name="Settings" component={Settings} /> */}
@@ -75,6 +92,9 @@ const Dashboard = ({navigation}) => {
           drawerIcon: () => (
             <List.Icon icon="logout" />
           ),
+          headerVisible: false,
+          headerShown: false,
+
 
         }} />
       </Drawer.Navigator>
