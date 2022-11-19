@@ -26,10 +26,10 @@ const Inbox = ({ navigation }) => {
     loading: false,
   });
 
-  console.log(activeNotifications)
+  console.log(activeNotifications, clients)
   useEffect(() => {
     if (!loadingMessages) {
-      const sorted = messageData?.sort(
+      const sorted = activeNotifications?.sort(
         (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
       );
       const unique = sorted?.filter((item, index) => {

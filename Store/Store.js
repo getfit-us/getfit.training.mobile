@@ -74,7 +74,7 @@ export const useProfile = create((set, get) => ({
         (notification) =>
           notification.receiver.id === get().profile.clientId &&
           notification.is_read === false &&
-          notification.type !== "activity" && notification.type !== "message"
+          notification.type !== "activity" 
       ), // set active notifications
       messages: notifications
         .filter((n) => n.type === "message")
@@ -106,7 +106,7 @@ export const useProfile = create((set, get) => ({
       activeNotifications:
         notification.receiver.id === get().profile.clientId &&
         notification.is_read === false &&
-        notification.type !== "activity" && notification.type !== "message"
+        notification.type !== "activity" 
           ? [...state.activeNotifications, notification]
           : state.activeNotifications,
       messages:

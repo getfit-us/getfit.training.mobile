@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { useProfile, useWorkouts } from "../../Store/Store";
 import {
-  ActivityIndicator,
   Avatar,
   Card,
   IconButton,
@@ -151,8 +150,10 @@ const ActivityFeed = ({ navigation }) => {
               {...props}
               icon="delete"
               onPress={() => {
+                setStatus({ loading: true });
                 deleteSingleNotification(axiosPrivate, item._id).then(
                   (status) => {
+                    setStatus({ loading: status.loading });
                     if (!status.loading && !status.error)
                       delNotificationState({ _id: item._id });
                   }
@@ -207,13 +208,13 @@ const ActivityFeed = ({ navigation }) => {
   return (
     <SafeAreaView>
       <View>
-        {status.loading || loadingNotifications ? (
+        
           <ProgressBar
             indeterminate
             color={MD2Colors.blue500}
             visible={status.loading  || loadingNotifications ? true : false}
           />
-        ) : (
+       
           <FlatList
             data={userActivity}
             keyExtractor={(userActivity) => userActivity._id}
@@ -223,7 +224,7 @@ const ActivityFeed = ({ navigation }) => {
             onEndReachedThreshold={0.5}
             ListEmptyComponent={NoNotifications}
           />
-        )}
+       
       </View>
     </SafeAreaView>
   );

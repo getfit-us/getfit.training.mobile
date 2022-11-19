@@ -7,15 +7,26 @@ import { useProfile, useWorkouts } from "../../Store/Store";
 const ViewActivity = ({ route, navigation }) => {
   const viewWorkout = useWorkouts((state) => state.viewWorkout);
   const viewMeasurement = useProfile((state) => state.viewMeasurement);
-  let newDate = '';
-
-
+  let newDate;
 
   const displayWorkout = (
     <View style={styles.container}>
-      {!viewWorkout?.dateCompleted && <Text variant="titleLarge"  style={styles.title}> New Workout Created </Text>}
-      <Text variant="titleLarge" style={styles.title}> Workout Name: {viewWorkout?.name}</Text>
-      {viewWorkout?.dateCompleted && ( <Text variant="titleMedium" style={styles.date}> Date Completed: {viewWorkout?.dateCompleted}</Text>)}
+      {!viewWorkout?.dateCompleted && (
+        <Text variant="titleLarge" style={styles.title}>
+          {" "}
+          New Workout Created{" "}
+        </Text>
+      )}
+      <Text variant="titleLarge" style={styles.title}>
+        {" "}
+        Workout Name: {viewWorkout?.name}
+      </Text>
+      {viewWorkout?.dateCompleted && (
+        <Text variant="titleMedium" style={styles.date}>
+          {" "}
+          Date Completed: {viewWorkout?.dateCompleted}
+        </Text>
+      )}
       {viewWorkout?.dateCompleted && viewWorkout?.feedback && (
         <>
           <Text>'Workout Feedback'</Text>
@@ -40,7 +51,8 @@ const ViewActivity = ({ route, navigation }) => {
               Super Set
             </Text>
             {exercise.map((superSet, superSetIndex) => {
-              return ( //superset exercise
+              return (
+                //superset exercise
                 <View key={superSet._id}>
                   <Text variant="titleMedium" style={styles.exercise}>
                     {superSet.name}
@@ -110,7 +122,8 @@ const ViewActivity = ({ route, navigation }) => {
               </Text>
             </View>
           </View>
-        ) : ( //regular exercise
+        ) : (
+          //regular exercise
           <View key={exercise._id}>
             <Text variant="titleMedium" style={styles.exercise}>
               {exercise.name}
@@ -121,7 +134,7 @@ const ViewActivity = ({ route, navigation }) => {
                 style={{
                   flexDirection: "row",
                   marginBottom: 3,
-                  justifyContent: 'center'
+                  justifyContent: "center",
                 }}
               >
                 <Text style={styles.setLabel}>
@@ -144,21 +157,33 @@ const ViewActivity = ({ route, navigation }) => {
     </View>
   );
 
-    const displayMeasurement = (
-      <View style={styles.container}>
-        <Text variant="titleLarge">Measurement</Text>
-        
-        <Text variant="titleMedium" style={styles.title}>{viewMeasurement?.message}</Text>
-        <Text style={styles.setLabel}>Date: <Text style={styles.setInfo}>{viewMeasurement?.date}</Text></Text>
-        {viewMeasurement?.weight && <Text style={styles.setLabel}>Weight: <Text style={styles.setInfo}>{viewMeasurement?.weight} (lbs)</Text></Text>}
-        {viewMeasurement?.bodyfat && <Text>Bodyfat: {viewMeasurement?.bodyfat}</Text>}
-       
-      </View>
-    );
+  const displayMeasurement = (
+    <View style={styles.container}>
+      <Text variant="titleLarge">Measurement</Text>
+
+      <Text variant="titleMedium" style={styles.title}>
+        {viewMeasurement?.message}
+      </Text>
+      <Text style={styles.setLabel}>
+        Date: <Text style={styles.setInfo}>{viewMeasurement?.date}</Text>
+      </Text>
+      {viewMeasurement?.weight && (
+        <Text style={styles.setLabel}>
+          Weight:{" "}
+          <Text style={styles.setInfo}>{viewMeasurement?.weight} (lbs)</Text>
+        </Text>
+      )}
+      {viewMeasurement?.bodyfat && (
+        <Text>Bodyfat: {viewMeasurement?.bodyfat}</Text>
+      )}
+    </View>
+  );
 
   return (
     <>
-      <ScrollView>{viewWorkout?.name ? displayWorkout : displayMeasurement}</ScrollView>
+      <ScrollView>
+        {viewWorkout?.name ? displayWorkout : displayMeasurement}
+      </ScrollView>
     </>
   );
 };
@@ -170,6 +195,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
+    backgroundColor: "white",
+    height: "100%",
   },
   superSet: {
     flex: 1,
@@ -211,7 +238,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 10,
-  color: "#243A37",
-  }
-
+    color: "#243A37",
+  },
 });
