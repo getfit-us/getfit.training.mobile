@@ -138,8 +138,8 @@ export const useProfile = create((set, get) => ({
       messages: state.messages.filter((n) => n._id !== notification._id),
     }));
   },
-
-  setClients: (clients) => set({ clients }),
+  //sort clients by first name
+  setClients: (clients) => set({ clients: clients.sort((c1, c2) => c1.firstname.localeCompare(c2.firstname)) }),
   updateClient: (client) =>
     set((state) => ({
       clients: state.clients.map((c) => (c._id === client._id ? client : c)),

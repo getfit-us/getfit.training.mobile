@@ -4,6 +4,7 @@ import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { TextInput, Button, Card } from "react-native-paper";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useProfile } from "../../Store/Store";
+import { sendMessage } from "../Api/services";
 
 const Chat = ({ route }) => {
   const clientId = useProfile((state) => state.profile.clientId);
@@ -12,7 +13,8 @@ const Chat = ({ route }) => {
   const addNotification = useProfile((state) => state.addNotification);
   const trainer = useProfile((state) => state.trainer);
   const axiosPrivate = useAxiosPrivate();
-  const { user } = route?.params ? route.params : { user: null };
+
+  const { user, message } = route?.params ? route.params : { user: null }; // user is the person you are chatting with
   const [reply, setReply] = useState("");
   const [msgSent, setMsgSent] = useState({
     message: "",
@@ -23,73 +25,57 @@ const Chat = ({ route }) => {
   const flatList = useRef();
 
   useEffect(() => {
+    let filtered;
     if (user) {
-      const filteredMessages = messages.filter(
-        (msg) =>
-          msg.sender.id === user.sender.id ||
-          (msg.sender.id === clientId && msg.receiver.id === user.sender.id)
+      //find all messages between the current user and the user you are chatting with
+      filtered = messages?.filter(
+        (message) =>
+          (message.sender.id === user._id &&
+            message.receiver.id === clientId) ||
+          (message.sender.id === clientId && message.receiver.id === user._id)
       );
-      setChat(filteredMessages);
     }
+
+    if (message) {
+      filtered = messages.filter(
+        (msg) =>
+          msg.sender.id === message.sender.id ||
+          (msg.sender.id === clientId && msg.receiver.id === message.sender.id)
+      );
+    }
+    setChat(filtered);
   }, [messages, user]);
 
-  const sendMessage = async (reply) => {
-    if (!reply) return;
-    let message = {};
-    //set type to message
-    message.type = "message";
-    message.message = reply;
-    //set sender
-    message.sender = {};
-    message.receiver = {};
-    message.sender.id = clientId;
-    message.sender.name = profile.firstName + " " + profile.lastName;
-    //set receiver
-    if (trainer?.firstname) {
-      message.receiver.id = trainerState.id;
-    } else {
-      message.receiver.id = user.sender.id;
-    }
-    const controller = new AbortController();
-    try {
-      const response = await axiosPrivate.post("/notifications", message, {
-        signal: controller.signal,
-      });
-
-      addNotification(response.data);
-      console.log(response.data);
-
-      //   setMsgSent((prev) => ({ ...prev, success: true }));
-
-      //   setTimeout(() => {
-      //     setMsgSent((prev) => ({ ...prev, success: false }));
-      //   }, 3000);
-      setReply("");
-    } catch (err) {
-      console.log(err);
-      //   setError(err.message);
-    }
-    return () => {
-      controller.abort();
+  const handleSend = () => {
+    const message = {
+      sender: {
+        id: clientId,
+        name: profile.firstName + " " + profile.lastName,
+      },
+      receiver: { id: user._id }, // set to current chat user
+      message: reply, // reply from input state
+      type: "message", // set type to message
     };
+    sendMessage(axiosPrivate, message).then((res) => {
+      if (res.error) {
+        setMsgSent({
+          message: res.message,
+          isError: true,
+          success: false,
+        });
+      } else {
+        setMsgSent({
+          message: res.message,
+          isError: false,
+          success: true,
+        });
+        addNotification(res.data);
+        setReply("");
+      }
+    });
   };
 
-  const Footer = () => {
-    return (
-      <View style={styles.input}>
-        <TextInput
-          placeholder="Type a message"
-          onChangeText={(value) => setReply(value)}
-          value={reply}
-          style={{ width: "80%" }}
-        />
 
-        <Button style={styles.button} onPress={() => sendMessage(reply)}>
-          Send
-        </Button>
-      </View>
-    );
-  };
 
   //going to check if user is trainer, if so going to list clients to chat with, if not going to just show their trainer
   return (
@@ -103,22 +89,34 @@ const Chat = ({ route }) => {
             return (
               <View
                 style={
-                  clientId === item.sender.id
+                  clientId === item?.sender.id
                     ? styles.messageSent
                     : styles.messageReceived
                 }
               >
                 <Text style={styles.sender}>
-                  {clientId !== item.sender.id ? item.sender.name : null}
+                  {clientId !== item?.sender.id ? item?.sender.name : null}
                 </Text>
-                <Text style={styles.date}>{item.createdAt}</Text>
-                <Text style={styles.msg}>{item.message}</Text>
+                <Text style={styles.date}>{item?.createdAt}</Text>
+                <Text style={styles.msg}>{item?.message}</Text>
               </View>
             );
           }}
           onContentSizeChange={() => flatList.current.scrollToEnd()}
         />
-        <Footer />
+        <View style={styles.input}>
+          <TextInput
+            placeholder="Type a message"
+            onChangeText={(value) => setReply(value)}
+            value={reply}
+            style={{ width: "80%" }}
+            mode="outlined"
+          />
+
+          <Button style={styles.button} onPress={handleSend}>
+            Send
+          </Button>
+        </View>
       </View>
     </>
   );
@@ -127,7 +125,6 @@ const Chat = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "grey",
   },
   chatContainer: {
     flex: 1,
@@ -167,6 +164,10 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
 

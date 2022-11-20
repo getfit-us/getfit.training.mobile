@@ -190,7 +190,6 @@ const HomeScreen = ({ navigation }) => {
       : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
   };
 
-console.log(themeType)
 
   return (
       <View

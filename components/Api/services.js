@@ -387,3 +387,20 @@ export const saveNewCustomWorkout = async (axiosPrivate, workout) => {
   }
   return status;
 };
+
+export const sendMessage = async (axiosPrivate, message) => {
+  let status = { loading: true, error: false, data: null };
+  if (!message) return status;
+  const controller = new AbortController();
+
+  try {
+    const response = await axiosPrivate.post("/notifications", message, {
+      signal: controller.signal,
+    });
+    status = { loading: false, error: false, data: response.data };
+  } catch (err) {
+    console.log(err);
+    status = { loading: false, error: true, data: err };
+  }
+  return status;
+}

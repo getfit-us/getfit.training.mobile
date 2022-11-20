@@ -31,6 +31,7 @@ export default function App() {
   function LogoTitle() {
     const navigation = useNavigation();
 
+
     return (
       <View style={styles.container}>
         <TouchableHighlight

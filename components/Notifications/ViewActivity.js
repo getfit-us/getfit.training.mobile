@@ -33,7 +33,7 @@ const ViewActivity = ({ route, navigation }) => {
           <Paragraph>{viewWorkout?.feedback}</Paragraph>
         </>
       )}
-      {viewWorkout?.exercises.map((exercise, ei) => {
+      {viewWorkout && viewWorkout?.exercises?.map((exercise, ei) => {
         //check if its a superset
 
         return Array.isArray(exercise) ? (
@@ -50,7 +50,7 @@ const ViewActivity = ({ route, navigation }) => {
             >
               Super Set
             </Text>
-            {exercise.map((superSet, superSetIndex) => {
+            {exercise?.map((superSet, superSetIndex) => {
               return (
                 //superset exercise
                 <View key={superSet._id}>
@@ -88,7 +88,7 @@ const ViewActivity = ({ route, navigation }) => {
               );
             })}
           </View>
-        ) : exercise.type === "cardio" ? ( //cardio exercise
+        ) : exercise?.type === "cardio" ? ( //cardio exercise
           <View key={exercise._id}>
             <Text variant="titleMedium" style={styles.exercise}>
               {exercise.name}

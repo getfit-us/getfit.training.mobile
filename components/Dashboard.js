@@ -9,6 +9,7 @@ import Profile from "./Profile/Profile";
 import Messages from "./Notifications/Messages";
 import ViewActivity from "./Notifications/ViewActivity";
 import {List } from "react-native-paper";
+import StartWorkout from "./Workout/StartWorkout";
 
 const Drawer = createDrawerNavigator();
 
@@ -26,6 +27,21 @@ const Dashboard = ({navigation}) => {
       <GetApiData />
 
       <Drawer.Navigator>
+        <Drawer.Screen name='Start Workout' component={StartWorkout} 
+        options={{
+          drawerIcon: () => (
+            <List.Icon  icon='weight-lifter' />
+          ),
+          title: 'Start Workout',
+          titleStyle: {
+            color: 'red',
+            backgroundColor: 'blue',
+          },
+          headerVisible: false,
+          headerShown: false,
+        }}
+        
+        />
         <Drawer.Screen name="Activity Feed" component={ActivityFeed} 
         options={{
           drawerIcon: () => (
