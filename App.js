@@ -28,9 +28,10 @@ export default function App() {
   const messages = useProfile((state) => state.messages);
   const themeType = useProfile((state) => state.themeType);
 
+
   function LogoTitle() {
     const navigation = useNavigation();
-
+    
 
     return (
       <View style={styles.container}>

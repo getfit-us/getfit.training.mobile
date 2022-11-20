@@ -205,6 +205,8 @@ const ActivityFeed = ({ navigation }) => {
     </View>
   );
 
+          console.log(profile)
+
   return (
     <SafeAreaView>
       <View>

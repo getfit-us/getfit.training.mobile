@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from "react-native-paper";
 import { View } from "react-native";
+import RenderSets from "./RenderSets";
 
 const RenderExercises = ({ startWorkout }) => {
   return startWorkout?.exercises?.map((exercise) => (
@@ -9,9 +10,7 @@ const RenderExercises = ({ startWorkout }) => {
     >
       <Card.Title title={exercise.name} />
       <Card.Content>
-        <View>
-            
-        </View>
+       <RenderSets sets={exercise.numOfSets} />
 
 
       </Card.Content>

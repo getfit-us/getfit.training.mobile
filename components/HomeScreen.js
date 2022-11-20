@@ -41,6 +41,19 @@ const HomeScreen = ({ navigation }) => {
       const userInfo = await SecureStore.getItemAsync('profile');
       if (userInfo) {
       setProfile(JSON.parse(userInfo));
+      //check if token is expired
+      const refreshTokenExpiration = await SecureStore.getItemAsync('refreshTokenExpiration');
+      if (refreshTokenExpiration) {
+        const now = new Date().getTime();
+        const expiration = new Date(refreshTokenExpiration).getTime();
+        if (now > expiration) {
+          console.log('Refresh token expired');
+          await SecureStore.deleteItemAsync('refreshToken');
+          await SecureStore.deleteItemAsync('refreshTokenExpiration');
+          await SecureStore.deleteItemAsync('profile');
+          setProfile(null);
+        }
+      }
       }
     } catch (error) {
       console.log(`Keychain Error: ${error.message}`);
@@ -95,7 +108,11 @@ const HomeScreen = ({ navigation }) => {
       if (response.headers["set-cookie"]) {
         console.log('Saving refresh token to keychain');
         const refreshToken = response.headers["set-cookie"][0].split(';')[0].split('=')[1];
+        const refreshTokenExpiration = response.headers["set-cookie"][0].split(';')[3].split('=')[1]
+       
         await SecureStore.setItemAsync('refreshToken', refreshToken);
+        await SecureStore.setItemAsync('refreshTokenExpiration',  refreshTokenExpiration);
+        
       }
       setProfile(response.data);
       if (persist) {

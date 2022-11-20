@@ -4,7 +4,6 @@ import RenderWorkout from "./RenderWorkout";
 import React, { useEffect } from "react";
 import { View, Text, FlatList } from "react-native";
 import { useWorkouts } from "../../Store/Store";
-import usePagination from "../../hooks/usePagination";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
 import {
   getAssignedCustomWorkouts,
@@ -20,6 +19,7 @@ const StartWorkout = () => {
     <Tab.Navigator>
       <Tab.Screen name="Assigned Workouts"
     options={{ title: "Assigned Workouts",
+    backBehavior: 'history',
     headerStyle: {
         backgroundColor: "#f4511e",
         borderRadius: 20,
@@ -41,7 +41,11 @@ const StartWorkout = () => {
 }}
       component={AssignedWorkouts} />
       <Tab.Screen name="Created Workouts" component={CustomWorkouts} />
-      <Tab.Screen name="Completed Workouts" component={CompletedWorkouts} />
+      <Tab.Screen name="Completed Workouts" 
+      options={{
+        backBehavior: 'history',
+      }}
+      component={CompletedWorkouts} />
     </Tab.Navigator>
   );
 };
@@ -134,7 +138,7 @@ const CustomWorkouts = () => {
   );
 };
 
-const CompletedWorkouts = () => {
+const CompletedWorkouts = ({navigation}) => {
   const stateCompletedWorkouts = useWorkouts(
     (state) => state.completedWorkouts
   );
@@ -152,6 +156,19 @@ const CompletedWorkouts = () => {
       );
     }
   }, [loadingCompletedWorkouts]);
+
+  // React.useEffect(() => {
+  //   const unsubscribe = navigation.addListener('tabPress', (e) => {
+  //     // Prevent default behavior
+  //     e.preventDefault();
+  //     setStartWorkout({});
+  //     navigation.navigate('Start Workout');
+  //     // Do something manually
+  //     // ...
+  //   });
+  
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const handleSearch = (query) => {
     const filteredData = stateCompletedWorkouts.filter((item) => {

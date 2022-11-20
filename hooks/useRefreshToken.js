@@ -9,6 +9,26 @@ const useRefreshToken = () => {
   const persist = useProfile((state) => state.persist);
 
   const refresh = async () => {
+
+
+    // check if refresh token is still valid
+    const refreshTokenExpiration = await SecureStore.getItemAsync('refreshTokenExpiration');
+    if (refreshTokenExpiration) {
+      const now = new Date().getTime();
+      const expiration = new Date(refreshTokenExpiration).getTime();
+      if (now > expiration) {
+        console.log('Refresh token expired');
+        await SecureStore.deleteItemAsync('refreshToken');
+        await SecureStore.deleteItemAsync('refreshTokenExpiration');
+        await SecureStore.deleteItemAsync('profile');
+        setProfile(null);
+        return;
+      }
+    } else {
+      console.log('No refresh token');
+      setProfile(null);
+      return;
+    }
     const response = await axiosPrivate.get("/refresh", {
       headers: {
         "Content-Type": "application/json",
@@ -16,14 +36,11 @@ const useRefreshToken = () => {
       },
       withCredentials: true,
     });
-    if (response.headers["set-cookie"]) {
-      console.log('Saving refresh token to keychain');
-      const refreshToken = response.headers["set-cookie"][0].split(';')[0].split('=')[1];
-      await SecureStore.setItemAsync('refreshToken', refreshToken);
-    }
+ 
+
     setProfile(response.data);
     if (persist) {
-      console.log("Saving Profile");
+      console.log("AccessToken Profile");
       const profile = await SecureStore.setItemAsync(
         "profile",
         JSON.stringify(response.data)

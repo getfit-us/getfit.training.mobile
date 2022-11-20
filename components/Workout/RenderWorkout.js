@@ -6,9 +6,9 @@ import RenderExercises from "./RenderExercises";
 const RenderWorkout = ({ startWorkout }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView style={styles.ScrollView}>
         <Text style={styles.title}>{startWorkout.name}</Text>
-        <Text style={styles.title}>{JSON.stringify(startWorkout)}</Text>
+        {/* <Text style={styles.title}>{JSON.stringify(startWorkout)}</Text> */}
         <RenderExercises startWorkout={startWorkout} />
       </ScrollView>
     </SafeAreaView>
@@ -21,7 +21,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
   },
+  ScrollView: {
+    width: "100%",
+   
+  },
+  
 });
 
 export default RenderWorkout;
