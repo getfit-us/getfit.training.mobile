@@ -5,11 +5,9 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 const GetApiData = () => {
   const state = useProfile();
   const workouts = useWorkouts();
-  const accessToken = useProfile((state) => state.profile.accessToken);
   const axiosPrivate = useAxiosPrivate();
 
-
-//  console.log(workouts)
+  //  console.log(workouts)
   // const axiosTest = axios.create({
   //   baseURL: "https://app.getfit.us:8000",
   //   headers: {
@@ -30,7 +28,7 @@ const GetApiData = () => {
       state.setCalendar(response.data);
       state.setStatus({ loading: false });
     } catch (error) {
-      console.log(error.message);
+      console.log("get calendar", error.message);
       state.setStatus({
         loading: false,
         error: true,
@@ -57,7 +55,7 @@ const GetApiData = () => {
       state.setStatus({ loading: false });
       // reset();
     } catch (err) {
-      console.log(err);
+      console.log("get CustomWorkouts", err);
       state.setStatus({
         loading: false,
         error: true,
@@ -91,7 +89,7 @@ const GetApiData = () => {
       state.setStatus({ loading: false });
       // reset();
     } catch (err) {
-      console.log(err);
+      console.log("error get assigned custom workouts", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -125,7 +123,7 @@ const GetApiData = () => {
       state?.setClients(response.data);
       state.setStatus({ loading: false });
     } catch (err) {
-      console.log(err);
+      console.log("get client data", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -147,11 +145,11 @@ const GetApiData = () => {
           signal: controller.signal,
         }
       );
-        if (state.notifications?.length !== response.data.length) {
-      state?.setNotifications(response.data);
-        }
+      if (state.notifications?.length !== response.data.length) {
+        state?.setNotifications(response.data);
+      }
     } catch (err) {
-      console.log(err);
+      console.log("error getting notifications", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -174,7 +172,7 @@ const GetApiData = () => {
       state?.setMeasurements(response.data);
       state?.setStatus({ loading: false });
     } catch (err) {
-      console.log(err);
+      console.log("error getting measurements", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -200,7 +198,7 @@ const GetApiData = () => {
       state?.setStatus({ loading: false });
       // console.log(state.workouts)
     } catch (err) {
-      console.log(err);
+      console.log("error getting completed workouts", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -223,7 +221,7 @@ const GetApiData = () => {
       state?.setTrainer(response.data);
       state?.setStatus({ loading: false });
     } catch (err) {
-      console.log(err);
+      console.log("error getting trainer", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -249,7 +247,7 @@ const GetApiData = () => {
 
       state?.setStatus({ loading: false });
     } catch (err) {
-      console.log(err);
+      console.log("error getting exercises", err);
       state?.setStatus({
         loading: false,
         error: true,
@@ -260,7 +258,6 @@ const GetApiData = () => {
       controller.abort();
     };
   };
-
 
   useEffect(() => {
     console.log("loading state");
@@ -305,16 +302,12 @@ const GetApiData = () => {
     }
   }, []);
 
-
-useEffect(() => {
+  useEffect(() => {
     //api call every 10sec for notifications
     const interval = setInterval(async () => {
       await getNotifications();
     }, 10000);
     return () => clearInterval(interval);
   }, []);
-
-
-
-}
-  export default GetApiData;
+};
+export default GetApiData;

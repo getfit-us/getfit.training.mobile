@@ -25,6 +25,7 @@ const initialWorkoutState = {
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
+  startWorkout: {},
 };
 
 export const useProfile = create((set, get) => ({
@@ -200,6 +201,18 @@ export const useWorkouts = create((set, get) => ({
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
+  startWorkout: {},
+  setStartWorkout: (startWorkout) => set({ startWorkout }),
+  updateStartWorkoutExercise: (exercise) =>
+    set((state) => ({
+      startWorkout: {
+        ...state.startWorkout,
+        exercises: state.startWorkout.exercises.map((e) =>
+          e._id === exercise._id ? exercise : e
+        ),
+      },
+    })),
+
   setCurrentWorkout: (workout) => set({ currentWorkout: workout }),
   setCompletedWorkouts: (completedWorkouts) => set({ completedWorkouts }),
   addCompletedWorkout: (completedWorkout) =>

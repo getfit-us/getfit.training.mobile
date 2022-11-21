@@ -7,6 +7,7 @@ const useRefreshToken = () => {
   const setProfile = useProfile((state) => state.setProfile);
   const axiosPrivate = useAxios();
   const persist = useProfile((state) => state.persist);
+  const setPersist = useProfile((state) => state.setPersist);
 
   const refresh = async () => {
 
@@ -21,12 +22,15 @@ const useRefreshToken = () => {
         await SecureStore.deleteItemAsync('refreshToken');
         await SecureStore.deleteItemAsync('refreshTokenExpiration');
         await SecureStore.deleteItemAsync('profile');
-        setProfile(null);
+
+        setProfile({});
         return;
       }
     } else {
       console.log('No refresh token');
-      setProfile(null);
+      setProfile({});
+      setPersist(false);
+
       return;
     }
     const response = await axiosPrivate.get("/refresh", {
@@ -36,6 +40,8 @@ const useRefreshToken = () => {
       },
       withCredentials: true,
     });
+    
+    console.log('inside refresh token hook', response.data);
  
 
     setProfile(response.data);

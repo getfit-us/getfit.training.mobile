@@ -21,7 +21,7 @@ const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const setProfile = useProfile((state) => state.setProfile);
-  const accessToken = useProfile((state) => state.profile.accessToken);
+  const accessToken = useProfile((state) => state.profile?.accessToken);
   const [persist, setPersist] = useProfile((state) => [
     state.persist,
     state.setPersist,
@@ -40,6 +40,7 @@ const HomeScreen = ({ navigation }) => {
      
       const userInfo = await SecureStore.getItemAsync('profile');
       if (userInfo) {
+        console.log(userInfo)
       setProfile(JSON.parse(userInfo));
       //check if token is expired
       const refreshTokenExpiration = await SecureStore.getItemAsync('refreshTokenExpiration');
@@ -128,7 +129,7 @@ const HomeScreen = ({ navigation }) => {
     } catch (err) {
       //if email unverified show error message for 6seconds
       setLoading(false);
-      console.log(err);
+      console.log('error on login', err);
 
       if (err?.response?.status === 403)
         // Unauthorized email not verified

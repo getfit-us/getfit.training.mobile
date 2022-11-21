@@ -14,38 +14,34 @@ import { List, Searchbar } from "react-native-paper";
 
 const StartWorkout = () => {
   const Tab = createBottomTabNavigator();
+  const startWorkout = useWorkouts((state) => state.startWorkout);
 
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Assigned Workouts"
-    options={{ title: "Assigned Workouts",
-    backBehavior: 'history',
-    headerStyle: {
-        backgroundColor: "#f4511e",
-        borderRadius: 20,
-
+    <Tab.Navigator
     
-      
-        },
-        headerTitleStyle: {
-        fontWeight: "bold",
-        color: "white",
-        textAlign: "center",
-        justifyContent: "center",
-        alignContent: "center",
-        alignSelf: "center",
-        marginLeft: "auto",
-        },
-
-
-}}
-      component={AssignedWorkouts} />
+    >
+      <Tab.Screen
+        name="Assigned Workouts"
+        options={{
+          backBehavior: "history",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+            borderRadius: 20,
+          },
+          headerTitleStyle: {
+            fontWeight: "bold",
+            color: "white",
+            textAlign: "center",
+            justifyContent: "center",
+            alignContent: "center",
+            alignSelf: "center",
+            marginLeft: "auto",
+          },
+        }}
+        component={AssignedWorkouts}
+      />
       <Tab.Screen name="Created Workouts" component={CustomWorkouts} />
-      <Tab.Screen name="Completed Workouts" 
-      options={{
-        backBehavior: 'history',
-      }}
-      component={CompletedWorkouts} />
+      <Tab.Screen name="Completed Workouts" component={CompletedWorkouts} />
     </Tab.Navigator>
   );
 };
@@ -85,7 +81,6 @@ const CustomWorkouts = () => {
     useApiCallOnMount(getCustomWorkouts);
   const stateCustomWorkouts = useWorkouts((state) => state.customWorkouts);
   const [workoutData, setWorkoutData] = React.useState([]);
-  const [startWorkout, setStartWorkout] = React.useState({});
 
   useEffect(() => {
     if (!loadingCustomWorkouts) {
@@ -138,14 +133,15 @@ const CustomWorkouts = () => {
   );
 };
 
-const CompletedWorkouts = ({navigation}) => {
+const CompletedWorkouts = ({ navigation }) => {
   const stateCompletedWorkouts = useWorkouts(
     (state) => state.completedWorkouts
   );
   const [loadingCompletedWorkouts, completedWorkouts, errorCompletedWorkouts] =
     useApiCallOnMount(getCompletedWorkouts);
   const [workoutData, setWorkoutData] = React.useState([]);
-  const [startWorkout, setStartWorkout] = React.useState({});
+  const startWorkout = useWorkouts((state) => state.startWorkout);
+  const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
 
   useEffect(() => {
     if (!loadingCompletedWorkouts) {
@@ -157,18 +153,19 @@ const CompletedWorkouts = ({navigation}) => {
     }
   }, [loadingCompletedWorkouts]);
 
-  // React.useEffect(() => {
-  //   const unsubscribe = navigation.addListener('tabPress', (e) => {
-  //     // Prevent default behavior
-  //     e.preventDefault();
-  //     setStartWorkout({});
-  //     navigation.navigate('Start Workout');
-  //     // Do something manually
-  //     // ...
-  //   });
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('goBack', (e) => {
+      setStartWorkout({});
+      navigation.goBack();
+      
   
-  //   return unsubscribe;
-  // }, [navigation]);
+      // Do something manually
+      // ...
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+
 
   const handleSearch = (query) => {
     const filteredData = stateCompletedWorkouts.filter((item) => {
@@ -185,13 +182,16 @@ const CompletedWorkouts = ({navigation}) => {
         title={item.name}
         description={new Date(item.dateCompleted).toLocaleDateString()}
         left={(props) => <List.Icon {...props} icon="dumbbell" />}
-        onPress={() => setStartWorkout(item)}
+        onPress={() => {
+          setStartWorkout(item);
+          
+        }}
       />
     );
   };
 
   return startWorkout?.name ? (
-    <RenderWorkout startWorkout={startWorkout} />
+    <RenderWorkout />
   ) : (
     <View>
       <Searchbar

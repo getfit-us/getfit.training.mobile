@@ -32,7 +32,7 @@ const Logout = () => {
         // console.log(remove);
     } catch (err) {
 
-      console.log(err);
+      console.log("logout error", err);
     }
 
     return () => {

@@ -26,7 +26,11 @@ const Dashboard = ({navigation}) => {
     <>
       <GetApiData />
 
-      <Drawer.Navigator>
+      <Drawer.Navigator 
+      initialRouteName="Activity Feed"
+      backBehavior="history"
+      
+      >
         <Drawer.Screen name='Start Workout' component={StartWorkout} 
         options={{
           drawerIcon: () => (
