@@ -40,6 +40,7 @@ const Messages = () => {
      options={{
       headerVisible: false,
       headerShown: false,
+      
     }} />
   </Tab.Navigator>
 

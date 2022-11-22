@@ -31,9 +31,16 @@ const useAxiosPrivate = () => {
       (response) => response,
       async (err) => {
         const prevRequest = err?.config;
-        prevRequest._retryCount = prevRequest._retryCount || 0;
+        prevRequest.retryCount -= 1;
         console.log("interceptor error", err.config);
-        if (prevRequest._retryCount > 2) {
+        if (err.response?.status === 403 && prevRequest.retryCount > 1) {
+          console.log("refreshing token", prevRequest._retryCount);
+
+          await refresh();
+         
+          prevRequest.headers["Authorization"] = "Bearer " + accessToken;
+        }
+        if (prevRequest._retryCount < 1) {
           //already tried to refresh token remove all tokens and redirect to login
           console.log("already tried to refresh token");
           resetProfileState();
@@ -41,13 +48,6 @@ const useAxiosPrivate = () => {
           setPersist(false);
           const remove = await SecureStore.deleteItemAsync("profile");
           return Promise.reject(err);
-        }
-        prevRequest._retryCount += 1;
-        if (err.response?.status === 403 && prevRequest._retryCount <= 1) {
-          console.log("refreshing token", prevRequest._retryCount);
-
-          const newAccessToken = await refresh();
-          prevRequest.headers["Authorization"] = "Bearer " + newAccessToken;
         }
 
         const backoff = new Promise((resolve) => {

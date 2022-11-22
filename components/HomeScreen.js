@@ -40,7 +40,6 @@ const HomeScreen = ({ navigation }) => {
      
       const userInfo = await SecureStore.getItemAsync('profile');
       if (userInfo) {
-        console.log(userInfo)
       setProfile(JSON.parse(userInfo));
       //check if token is expired
       const refreshTokenExpiration = await SecureStore.getItemAsync('refreshTokenExpiration');

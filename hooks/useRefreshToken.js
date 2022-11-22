@@ -41,7 +41,7 @@ const useRefreshToken = () => {
       withCredentials: true,
     });
     
-    console.log('inside refresh token hook', response.data);
+    console.log('inside refresh token hook updated token');
  
 
     setProfile(response.data);

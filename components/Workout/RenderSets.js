@@ -1,10 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, StyleSheet } from "react-native";
 import { IconButton, TextInput } from "react-native-paper";
-import RenderSuperSet from "./RenderSuperSet";
 import { useWorkouts } from "../../Store/Store";
 
-const RenderSets = ({ sets, exercise, exerciseIndex }) => {
+const RenderSets = memo(({ sets, exercise, exerciseIndex }) => {
   const updateStartWorkoutExercise = useWorkouts(
     (state) => state.updateStartWorkoutExercise
   );
@@ -13,47 +12,48 @@ const RenderSets = ({ sets, exercise, exerciseIndex }) => {
     _exercise.numOfSets.splice(setIndex, 1);
     updateStartWorkoutExercise(_exercise);
   };
+ 
 
   return sets?.map((set, setIndex) => {
-    return Array.isArray(set) ? (
-      <RenderSuperSet sets={set} key={setIndex  + 'superset'} />
-    ) : (
-      <View style={styles.sets} key={" Set View" + setIndex}>
-        <TextInput
-          key={setIndex + "set"}
-          label="Set"
-        //   value={index + 1}
-         defaultValue={setIndex + 1}
-          editable={false}
-          mode="outlined"
-          style={styles.set}
+    return (
+    <View style={styles.sets} key={" Set View" + setIndex}>
+      <TextInput
+        key={exercise._id + "setInput"}
+        label="Set"
+        value={(setIndex + 1).toString()}
+        editable={false}
+        mode="outlined"
+        style={styles.set}
+        
+      />
+      <TextInput
+        key={exercise._id + "weight"}
+        label="Weight"
+        defaultValue={set.weight}
+        mode="outlined"
+        style={styles.weight}
+        keyboardType="number-pad"
+      />
+      <TextInput
+        key={exercise._id + "reps"}
+        label="Reps"
+        defaultValue={set.reps}
+        mode="outlined"
+        style={styles.rep}
+        keyboardType="numeric"
+      />
+      {setIndex > 0 && (
+        <IconButton
+          key={exercise._id + "delete"}
+          icon="delete"
+          onPress={() => handleDeleteSet(setIndex)}
+          size={20}
         />
-        <TextInput
-          key={setIndex + "weight"}
-          label="Weight"
-          value={set.weight}
-          mode="outlined"
-          style={styles.weight}
-        />
-        <TextInput
-          key={setIndex + "reps"}
-          label="Reps"
-          value={set.reps}
-          mode="outlined"
-          style={styles.rep}
-        />
-        {setIndex > 0 && (
-          <IconButton
-            key={setIndex + "delete"}
-            icon="delete"
-            onPress={() => handleDeleteSet(setIndex)}
-            size={20}
-          />
-        )}
-      </View>
-    );
+      )}
+    </View>);
+    
   });
-};
+});
 
 const styles = StyleSheet.create({
   sets: {

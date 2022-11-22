@@ -5,6 +5,7 @@ import { TextInput, Button, Card } from "react-native-paper";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useProfile } from "../../Store/Store";
 import { sendMessage } from "../Api/services";
+import { useNavigation } from "@react-navigation/native";
 
 const Chat = ({ route }) => {
   const clientId = useProfile((state) => state.profile.clientId);
@@ -13,8 +14,9 @@ const Chat = ({ route }) => {
   const addNotification = useProfile((state) => state.addNotification);
   const trainer = useProfile((state) => state.trainer);
   const axiosPrivate = useAxiosPrivate();
+  const navigation = useNavigation();
 
-  const { user, message } = route?.params ? route.params : { user: null }; // user is the person you are chatting with
+  const { user, message } = route?.params ? route.params : { user: null, message: null }; // user is the person you are chatting with
   const [reply, setReply] = useState("");
   const [msgSent, setMsgSent] = useState({
     message: "",
@@ -25,6 +27,8 @@ const Chat = ({ route }) => {
   const flatList = useRef();
 
   useEffect(() => {
+
+    if (route?.params === undefined) navigation.navigate('Inbox');
     let filtered;
     if (user) {
       //find all messages between the current user and the user you are chatting with
@@ -44,7 +48,8 @@ const Chat = ({ route }) => {
       );
     }
     setChat(filtered);
-  }, [messages, user]);
+  }, [messages, user, message]);
+
 
   const handleSend = () => {
     const message = {
@@ -82,7 +87,7 @@ const Chat = ({ route }) => {
     <>
       <View style={styles.container}>
         <FlatList
-          data={chat}
+          data={chat ? chat : []}
           ref={flatList}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => {

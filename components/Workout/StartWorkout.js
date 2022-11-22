@@ -11,6 +11,7 @@ import {
   getCompletedWorkouts,
 } from "../Api/services";
 import { List, Searchbar } from "react-native-paper";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const StartWorkout = () => {
   const Tab = createBottomTabNavigator();
@@ -21,27 +22,67 @@ const StartWorkout = () => {
     
     >
       <Tab.Screen
-        name="Assigned Workouts"
+        name="Trainer Assigned Workouts"
         options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="clipboard-account" color={color} size={size} />
+          ),
           backBehavior: "history",
           headerStyle: {
-            backgroundColor: "#f4511e",
-            borderRadius: 20,
+            backgroundColor: "#071013",
+           
           },
           headerTitleStyle: {
             fontWeight: "bold",
             color: "white",
-            textAlign: "center",
             justifyContent: "center",
             alignContent: "center",
-            alignSelf: "center",
-            marginLeft: "auto",
+            marginLeft: 50,
+         
+          
           },
         }}
         component={AssignedWorkouts}
       />
-      <Tab.Screen name="Created Workouts" component={CustomWorkouts} />
-      <Tab.Screen name="Completed Workouts" component={CompletedWorkouts} />
+      <Tab.Screen name="Created Workouts"
+       options={{
+        tabBarIcon: ({ color, size }) => (
+          <MaterialCommunityIcons name="pencil" color={color} size={size} />
+        ),
+        backBehavior: "history",
+        headerStyle: {
+          backgroundColor: "#D3D5D4",
+         
+        },
+        headerTitleStyle: {
+          fontWeight: "bold",
+          color: "white",
+          justifyContent: "center",
+          alignContent: "center",
+          marginLeft: 50,
+       
+        
+        },
+      }}
+      
+      component={CustomWorkouts} />
+      <Tab.Screen name="Completed Workouts" component={CompletedWorkouts} 
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <MaterialCommunityIcons name="check" color={color} size={size} />
+        ),
+        backBehavior: "history",
+        headerStyle: {
+          backgroundColor: "#D3D5D4",
+        },
+        headerTitleStyle: {
+          fontWeight: "bold",
+          color: "white",
+             
+        },
+        icon: "check",
+      }}
+      />
     </Tab.Navigator>
   );
 };

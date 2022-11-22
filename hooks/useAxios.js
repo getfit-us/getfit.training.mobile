@@ -11,6 +11,7 @@ const useAxios = () => {
             withCredentials: true,
             Authorization: "Bearer " + accessToken,
         },
+        retryCount: 3,
     });
     return axiosPrivate;
 

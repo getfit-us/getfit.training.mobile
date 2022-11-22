@@ -1,18 +1,30 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { StyleSheet, SafeAreaView, Text } from "react-native";
 import RenderExercises from "./RenderExercises";
 import { useWorkouts } from "../../Store/Store";
 import { useNavigation } from "@react-navigation/native";
+import { IconButton } from "react-native-paper";
 
-const RenderWorkout = () => {
+const RenderWorkout = memo(() => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
   const navigation = useNavigation();
+  const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   
 
   useEffect(() => {
     navigation.setOptions({
-      title: startWorkout?.name,
+      title: `Workout: ${startWorkout?.name}`,
+      titleStyle: {
+        textAlign: "center",
+        justifyContent: "flex-start",
+        alignContent: "center",
+      },
+      headerRight: () => (
+        <IconButton icon="close" onPress={() => {
+          setStartWorkout({});
+          navigation.navigate('Completed Workouts')}} />
+      ),
     });
 
     return () => {
@@ -33,7 +45,7 @@ const RenderWorkout = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

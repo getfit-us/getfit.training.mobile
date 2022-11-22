@@ -212,6 +212,13 @@ export const useWorkouts = create((set, get) => ({
         ),
       },
     })),
+    deleteStartWorkoutExercise: (exercise) =>
+    set((state) => ({
+      startWorkout: {
+        ...state.startWorkout,
+        exercises: state.startWorkout.exercises.filter((e) => e._id !== exercise._id),
+      },
+    })),
 
   setCurrentWorkout: (workout) => set({ currentWorkout: workout }),
   setCompletedWorkouts: (completedWorkouts) => set({ completedWorkouts }),
