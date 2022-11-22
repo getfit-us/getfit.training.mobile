@@ -188,7 +188,7 @@ const Inbox = ({ navigation }) => {
                 ) : (
                   <Avatar.Text
                     size={50}
-                    label={trainer.firstName[0] + trainer.lastName[0]}
+                    label={trainer?.firstName[0] + trainer?.lastName[0]}
                     style={styles.avatar}
                   />
                 )

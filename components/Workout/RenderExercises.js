@@ -9,7 +9,6 @@ import RenderSuperSet from "./RenderSuperSet";
 
 const RenderExercises = memo(() => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
-  const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   const updateStartWorkoutExercise = useWorkouts(
     (state) => state.updateStartWorkoutExercise
   );
@@ -22,7 +21,7 @@ const RenderExercises = memo(() => {
 
   return startWorkout?.exercises?.map((exercise, index) => {
     return Array.isArray(exercise) ? (
-      <RenderSuperSet superSet={exercise} key={index + "superset"} />
+      <RenderSuperSet superSet={exercise} superSetIndex={index} key={index + "superset"} />
     ) : (
     <Card
       key={exercise._id}
@@ -33,7 +32,10 @@ const RenderExercises = memo(() => {
         position: "relative",
       }}
     >
-      <Card.Title title={exercise.name} />
+      <Card.Title title={exercise.name}
+      titleStyle={{fontWeight: "bold",
+    color: "#A30B37",}}
+      />
       <Card.Content>
         <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />
 

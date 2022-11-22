@@ -75,7 +75,7 @@ export const useProfile = create((set, get) => ({
         (notification) =>
           notification.receiver.id === get().profile.clientId &&
           notification.is_read === false &&
-          notification.type !== "activity" 
+          notification.type !== "activity"
       ), // set active notifications
       messages: notifications
         .filter((n) => n.type === "message")
@@ -107,7 +107,7 @@ export const useProfile = create((set, get) => ({
       activeNotifications:
         notification.receiver.id === get().profile.clientId &&
         notification.is_read === false &&
-        notification.type !== "activity" 
+        notification.type !== "activity"
           ? [...state.activeNotifications, notification]
           : state.activeNotifications,
       messages:
@@ -140,7 +140,12 @@ export const useProfile = create((set, get) => ({
     }));
   },
   //sort clients by first name
-  setClients: (clients) => set({ clients: clients.sort((c1, c2) => c1.firstname.localeCompare(c2.firstname)) }),
+  setClients: (clients) =>
+    set({
+      clients: clients.sort((c1, c2) =>
+        c1.firstname.localeCompare(c2.firstname)
+      ),
+    }),
   updateClient: (client) =>
     set((state) => ({
       clients: state.clients.map((c) => (c._id === client._id ? client : c)),
@@ -212,13 +217,26 @@ export const useWorkouts = create((set, get) => ({
         ),
       },
     })),
-    deleteStartWorkoutExercise: (exercise) =>
-    set((state) => ({
-      startWorkout: {
-        ...state.startWorkout,
-        exercises: state.startWorkout.exercises.filter((e) => e._id !== exercise._id),
-      },
-    })),
+  deleteStartWorkoutExercise: (exercise, superSetIndex) =>
+    set((state) => {
+      if (Array.isArray(exercise) && superSetIndex !== undefined) {
+        //delete exercise from superset array
+        state.startWorkout.exercises[superSetIndex].filter(e => e._id !== exercise._id)
+        
+
+        
+
+      } else {
+        return {
+          startWorkout: {
+            ...state.startWorkout,
+            exercises: state.startWorkout.exercises.filter(
+              (e) => e._id !== exercise._id
+            ),
+          },
+        };
+      }
+    }),
 
   setCurrentWorkout: (workout) => set({ currentWorkout: workout }),
   setCompletedWorkouts: (completedWorkouts) => set({ completedWorkouts }),

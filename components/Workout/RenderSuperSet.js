@@ -3,7 +3,17 @@ import { View, StyleSheet, Text } from "react-native";
 import { Card, Button } from "react-native-paper";
 import RenderSets from "./RenderSets";
 import ExerciseMenu from "./ExerciseMenu";
-const RenderSuperSet = ({ superSet }) => {
+import { useWorkouts } from "../../Store/Store";
+const RenderSuperSet = ({ superSet, superSetIndex }) => {
+
+  const updateStartWorkoutExercise = useWorkouts(
+    (state) => state.updateStartWorkoutExercise
+  );
+  const handleAddSet = (exerciseIndex) => {
+    const _exercise = { ...startWorkout.exercises[superSetIndex][exerciseIndex] };
+    _exercise.numOfSets.push({ weight: 0, reps: 0 });
+    updateStartWorkoutExercise(_exercise, superSetIndex);
+  };
   return (
     <Card
       style={{
@@ -15,7 +25,10 @@ const RenderSuperSet = ({ superSet }) => {
         borderLeftWidth: 5,
       }}
     >
-      <Card.Title title={"SuperSet"} />
+      <Card.Title title={"SuperSet"} 
+      titleStyle={{fontWeight: "bold",
+    color: "green",}}
+      />
       <Card.Content>
         {superSet.map((exercise, index) => {
           return (
@@ -39,15 +52,16 @@ const RenderSuperSet = ({ superSet }) => {
               key={exercise._id + " SuperSet buttons"}
               >
                 <Button
-                  key={index + "add"}
+                  key={exercise._id + "add set button"}
                   style={styles.add}
                   mode="contained"
                   onPress={() => handleAddSet(index)}
+
                 >
                   Add Set
                 </Button>
                 <Button
-                  key={index + "history"}
+                  key={exercise._id + "history button"}
                   style={styles.history}
                   mode="contained"
                   onPress={() => console.log("Pressed")}
@@ -82,7 +96,8 @@ const styles = StyleSheet.create({
   },
   exerciseTitle: {
     marginBottom: 10,
-    fontSize: 16,
+    fontWeight: "bold",
+    color: "#A30B37",
   },
 });
 
