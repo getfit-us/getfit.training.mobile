@@ -208,7 +208,7 @@ export const useWorkouts = create((set, get) => ({
   exercises: [],
   startWorkout: {},
   setStartWorkout: (startWorkout) => set({ startWorkout }),
-  updateStartWorkoutExercise: (exercise) =>
+  updateStartWorkoutExercise: (exercise, superSetIndex, exerciseIndex) =>
     set((state) => ({
       startWorkout: {
         ...state.startWorkout,
@@ -217,15 +217,27 @@ export const useWorkouts = create((set, get) => ({
         ),
       },
     })),
+  updateStartWorkoutSuperSet: (exercise, superSetIndex, exerciseIndex) =>
+    //need to spread the exercise array and then only update the superset array
+
+    set((state) => {
+      const newExerciseArray = [...state.startWorkout.exercises];
+      newExerciseArray[superSetIndex][exerciseIndex] = exercise;
+      return {
+        startWorkout: {
+          ...state.startWorkout,
+          exercises: newExerciseArray,
+        },
+      };
+    }
+    ),
   deleteStartWorkoutExercise: (exercise, superSetIndex) =>
     set((state) => {
       if (Array.isArray(exercise) && superSetIndex !== undefined) {
         //delete exercise from superset array
-        state.startWorkout.exercises[superSetIndex].filter(e => e._id !== exercise._id)
-        
-
-        
-
+        state.startWorkout.exercises[superSetIndex].filter(
+          (e) => e._id !== exercise._id
+        );
       } else {
         return {
           startWorkout: {

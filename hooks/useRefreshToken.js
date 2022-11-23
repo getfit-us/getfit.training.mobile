@@ -1,7 +1,6 @@
 import { useProfile } from "../Store/Store";
-import useAxios from '../hooks/useAxios';
-import * as SecureStore from 'expo-secure-store';
-
+import useAxios from "../hooks/useAxios";
+import * as SecureStore from "expo-secure-store";
 
 const useRefreshToken = () => {
   const setProfile = useProfile((state) => state.setProfile);
@@ -10,47 +9,48 @@ const useRefreshToken = () => {
   const setPersist = useProfile((state) => state.setPersist);
 
   const refresh = async () => {
-
-
     // check if refresh token is still valid
-    const refreshTokenExpiration = await SecureStore.getItemAsync('refreshTokenExpiration');
+    const refreshTokenExpiration = await SecureStore.getItemAsync(
+      "refreshTokenExpiration"
+    );
     if (refreshTokenExpiration) {
       const now = new Date().getTime();
       const expiration = new Date(refreshTokenExpiration).getTime();
       if (now > expiration) {
-        console.log('Refresh token expired');
-        await SecureStore.deleteItemAsync('refreshToken');
-        await SecureStore.deleteItemAsync('refreshTokenExpiration');
-        await SecureStore.deleteItemAsync('profile');
+        console.log("Refresh token expired");
+        await SecureStore.deleteItemAsync("refreshToken");
+        await SecureStore.deleteItemAsync("refreshTokenExpiration");
+        await SecureStore.deleteItemAsync("profile");
 
         setProfile({});
         return;
       }
-    } else {
-      console.log('No refresh token');
+    } else if (!refreshTokenExpiration) {
+      console.log("No refresh token");
       setProfile({});
       setPersist(false);
 
       return;
     }
-    const response = await axiosPrivate.get("/refresh", {
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `jwt=${await SecureStore.getItemAsync("refreshToken")}`,
-      },
-      withCredentials: true,
-    });
-    
-    console.log('inside refresh token hook updated token');
- 
+    try {
+      const response = await axiosPrivate.get("/refresh", {
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `jwt=${await SecureStore.getItemAsync("refreshToken")}`,
+        },
+        withCredentials: true,
+      });
 
-    setProfile(response.data);
-    if (persist) {
-      console.log("AccessToken Profile");
-      const profile = await SecureStore.setItemAsync(
-        "profile",
-        JSON.stringify(response.data)
-      );
+      setProfile(response.data);
+      if (persist) {
+        console.log("AccessToken Profile");
+        const profile = await SecureStore.setItemAsync(
+          "profile",
+          JSON.stringify(response.data)
+        );
+      }
+    } catch (error) {
+      console.log("error inside refresh token", error);
     }
   };
 

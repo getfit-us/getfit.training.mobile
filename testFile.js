@@ -244,4 +244,11 @@ let messages = [
    const unique = sorted.filter((item, index) => sorted.findIndex(i => i.sender.id === item.sender.id) === index)
    
    unique
-   
+
+  var foo = function foo() {
+    console.log(foo===foo);
+  };
+  foo();
+  
+  typeof foo;
+  (true + false) > 2 +true;

@@ -17,7 +17,7 @@ const useAxiosPrivate = () => {
         if (!config.headers["Authorization"]) {
           config.headers["Authorization"] = `Bearer ${accessToken}`;
 
-          console.log("config", config.headers);
+          // console.log("config", config.headers);
         }
         return config;
       },
@@ -34,13 +34,13 @@ const useAxiosPrivate = () => {
         prevRequest.retryCount -= 1;
         console.log("interceptor error", err.config);
         if (err.response?.status === 403 && prevRequest.retryCount > 1) {
-          console.log("refreshing token", prevRequest._retryCount);
+          console.log("refreshing token", prevRequest.retryCount);
 
           await refresh();
          
           prevRequest.headers["Authorization"] = "Bearer " + accessToken;
         }
-        if (prevRequest._retryCount < 1) {
+        if (prevRequest.retryCount < 1) {
           //already tried to refresh token remove all tokens and redirect to login
           console.log("already tried to refresh token");
           resetProfileState();

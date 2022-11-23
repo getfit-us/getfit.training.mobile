@@ -5,14 +5,17 @@ import RenderSets from "./RenderSets";
 import ExerciseMenu from "./ExerciseMenu";
 import { useWorkouts } from "../../Store/Store";
 const RenderSuperSet = ({ superSet, superSetIndex }) => {
-
-  const updateStartWorkoutExercise = useWorkouts(
-    (state) => state.updateStartWorkoutExercise
+  const updateStartWorkoutSuperSet = useWorkouts(
+    (state) => state.updateStartWorkoutSuperSet
   );
+
+  const inSuperSet = true;
+  // this is different because we are one level deeper inside superset
   const handleAddSet = (exerciseIndex) => {
-    const _exercise = { ...startWorkout.exercises[superSetIndex][exerciseIndex] };
+    const _exercise = { ...superSet[exerciseIndex] };
     _exercise.numOfSets.push({ weight: 0, reps: 0 });
-    updateStartWorkoutExercise(_exercise, superSetIndex);
+    updateStartWorkoutSuperSet(_exercise, superSetIndex, exerciseIndex);
+    console.log(_exercise);
   };
   return (
     <Card
@@ -25,9 +28,9 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
         borderLeftWidth: 5,
       }}
     >
-      <Card.Title title={"SuperSet"} 
-      titleStyle={{fontWeight: "bold",
-    color: "green",}}
+      <Card.Title
+        title={"SuperSet"}
+        titleStyle={{ fontWeight: "bold", color: "green" }}
       />
       <Card.Content>
         {superSet.map((exercise, index) => {
@@ -38,25 +41,29 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
                 key={exercise._id + " SuperSet menu"}
               />
 
-              <Text style={styles.exerciseTitle}
-              key={exercise._id + "exercise title"}
-              >{exercise.name}</Text>
+              <Text
+                style={styles.exerciseTitle}
+                key={exercise._id + "exercise title"}
+              >
+                {exercise.name}
+              </Text>
               <RenderSets
                 sets={exercise.numOfSets}
                 exercise={exercise}
                 exerciseIndex={index}
-                key={exercise._id + " SuperSet render sets"}
+                inSuperSet={inSuperSet}
+                superSetIndex={superSetIndex}
               />
 
-              <View style={styles.buttons} 
-              key={exercise._id + " SuperSet buttons"}
+              <View
+                style={styles.buttons}
+                key={exercise._id + " SuperSet buttons"}
               >
                 <Button
                   key={exercise._id + "add set button"}
                   style={styles.add}
                   mode="contained"
                   onPress={() => handleAddSet(index)}
-
                 >
                   Add Set
                 </Button>

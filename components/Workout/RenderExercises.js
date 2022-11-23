@@ -5,6 +5,7 @@ import RenderSets from "./RenderSets";
 import { useWorkouts } from "../../Store/Store";
 import ExerciseMenu from "./ExerciseMenu";
 import RenderSuperSet from "./RenderSuperSet";
+import RenderCardio from "./RenderCardio";
 
 
 const RenderExercises = memo(() => {
@@ -22,7 +23,8 @@ const RenderExercises = memo(() => {
   return startWorkout?.exercises?.map((exercise, index) => {
     return Array.isArray(exercise) ? (
       <RenderSuperSet superSet={exercise} superSetIndex={index} key={index + "superset"} />
-    ) : (
+    ) : exercise?.type === 'cardio' ? (
+      <RenderCardio exercise={exercise}/> ) : (
     <Card
       key={exercise._id}
       style={{
