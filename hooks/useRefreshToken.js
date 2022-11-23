@@ -10,28 +10,28 @@ const useRefreshToken = () => {
 
   const refresh = async () => {
     // check if refresh token is still valid
-    const refreshTokenExpiration = await SecureStore.getItemAsync(
-      "refreshTokenExpiration"
-    );
-    if (refreshTokenExpiration) {
-      const now = new Date().getTime();
-      const expiration = new Date(refreshTokenExpiration).getTime();
-      if (now > expiration) {
-        console.log("Refresh token expired");
-        await SecureStore.deleteItemAsync("refreshToken");
-        await SecureStore.deleteItemAsync("refreshTokenExpiration");
-        await SecureStore.deleteItemAsync("profile");
+    // const refreshTokenExpiration = await SecureStore.getItemAsync(
+    //   "refreshTokenExpiration"
+    // );
+    // if (refreshTokenExpiration) {
+    //   const now = new Date().getTime();
+    //   const expiration = new Date(refreshTokenExpiration).getTime();
+    //   if (now > expiration) {
+    //     console.log("Refresh token expired");
+    //     await SecureStore.deleteItemAsync("refreshToken");
+    //     await SecureStore.deleteItemAsync("refreshTokenExpiration");
+    //     await SecureStore.deleteItemAsync("profile");
 
-        setProfile({});
-        return;
-      }
-    } else if (!refreshTokenExpiration) {
-      console.log("No refresh token");
-      setProfile({});
-      setPersist(false);
+    //     setProfile({});
+    //     return;
+    //   }
+    // } else if (!refreshTokenExpiration) {
+    //   console.log("No refresh token");
+    //   setProfile({});
+    //   setPersist(false);
 
-      return;
-    }
+    //   return;
+    // }
     try {
       const response = await axiosPrivate.get("/refresh", {
         headers: {
@@ -40,6 +40,7 @@ const useRefreshToken = () => {
         },
         withCredentials: true,
       });
+      console.log("response", response.data);
 
       setProfile(response.data);
       if (persist) {
@@ -49,12 +50,14 @@ const useRefreshToken = () => {
           JSON.stringify(response.data)
         );
       }
+
+      return response.data;
     } catch (error) {
       console.log("error inside refresh token", error);
-    }
+    } 
   };
-
   return refresh;
+  
 };
 
 export default useRefreshToken;

@@ -11,6 +11,7 @@ const RenderSets = memo(({ sets, exercise, exerciseIndex, inSuperSet, superSetIn
     if (inSuperSet) {
       const _exercise = { ...exercise };
       _exercise.numOfSets.splice(setIndex, 1);
+      
       updateStartWorkoutExercise(_exercise, superSetIndex, exerciseIndex);
 
 

@@ -24,13 +24,13 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
         padding: 10,
         borderRadius: 10,
         position: "relative",
-        borderLeftColor: "#A30B37",
+        borderLeftColor: "#7132a8",
         borderLeftWidth: 5,
       }}
     >
       <Card.Title
         title={"SuperSet"}
-        titleStyle={{ fontWeight: "bold", color: "green" }}
+        titleStyle={{ fontWeight: "bold", backgroundColor: "#7132a8", padding: 5, borderRadius: 5, width: '30%', marginRight: 'auto', marginLeft: 'auto', color: 'white' }}
       />
       <Card.Content>
         {superSet.map((exercise, index) => {

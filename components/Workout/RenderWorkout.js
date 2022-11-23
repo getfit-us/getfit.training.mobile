@@ -50,7 +50,7 @@ const RenderWorkout = memo(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "grey",
+    backgroundColor: "#d9d5db",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
