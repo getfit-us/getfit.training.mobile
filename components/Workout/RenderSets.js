@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { IconButton, TextInput } from "react-native-paper";
 import { useWorkouts } from "../../Store/Store";
@@ -11,6 +11,12 @@ const RenderSets = memo(
     const updateStartWorkoutSuperSet = useWorkouts(
       (state) => state.updateStartWorkoutSuperSet
     );
+    const startWorkoutExercise = inSuperSet
+      ? useWorkouts(
+          (state) => state.startWorkout.exercises[superSetIndex][exerciseIndex]
+        )
+      : useWorkouts((state) => state.startWorkout.exercises[exerciseIndex]);
+
     const handleDeleteSet = (setIndex) => {
       if (inSuperSet) {
         const _exercise = { ...exercise };
@@ -38,18 +44,47 @@ const RenderSets = memo(
           <TextInput
             key={exercise._id + "weight"}
             label="Weight"
-            defaultValue={sets[setIndex].weight}
+            value={startWorkoutExercise.numOfSets[setIndex].weight}
             mode="outlined"
             style={styles.weight}
             keyboardType="number-pad"
+            onChangeText={(e) => {
+              const _exercise = { ...exercise };
+              _exercise.numOfSets[setIndex].weight = e;
+
+              if (inSuperSet) {
+                updateStartWorkoutSuperSet(
+                  _exercise,
+                  superSetIndex,
+                  exerciseIndex
+                );
+              } else {
+                updateStartWorkoutExercise(_exercise);
+              }
+            }}
           />
+
           <TextInput
             key={exercise._id + "reps"}
             label="Reps"
-            defaultValue={sets[setIndex].reps}
+            value={startWorkoutExercise.numOfSets[setIndex].reps}
             mode="outlined"
             style={styles.rep}
             keyboardType="numeric"
+            onChangeText={(e) => {
+              const _exercise = { ...exercise };
+              _exercise.numOfSets[setIndex].reps = e;
+
+              if (inSuperSet) {
+                updateStartWorkoutSuperSet(
+                  _exercise,
+                  superSetIndex,
+                  exerciseIndex
+                );
+              } else {
+                updateStartWorkoutExercise(_exercise);
+              }
+            }}
           />
           {setIndex > 0 && (
             <IconButton

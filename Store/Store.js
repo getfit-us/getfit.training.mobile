@@ -208,13 +208,20 @@ export const useWorkouts = create((set, get) => ({
   exercises: [],
   startWorkout: {},
   setStartWorkout: (startWorkout) => set({ startWorkout }),
-  updateStartWorkoutExercise: (exercise, superSetIndex, exerciseIndex) =>
+  updateStartWorkoutExercise: (exercise, exerciseIndex) =>
     set((state) => ({
       startWorkout: {
         ...state.startWorkout,
         exercises: state.startWorkout.exercises.map((e) =>
           e._id === exercise._id ? exercise : e
         ),
+      },
+    })),
+  setStartWorkoutExercises: (exercises) =>
+    set((state) => ({
+      startWorkout: {
+        ...state.startWorkout,
+        exercises: exercises,
       },
     })),
   updateStartWorkoutSuperSet: (exercise, superSetIndex, exerciseIndex) =>
@@ -264,6 +271,26 @@ export const useWorkouts = create((set, get) => ({
             exercises: state.startWorkout.exercises.filter(
               (e) => e._id !== exercise._id
             ),
+          },
+        };
+      }
+    }),
+  addStartWorkoutExercise: (exercise, superSetIndex) =>
+    set((state) => {
+      if (superSetIndex !== undefined) {
+        const newExerciseArray = [...state.startWorkout.exercises];
+        newExerciseArray[superSetIndex].push(exercise);
+        return {
+          startWorkout: {
+            ...state.startWorkout,
+            exercises: newExerciseArray,
+          },
+        };
+      } else {
+        return {
+          startWorkout: {
+            ...state.startWorkout,
+            exercises: [...state.startWorkout.exercises, exercise],
           },
         };
       }

@@ -67,12 +67,14 @@ const ExerciseMenu = ({
         inSuperSet={inSuperSet}
         superSetIndex={superSetIndex}
         exerciseIndex={exerciseIndex}
+        key={exercise._id + "notes dialog"}
       />
       <CreateSuperSet
         visibleSuperSetDialog={visibleSuperSetDialog}
         hideSupersetDialog={hideSupersetDialog}
         inSuperSet={inSuperSet}
         superSetIndex={superSetIndex}
+        key={exercise._id + "superset dialog"}
       />
       <IconButton
         icon="menu"

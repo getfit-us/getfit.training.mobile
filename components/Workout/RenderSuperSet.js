@@ -1,14 +1,15 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Card, Button, Snackbar } from "react-native-paper";
+import { Card, Button, Snackbar, TextInput } from "react-native-paper";
 import RenderSets from "./RenderSets";
 import ExerciseMenu from "./ExerciseMenu";
 import { useWorkouts } from "../../Store/Store";
 import SnackBarComponent from "./Dialogs/SnackBar";
-const RenderSuperSet = ({ superSet, superSetIndex }) => {
+const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
   const updateStartWorkoutSuperSet = useWorkouts(
     (state) => state.updateStartWorkoutSuperSet
   );
+  const startWorkout = useWorkouts((state) => state.startWorkout);
 
   const inSuperSet = true;
   // this is different because we are one level deeper inside superset
@@ -34,6 +35,8 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
      
       <TouchableOpacity
         onPress={() => {
+
+          //this is not working great needs to be fixed
           setNotification(
             "Do all exercises in this superset without rest in between each exercise"
           );
@@ -58,9 +61,28 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
      
       </TouchableOpacity>
       <Card.Content>
+      <TextInput
+            label="Set Exercise Order"
+            defaultValue={(superSetIndex + 1).toString()}
+            onChangeText={(text) => {
+              if (
+                text !== "" &&
+                startWorkout.exercises
+                  .map((exercise, index) => index + 1)
+                  .includes(parseInt(text))
+              ) {
+                handleChangeOrder(superSetIndex, parseInt(text) - 1);
+              }
+            }}
+            mode="outlined"
+            keyboardType="numeric"
+            style={{ marginBottom: 10, maxWidth: "60%" }}
+          />
         {superSet.map((exercise, index) => {
           return (
-            <View style={{ position: "relative", marginTop: 30 }}>
+            <View 
+            key={exercise._id + "superset View"}
+            style={{ position: "relative", marginTop: 30 }}>
               
               <ExerciseMenu
                 exercise={exercise}

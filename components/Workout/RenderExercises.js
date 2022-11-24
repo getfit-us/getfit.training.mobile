@@ -7,69 +7,105 @@ import ExerciseMenu from "./ExerciseMenu";
 import RenderSuperSet from "./RenderSuperSet";
 import RenderCardio from "./RenderCardio";
 
-
 const RenderExercises = memo(() => {
-  const startWorkout = useWorkouts((state) => state.startWorkout);
+  const startWorkoutExercises = useWorkouts(
+    (state) => state.startWorkout.exercises
+  );
+  const setStartWorkoutExercises = useWorkouts(
+    (state) => state.setStartWorkoutExercises
+  );
   const updateStartWorkoutExercise = useWorkouts(
     (state) => state.updateStartWorkoutExercise
   );
 
   const handleAddSet = (exerciseIndex) => {
-    const _exercise = { ...startWorkout.exercises[exerciseIndex] };
+    const _exercise = { ...startWorkoutExercises[exerciseIndex] };
     _exercise.numOfSets.push({ weight: 0, reps: 0 });
     updateStartWorkoutExercise(_exercise);
   };
+  const handleChangeOrder = (currentIndex, newIndex) => {
+    const _startWorkoutExercises = { ...startWorkoutExercises };
+    // remove the exercise from the array and save it in a variable
+    const exercise = _startWorkoutExercises.splice(currentIndex, 1);
+    // add to selected index
+    _startWorkoutExercises.splice(newIndex, 0, exercise[0]);
+    // console.log(_startWorkout.exercises);
+    setStartWorkoutExercises(_startWorkoutExercises);
+  };
 
-  return startWorkout?.exercises?.map((exercise, index) => {
+  return startWorkoutExercises?.map((exercise, index) => {
     return Array.isArray(exercise) ? (
-      <RenderSuperSet superSet={exercise} superSetIndex={index} key={index + "superset array"} />
-    ) : exercise?.type === 'cardio' ? (
-      <RenderCardio exercise={exercise}/> ) : (
-    <Card
-      key={exercise._id}
-      style={{
-        margin: 10,
-        padding: 10,
-        borderRadius: 10,
-        position: "relative",
-      }}
-    >
-      <Card.Title title={exercise.name}
-      titleStyle={{fontWeight: "bold",
-    color: "black",}}
+      <RenderSuperSet
+        superSet={exercise}
+        superSetIndex={index}
+        key={index + "superset array"}
+        handleChangeOrder={handleChangeOrder}
       />
-      <Card.Content>
-        <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />
-        
-
-        <RenderSets
-          sets={exercise.numOfSets}
-          exercise={exercise}
-          exerciseIndex={index}
+    ) : exercise?.type === "cardio" ? (
+      <RenderCardio exercise={exercise} />
+    ) : (
+      <Card
+        key={exercise._id}
+        style={{
+          margin: 10,
+          padding: 10,
+          borderRadius: 10,
+          position: "relative",
+        }}
+      >
+        <Card.Title
+          title={exercise.name}
+          titleStyle={{ fontWeight: "bold", color: "black" }}
+          titleNumberOfLines={2}
         />
+        <Card.Content>
+          <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />
+          <TextInput
+            label="Set Exercise Order"
+            defaultValue={(index + 1).toString()}
+            onChangeText={(text) => {
+              if (
+                text !== "" &&
+                startWorkoutExercises
+                  .map((exercise, index) => index + 1)
+                  .includes(parseInt(text))
+              ) {
+                handleChangeOrder(index, parseInt(text) - 1);
+              }
+            }}
+            mode="outlined"
+            keyboardType="numeric"
+            style={{ marginBottom: 10, maxWidth: "60%" }}
+          />
 
-        <View style={styles.buttons}>
-          <Button
-            key={index + "add"}
-            style={styles.add}
-            mode="contained"
-            onPress={() => handleAddSet(index)}
-          >
-            Add Set
-          </Button>
-          <Button
-            key={index + "history"}
-            style={styles.history}
-            mode="contained"
-            onPress={() => console.log("Pressed")}
-          >
-            History
-          </Button>
-        </View>
-      </Card.Content>
-    </Card>
-  )});
+          <RenderSets
+            sets={exercise.numOfSets}
+            exercise={exercise}
+            exerciseIndex={index}
+          />
 
+          <View style={styles.buttons}>
+            <Button
+              key={index + "add"}
+              style={styles.add}
+              mode="contained"
+              onPress={() => handleAddSet(index)}
+            >
+              Add Set
+            </Button>
+            <Button
+              key={index + "history"}
+              style={styles.history}
+              mode="contained"
+              onPress={() => console.log("Pressed")}
+            >
+              History
+            </Button>
+          </View>
+        </Card.Content>
+      </Card>
+    );
+  });
 });
 
 const styles = StyleSheet.create({

@@ -11,7 +11,6 @@ const useRefreshToken = () => {
 
   const refresh = async () => {
     const refreshToken = await SecureStore.getItemAsync("refreshToken");
-    console.log("refresh token", refreshToken);
     // check if refresh token is still valid
     const refreshTokenExpiration = await SecureStore.getItemAsync(
       "refreshTokenExpiration"
@@ -43,7 +42,6 @@ const useRefreshToken = () => {
         },
         withCredentials: true,
       });
-      console.log("response", response.data);
 
       setProfile(response.data);
       if (persist) {
@@ -54,7 +52,7 @@ const useRefreshToken = () => {
         );
       }
 
-      return response.data;
+      
     } catch (error) {
       console.log("error inside refresh token", error);
     } 
