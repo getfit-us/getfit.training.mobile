@@ -229,16 +229,35 @@ export const useWorkouts = create((set, get) => ({
           exercises: newExerciseArray,
         },
       };
-    }
-    ),
+    }),
   deleteStartWorkoutExercise: (exercise, superSetIndex) =>
     set((state) => {
-      if (Array.isArray(exercise) && superSetIndex !== undefined) {
-        //delete exercise from superset array
-        state.startWorkout.exercises[superSetIndex].filter(
-          (e) => e._id !== exercise._id
-        );
+      if (superSetIndex !== undefined) {
+        //delete exercise from superset array if length is greater than 1 else move the single exercise to the main array
+
+        if (state.startWorkout.exercises[superSetIndex].length > 2) {
+          const newExerciseArray = [...state.startWorkout.exercises];
+          newExerciseArray[superSetIndex].filter((e) => e._id !== exercise._id);
+          return {
+            startWorkout: {
+              ...state.startWorkout,
+              exercises: newExerciseArray,
+            },
+          };
+        } else {
+          const newExerciseArray = [...state.startWorkout.exercises];
+          newExerciseArray[superSetIndex].filter((e) => e._id !== exercise._id);
+          newExerciseArray.push(newExerciseArray[superSetIndex][0]);
+          newExerciseArray.splice(superSetIndex, 1);
+          return {
+            startWorkout: {
+              ...state.startWorkout,
+              exercises: newExerciseArray,
+            },
+          };
+        }
       } else {
+        //standard non superset exercise just filter from exercise array
         return {
           startWorkout: {
             ...state.startWorkout,

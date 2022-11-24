@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { Card, Button, IconButton } from "react-native-paper";
+import { Card, Button, IconButton, TextInput } from "react-native-paper";
 import { View, StyleSheet } from "react-native";
 import RenderSets from "./RenderSets";
 import { useWorkouts } from "../../Store/Store";
@@ -22,7 +22,7 @@ const RenderExercises = memo(() => {
 
   return startWorkout?.exercises?.map((exercise, index) => {
     return Array.isArray(exercise) ? (
-      <RenderSuperSet superSet={exercise} superSetIndex={index} key={index + "superset"} />
+      <RenderSuperSet superSet={exercise} superSetIndex={index} key={index + "superset array"} />
     ) : exercise?.type === 'cardio' ? (
       <RenderCardio exercise={exercise}/> ) : (
     <Card
@@ -36,10 +36,11 @@ const RenderExercises = memo(() => {
     >
       <Card.Title title={exercise.name}
       titleStyle={{fontWeight: "bold",
-    color: "#A30B37",}}
+    color: "black",}}
       />
       <Card.Content>
         <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />
+        
 
         <RenderSets
           sets={exercise.numOfSets}

@@ -1,9 +1,10 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { Card, Button } from "react-native-paper";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Card, Button, Snackbar } from "react-native-paper";
 import RenderSets from "./RenderSets";
 import ExerciseMenu from "./ExerciseMenu";
 import { useWorkouts } from "../../Store/Store";
+import SnackBarComponent from "./Dialogs/SnackBar";
 const RenderSuperSet = ({ superSet, superSetIndex }) => {
   const updateStartWorkoutSuperSet = useWorkouts(
     (state) => state.updateStartWorkoutSuperSet
@@ -15,29 +16,57 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
     const _exercise = { ...superSet[exerciseIndex] };
     _exercise.numOfSets.push({ weight: 0, reps: 0 });
     updateStartWorkoutSuperSet(_exercise, superSetIndex, exerciseIndex);
-    console.log(_exercise);
   };
+  const [notification, setNotification] = React.useState("");
+  const [showSnackBar, setShowSnackBar] = React.useState(false);
   return (
+    <>
     <Card
       style={{
         margin: 10,
         padding: 10,
         borderRadius: 10,
-        position: "relative",
-        borderLeftColor: "#7132a8",
-        borderLeftWidth: 5,
+
+        borderLeftColor: "#3483eb",
+        borderLeftWidth: 9,
       }}
     >
-      <Card.Title
-        title={"SuperSet"}
-        titleStyle={{ fontWeight: "bold", backgroundColor: "#7132a8", padding: 5, borderRadius: 5, width: '30%', marginRight: 'auto', marginLeft: 'auto', color: 'white' }}
-      />
+     
+      <TouchableOpacity
+        onPress={() => {
+          setNotification(
+            "Do all exercises in this superset without rest in between each exercise"
+          );
+          setShowSnackBar(true);
+        }}
+      >
+        <Card.Title
+          title={"  Super Set "}
+          titleStyle={{
+            fontWeight: "bold",
+            backgroundColor: "#3483eb",
+            padding: 5,
+            borderRadius: 15,
+            width: "40%",
+            marginRight: "auto",
+            marginLeft: "auto",
+            color: "white",
+            textAlign: "center",
+            alignSelf: "center",
+          }}
+        />
+     
+      </TouchableOpacity>
       <Card.Content>
         {superSet.map((exercise, index) => {
           return (
-            <>
+            <View style={{ position: "relative", marginTop: 30 }}>
+              
               <ExerciseMenu
                 exercise={exercise}
+                inSuperSet={inSuperSet}
+                superSetIndex={superSetIndex}
+                exerciseIndex={index}
                 key={exercise._id + " SuperSet menu"}
               />
 
@@ -57,7 +86,7 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
 
               <View
                 style={styles.buttons}
-                key={exercise._id + " SuperSet buttons"}
+                key={exercise._id + " SuperSet View buttons"}
               >
                 <Button
                   key={exercise._id + "add set button"}
@@ -76,11 +105,17 @@ const RenderSuperSet = ({ superSet, superSetIndex }) => {
                   History
                 </Button>
               </View>
-            </>
+            </View>
           );
         })}
       </Card.Content>
+      
     </Card>
+        <SnackBarComponent message={notification}
+        showSnackBar={showSnackBar}
+        setShowSnackBar={setShowSnackBar}
+        />
+        </>
   );
 };
 
@@ -104,7 +139,7 @@ const styles = StyleSheet.create({
   exerciseTitle: {
     marginBottom: 10,
     fontWeight: "bold",
-    color: "#A30B37",
+    color: "#3483eb",
   },
 });
 

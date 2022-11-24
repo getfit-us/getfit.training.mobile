@@ -2,7 +2,7 @@ import { useRoute } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import RenderWorkout from "./RenderWorkout";
 import React, { useEffect } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useWorkouts } from "../../Store/Store";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
 import {
@@ -28,19 +28,8 @@ const StartWorkout = () => {
             <MaterialCommunityIcons name="clipboard-account" color={color} size={size} />
           ),
           backBehavior: "history",
-          headerStyle: {
-            backgroundColor: "#071013",
-           
-          },
-          headerTitleStyle: {
-            fontWeight: "bold",
-            color: "white",
-            justifyContent: "center",
-            alignContent: "center",
-            marginLeft: 50,
-         
-          
-          },
+          headerStyle: styles.headerStyle,
+          headerTitleStyle: styles.headerTitleStyle,
         }}
         component={AssignedWorkouts}
       />
@@ -50,19 +39,8 @@ const StartWorkout = () => {
           <MaterialCommunityIcons name="pencil" color={color} size={size} />
         ),
         backBehavior: "history",
-        headerStyle: {
-          backgroundColor: "#D3D5D4",
-         
-        },
-        headerTitleStyle: {
-          fontWeight: "bold",
-          color: "white",
-          justifyContent: "center",
-          alignContent: "center",
-          marginLeft: 50,
-       
-        
-        },
+        headerStyle: styles.headerStyle,
+        headerTitleStyle: styles.headerTitleStyle,
       }}
       
       component={CustomWorkouts} />
@@ -72,14 +50,8 @@ const StartWorkout = () => {
           <MaterialCommunityIcons name="check" color={color} size={size} />
         ),
         backBehavior: "history",
-        headerStyle: {
-          backgroundColor: "#D3D5D4",
-        },
-        headerTitleStyle: {
-          fontWeight: "bold",
-          color: "white",
-             
-        },
+        headerStyle: styles.headerStyle,
+        headerTitleStyle: styles.headerTitleStyle,
         icon: "check",
       }}
       />
@@ -248,5 +220,25 @@ const CompletedWorkouts = ({ navigation }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  headerStyle: {
+    backgroundColor: "#ebab34",
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+    
+  },
+  headerTitleStyle: {
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    justifyContent: 'center',
+  
+    
+    
+ 
+  
+  },
+});
 
 export default StartWorkout;

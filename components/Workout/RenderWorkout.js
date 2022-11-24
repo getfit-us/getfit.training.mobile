@@ -25,12 +25,15 @@ const RenderWorkout = memo(() => {
           setStartWorkout({});
           navigation.navigate('Completed Workouts')}} />
       ),
+      tabBarStyle: {display: 'none'}
+      
     });
 
     return () => {
       navigation.setOptions({
         title: "Completed Workouts",
-      });
+        headerRight: () => null,
+        tabBarStyle: {display: 'flex'}      });
     }
   }, [startWorkout, navigation]);
 
