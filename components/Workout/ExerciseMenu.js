@@ -71,6 +71,8 @@ const ExerciseMenu = ({
       <CreateSuperSet
         visibleSuperSetDialog={visibleSuperSetDialog}
         hideSupersetDialog={hideSupersetDialog}
+        inSuperSet={inSuperSet}
+        superSetIndex={superSetIndex}
       />
       <IconButton
         icon="menu"

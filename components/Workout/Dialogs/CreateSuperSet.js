@@ -14,10 +14,34 @@ const CreateSuperSet = ({
   visibleSuperSetDialog,
   hideSupersetDialog,
   inSuperSet,
+  superSetIndex,
 }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
+  const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   const [checked, setChecked] = React.useState([]);
   const handleAddSuperSet = () => {
+    //if we are in a superset, we need to add the exercise to the superset if its not already there, if in superset and exercise is unchecked we need to remove it from the superset
+
+    if (inSuperSet) {
+    } else {
+      // not in a superset so we need to create a new superset and add the exercises from checked into it
+      const _exercises = [...startWorkout.exercises];
+      const _superSet = [];
+      const new_exercises = _exercises.filter((exercise, index) => {
+        if (checked.includes(exercise._id)) {
+          _superSet.push(exercise);
+          // remove from checked array
+          setChecked((prev) => prev.filter((id) => id !== exercise._id));
+          return false;
+
+        }
+        return true;
+      });
+      new_exercises.push(_superSet);
+
+      setStartWorkout({ ...startWorkout, exercises: new_exercises });
+    }
+
     console.log(checked);
     hideSupersetDialog();
   };
@@ -26,8 +50,15 @@ const CreateSuperSet = ({
     const _checked = [...checked];
 
     if (inSuperSet) {
-      //do something different
+      //add superset exercise ids to checked array
+      const superSet = startWorkout.exercises[superSetIndex];
+      superSet.forEach((exercise) => {
+        if (!_checked.includes(exercise._id)) {
+          _checked.push(exercise._id);
+        }
+      });
     } else {
+      // not in superset
       if (_checked.includes(id)) {
         const index = _checked.indexOf(id);
         if (index > -1) {
@@ -52,14 +83,15 @@ const CreateSuperSet = ({
           <View>
             {startWorkout.exercises.map((exercise, index) =>
               Array.isArray(exercise) ? (
-                <View style={styles.superSet}>
-                  <Text> Current SuperSet</Text>
+                <View style={styles.superSet} key={index + "view"}>
+                  <Text key={index + "text"}> Current SuperSet</Text>
                   {exercise.map((exercise, index) => (
                     <List.Item
                       key={exercise._id}
                       title={exercise.name}
                       left={(props) => (
                         <Checkbox
+                          key={exercise._id + "checkbox"}
                           status={
                             checked.includes(exercise._id)
                               ? "checked"
@@ -81,6 +113,7 @@ const CreateSuperSet = ({
                   title={exercise.name}
                   left={(props) => (
                     <Checkbox
+                      key={exercise._id + "checkbox"}
                       status={
                         checked.includes(exercise._id) ? "checked" : "unchecked"
                       }
