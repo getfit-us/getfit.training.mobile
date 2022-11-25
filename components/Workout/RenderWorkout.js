@@ -74,14 +74,14 @@ const RenderWorkout = memo(() => {
             onPress={() => setAddExercises((prev) => !prev)}
             mode="contained"
             style={{ margin: 5 }}
-            buttonColor="#309150"
+            buttonColor="#ebab34"
           >
             Add Exercises
           </Button>
           <Button
             mode="contained"
             style={{ margin: 5 }}
-            buttonColor="#309150"
+            buttonColor="#ebab34"
             onPress={handleSaveWorkout}
           >
             Finish Workout

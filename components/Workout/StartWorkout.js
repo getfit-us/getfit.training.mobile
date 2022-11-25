@@ -226,6 +226,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#ebab34",
     borderBottomColor: "black",
     borderBottomWidth: 1,
+    borderTopWidth: 1,
+    height: 30,
+  
     
   },
   headerTitleStyle: {
@@ -233,7 +236,8 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     justifyContent: 'center',
-  
+    paddingTop: 0,
+    marginTop: 0,
     
     
  

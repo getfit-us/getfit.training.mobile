@@ -9,7 +9,7 @@ import RenderCardio from "./RenderCardio";
 
 const RenderExercises = memo(() => {
   const startWorkoutExercises = useWorkouts(
-    (state) => state.startWorkout.exercises
+    (state) => state.startWorkout?.exercises
   );
   const setStartWorkoutExercises = useWorkouts(
     (state) => state.setStartWorkoutExercises
@@ -24,7 +24,7 @@ const RenderExercises = memo(() => {
     updateStartWorkoutExercise(_exercise);
   };
   const handleChangeOrder = (currentIndex, newIndex) => {
-    const _startWorkoutExercises = { ...startWorkoutExercises };
+    const _startWorkoutExercises = [...startWorkoutExercises];
     // remove the exercise from the array and save it in a variable
     const exercise = _startWorkoutExercises.splice(currentIndex, 1);
     // add to selected index
@@ -62,7 +62,7 @@ const RenderExercises = memo(() => {
           <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />
           <TextInput
             label="Set Exercise Order"
-            defaultValue={(index + 1).toString()}
+            value={(index + 1).toString()}
             onChangeText={(text) => {
               if (
                 text !== "" &&
