@@ -4,12 +4,12 @@ import { StyleSheet, SafeAreaView, Text, View } from "react-native";
 import RenderExercises from "./RenderExercises";
 import { useProfile, useWorkouts } from "../../Store/Store";
 import { useNavigation } from "@react-navigation/native";
-import { Button, IconButton } from "react-native-paper";
+import { Button, IconButton, ProgressBar } from "react-native-paper";
 import SearchExercises from "../Exercises/SearchExercises";
 import { saveCompletedWorkout } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
-const RenderWorkout = memo(() => {
+const RenderWorkout = memo(({ screenOptions }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
   const navigation = useNavigation();
   const clientId = useProfile((state) => state.profile.clientId);
@@ -17,17 +17,24 @@ const RenderWorkout = memo(() => {
   const [addExercises, setAddExercises] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
   const addCompletedWorkout = useWorkouts((state) => state.addCompletedWorkout);
+  const [status, setStatus] = React.useState({
+    loading: false,
+    error: false,
+    message: "",
+  });
 
   const handleSaveWorkout = () => {
-    //need to set loading..  true
+    //need to set   loading..  true
+    setStatus({ ...status, loading: true });
 
     const completedWorkout = { ...startWorkout, id: clientId };
 
     saveCompletedWorkout(axiosPrivate, completedWorkout).then((res) => {
       if (!res.error && !res.loading) {
-        setStartWorkout(null);
+        setStatus({ ...status, loading: false });
+        addCompletedWorkout(res.data); // add to local state
+        setStartWorkout(null); // clear workout
         navigation.goBack();
-        addCompletedWorkout(res.data);
       }
     });
   };
@@ -43,9 +50,11 @@ const RenderWorkout = memo(() => {
       headerRight: () => (
         <IconButton
           icon="close"
+          iconColor="white"
           onPress={() => {
             setStartWorkout({});
-            navigation.navigate("Completed Workouts");
+            navigation.goBack();
+
           }}
         />
       ),
@@ -53,11 +62,7 @@ const RenderWorkout = memo(() => {
     });
 
     return () => {
-      navigation.setOptions({
-        title: "Completed Workouts",
-        headerRight: () => null,
-        tabBarStyle: { display: "flex" },
-      });
+      navigation.setOptions(screenOptions);
     };
   }, [startWorkout, navigation]);
 
@@ -70,6 +75,7 @@ const RenderWorkout = memo(() => {
         <SearchExercises setAddExercises={setAddExercises} />
       ) : (
         <View style={styles.buttonContainer}>
+          <ProgressBar indeterminate visible={status.loading} />
           <Button
             onPress={() => setAddExercises((prev) => !prev)}
             mode="contained"
@@ -81,10 +87,10 @@ const RenderWorkout = memo(() => {
           <Button
             mode="contained"
             style={{ margin: 5 }}
-            buttonColor="#ebab34"
+            buttonColor="green"
             onPress={handleSaveWorkout}
           >
-            Finish Workout
+            Save Workout
           </Button>
         </View>
       )}
@@ -112,7 +118,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    backgroundColor: "#d9d5db",
+    backgroundColor: "white",
+    borderBottomColor: "black",
+    borderTopWidth: 4,
+    width: "100%",
+    justifyContent: "space-evenly",
   },
 });
 

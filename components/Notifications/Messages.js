@@ -5,11 +5,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Inbox from './Inbox';
 import Chat from './Chat';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import useApiCallOnMount from "../../hooks/useApiCallOnMount";
+import { getNotifications , getClientData} from "../Api/services";
 
 const Tab = createBottomTabNavigator();
 
 const Messages = () => {
+  const [loadingNotifications, notificationData, errorNotifications] = useApiCallOnMount(getNotifications);
+  const [loadingClientData, clientData, errorClient] = useApiCallOnMount(getClientData);
+
+
   return (
   <Tab.Navigator
   screenOptions={({ route }) => ({
@@ -26,8 +31,20 @@ const Messages = () => {
       // You can return any component that you like here!
       return <Ionicons name={iconName} size={size} color={color} />;
     },
-    tabBarActiveTintColor: 'tomato',
-    tabBarInactiveTintColor: 'gray',
+    tabBarActiveTintColor: 'rgb(8, 97, 164)',
+    tabBarInactiveTintColor: 'white',
+    tabBarStyle: {
+      backgroundColor: '#b5b1b1',
+      borderTopWidth: 2,
+      borderTopColor: 'rgb(8, 97, 164)',
+      elevation: 3,
+      shadowOpacity: 0,
+      height: 60,
+    },
+    tabBarLabelStyle: {
+      fontSize: 16,
+      marginBottom: 5,
+    },
   })}>
     <Tab.Screen name="Inbox" component={Inbox} 
     options={{

@@ -25,7 +25,6 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const accessToken = useProfile((state) => state.profile?.accessToken);
   const activeNotifications = useProfile((state) => state.activeNotifications);
-  const messages = useProfile((state) => state.messages);
   const themeType = useProfile((state) => state.themeType);
 
 
@@ -108,7 +107,12 @@ export default function App() {
                 name="Home"
                 options={{
                   headerTitle: (props) => <LogoTitle {...props} />,
-                  headerStyle: { backgroundColor: "rgb(8, 97, 164)" },
+                  headerStyle: { backgroundColor: "rgb(8, 97, 164)",
+                  borderBottomWidth: 2,
+                  borderBottomColor: "black",
+                  
+                  
+                },
                 }}
                 component={HomeScreen}
               />

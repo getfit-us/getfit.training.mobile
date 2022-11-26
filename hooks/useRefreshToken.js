@@ -28,7 +28,7 @@ const useRefreshToken = () => {
         return;
       }
     } else if (!refreshTokenExpiration) {
-      console.log("No refresh token");
+      console.log("No refresh token");  
       setProfile({});
       setPersist(false);
 

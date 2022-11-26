@@ -21,7 +21,6 @@ const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const setProfile = useProfile((state) => state.setProfile);
-  const accessToken = useProfile((state) => state.profile?.accessToken);
   const [persist, setPersist] = useProfile((state) => [
     state.persist,
     state.setPersist,

@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-evenly",
     alignItems: "center",
     width: "100%",
     flex: 1,

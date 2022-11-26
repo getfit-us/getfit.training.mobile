@@ -208,7 +208,7 @@ const ActivityFeed = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <View>
+      <View style={styles.container}>
         
           <ProgressBar
             indeterminate
@@ -237,11 +237,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 5,
+    marginBottom: 5,
   },
   card: {
     backgroundColor: "white",
     borderRadius: 10,
   },
+  container: {
+    height: "100%",
+  }
 
 });
 
