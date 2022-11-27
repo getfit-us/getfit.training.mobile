@@ -4,7 +4,6 @@ import { createDrawerNavigator, DrawerButton } from "@react-navigation/drawer";
 import ActivityFeed from "./Notifications/ActivityFeed";
 import Logout from "./Logout";
 import { useProfile, useWorkouts } from "../Store/Store";
-import GetApiData from "./GetApiData";
 import Profile from "./Profile/Profile";
 import Messages from "./Notifications/Messages";
 import ViewActivity from "./Notifications/ViewActivity";

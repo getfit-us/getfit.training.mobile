@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     border: "1px solid black",
     marginBottom: 5,
+    marginTop: 5,
     elevation: 3,
     borderRadius: 5,
     marginLeft: 10,

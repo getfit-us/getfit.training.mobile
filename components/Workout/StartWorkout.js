@@ -11,6 +11,7 @@ const StartWorkout = () => {
 
   return (
     <Tab.Navigator
+    backBehavior="order"
       screenOptions={{
         tabBarActiveTintColor: "rgb(8, 97, 164)",
         tabBarInactiveTintColor: "white",
@@ -26,11 +27,13 @@ const StartWorkout = () => {
           fontSize: 12,
           marginBottom: 5,
         },
+        
       }}
     >
       <Tab.Screen
         name="Assigned Workouts"
         options={{
+          backBehavior: "history",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="clipboard-account"

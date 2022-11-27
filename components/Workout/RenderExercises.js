@@ -42,7 +42,9 @@ const RenderExercises = memo(() => {
         handleChangeOrder={handleChangeOrder}
       />
     ) : exercise?.type === "cardio" ? (
-      <RenderCardio exercise={exercise} />
+      <RenderCardio exercise={exercise}
+      key={'Render cardio' + index}
+      />
     ) : (
       <Card
         key={exercise._id}

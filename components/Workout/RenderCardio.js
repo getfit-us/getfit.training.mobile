@@ -25,6 +25,7 @@ const RenderCardio = ({exercise}) => {
       <TextInput
         key={exercise._id + "setInput"}
         label="Level"
+        keyboardType='numeric'
        defaultValue={exercise.numOfSets[0].level}
         mode="outlined"
         style={styles.level}
@@ -33,6 +34,7 @@ const RenderCardio = ({exercise}) => {
       <TextInput
         key={exercise._id + "time"}
         label="Time"
+        
         defaultValue={exercise.numOfSets[0].minutes}
         mode="outlined"
         style={styles.minutes}
