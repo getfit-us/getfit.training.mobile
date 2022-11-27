@@ -88,18 +88,22 @@ const RenderExercises = memo(() => {
             <Button
               key={index + "add"}
               style={styles.add}
+              buttonColor='#3483eb'
               mode="contained"
+              icon="plus"
               onPress={() => handleAddSet(index)}
+              
             >
-              Add Set
+              ADD SET
             </Button>
             <Button
               key={index + "history"}
               style={styles.history}
+              icon="history"
               mode="contained"
               onPress={() => console.log("Pressed")}
             >
-              History
+              EXERCISE HISTORY
             </Button>
           </View>
         </Card.Content>
@@ -115,10 +119,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     flex: 1,
+    width: 50,
   },
   buttons: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
     flex: 1,

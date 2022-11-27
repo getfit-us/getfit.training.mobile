@@ -28,7 +28,7 @@ const CreateSuperSet = ({
       });
       setChecked(_checked);
     }
-  }, [inSuperSet, startWorkout.exercises[superSetIndex]?.length]); 
+  }, [inSuperSet, startWorkout.exercises[superSetIndex]?.length]);
 
   const handleAddSuperSet = () => {
     //if we are in a superset, we need to add the exercise to the superset if its not already there, if in superset and exercise is unchecked we need to remove it from the superset
@@ -68,7 +68,6 @@ const CreateSuperSet = ({
         console.log(_superSet);
         _startWorkout.exercises[superSetIndex] = _superSet;
       }
-    
 
       setStartWorkout(_startWorkout);
     } else {
@@ -167,9 +166,16 @@ const CreateSuperSet = ({
                 />
               )
             )}
-
-            <Button onPress={handleAddSuperSet}>Save</Button>
-            <Button onPress={hideSupersetDialog}>Exit</Button>
+            <View style={styles.buttons}>
+              <Button mode="contained" onPress={handleAddSuperSet}>
+                Save
+              </Button>
+              <Button
+              buttonColor="red"
+              mode="contained" onPress={hideSupersetDialog}>
+                Exit
+              </Button>
+            </View>
           </ScrollView>
         </Dialog.ScrollArea>
       </Dialog>
@@ -183,6 +189,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin: 10,
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
   },
 });
 

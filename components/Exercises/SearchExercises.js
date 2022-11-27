@@ -12,7 +12,6 @@ const SearchExercises = ({ setAddExercises }) => {
     useApiCallOnMount(getAllExercises);
   const exercises = useWorkouts((state) => state.exercises);
   const [filteredExercises, setFilteredExercises] = React.useState(null);
-  const startWorkout = useWorkouts((state) => state.startWorkout);
   const addStartWorkoutExercise = useWorkouts(
     (state) => state.addStartWorkoutExercise
   );
@@ -27,10 +26,12 @@ const SearchExercises = ({ setAddExercises }) => {
   };
 
   return (
-    <View style={{ height: "100%", width: "100%" }}>
-      <Button
+    <View style={{ height: "100%", width: "100%" , }}>
+
+     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignContent: 'center', marginLeft: 5, marginRight: 5 }}>
+     <Button
         mode="contained"
-        style={{ margin: 10 }}
+        style={{ margin: 10, width: "50%", alignSelf: "center" }}
         buttonColor="#fc6b03"
         onPress={() => {
           //clear checked array
@@ -41,15 +42,16 @@ const SearchExercises = ({ setAddExercises }) => {
       >
         Close Exercise Search
       </Button>
+         
       {checked.length > 0 ? (
         <Button
           mode="contained"
-          style={{ margin: 10 }}
-          buttonColor="#fc6b03"
+          style={{ margin: 10, width: "50%", alignSelf: "center"  }}
+          buttonColor="green"
           onPress={() => {
             exercises.forEach((exercise) => {
               if (checked.includes(exercise._id)) {
-                console.log("exercise", exercise);
+                // console.log("exercise", exercise);
                 addStartWorkoutExercise({
                   ...exercise,
                   numOfSets: [
@@ -67,6 +69,9 @@ const SearchExercises = ({ setAddExercises }) => {
           {checked.length > 1 ? "Add Exercises" : "Add Exercise"}{" "}
         </Button>
       ) : null}
+     </View>
+      
+
       <Searchbar
         placeholder="Search Exercises to add"
         onChangeText={(query) => onChangeSearch(query)}

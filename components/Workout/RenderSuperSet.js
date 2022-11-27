@@ -1,10 +1,10 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Card, Button, Snackbar, TextInput } from "react-native-paper";
+import { Card, Button, Snackbar, TextInput, Banner } from "react-native-paper";
 import RenderSets from "./RenderSets";
 import ExerciseMenu from "./ExerciseMenu";
 import { useWorkouts } from "../../Store/Store";
-import SnackBarComponent from "./Dialogs/SnackBar";
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
   const updateStartWorkoutSuperSet = useWorkouts(
     (state) => state.updateStartWorkoutSuperSet
@@ -19,7 +19,7 @@ const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
     updateStartWorkoutSuperSet(_exercise, superSetIndex, exerciseIndex);
   };
   const [notification, setNotification] = React.useState("");
-  const [showSnackBar, setShowSnackBar] = React.useState(false);
+  const [bannerVisible, setBannerVisible] = React.useState(false);
   return (
     <>
     <Card
@@ -32,15 +32,27 @@ const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
         borderLeftWidth: 9,
       }}
     >
+       <Banner
+       elevation={3}
+      visible={bannerVisible}
+      actions={[
+      
+        {
+          label: 'Dismiss',
+          onPress: () => setBannerVisible(false),
+        },
+      ]}
+      style={{marginBottom: 5,}}
+    >
+     Perform exercises back to back. Without rest between the exercises. Rest after completing a set of each exercise.
+    </Banner>
      
       <TouchableOpacity
         onPress={() => {
 
           //this is not working great needs to be fixed
-          setNotification(
-            "Do all exercises in this superset without rest in between each exercise"
-          );
-          setShowSnackBar(true);
+         
+          setBannerVisible(prev => !prev);
         }}
       >
         <Card.Title
@@ -113,18 +125,22 @@ const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
                 <Button
                   key={exercise._id + "add set button"}
                   style={styles.add}
+                  buttonColor="#3483eb"
                   mode="contained"
+                  icon="plus"
+
                   onPress={() => handleAddSet(index)}
                 >
-                  Add Set
+                  ADD SET
                 </Button>
                 <Button
                   key={exercise._id + "history button"}
                   style={styles.history}
                   mode="contained"
+                  icon="history"
                   onPress={() => console.log("Pressed")}
                 >
-                  History
+                  EXERCISE HISTORY
                 </Button>
               </View>
             </View>
@@ -133,10 +149,7 @@ const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
       </Card.Content>
       
     </Card>
-        <SnackBarComponent message={notification}
-        showSnackBar={showSnackBar}
-        setShowSnackBar={setShowSnackBar}
-        />
+   
         </>
   );
 };
@@ -144,11 +157,14 @@ const RenderSuperSet = ({ superSet, superSetIndex, handleChangeOrder }) => {
 const styles = StyleSheet.create({
   superSet: {},
   add: {
-    marginLeft: 3,
+    marginLeft: 1,
     marginRight: 3,
     marginTop: 10,
     marginBottom: 10,
     flex: 1,
+  },
+  history: {
+  
   },
   buttons: {
     flexDirection: "row",

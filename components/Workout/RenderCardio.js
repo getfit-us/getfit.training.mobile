@@ -6,7 +6,7 @@ import ExerciseMenu from './ExerciseMenu'
 const RenderCardio = ({exercise}) => {
   return (
     <Card
-      key={exercise._id}
+      key={exercise._id + 'card cardio'}
       style={{
         margin: 10,
         padding: 10,
@@ -17,6 +17,7 @@ const RenderCardio = ({exercise}) => {
       <Card.Title title={exercise.name}
       titleStyle={{fontWeight: "bold",
     color: "#A30B37",}}
+    key={exercise._id + 'card title cardio'}
       />
       <Card.Content>
         <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />

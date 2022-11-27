@@ -8,6 +8,7 @@ import { Button, IconButton, ProgressBar } from "react-native-paper";
 import SearchExercises from "../Exercises/SearchExercises";
 import { saveCompletedWorkout } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import SaveWorkout from "./Dialogs/SaveWorkout";
 
 const RenderWorkout = memo(({ screenOptions }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
@@ -17,11 +18,15 @@ const RenderWorkout = memo(({ screenOptions }) => {
   const [addExercises, setAddExercises] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
   const addCompletedWorkout = useWorkouts((state) => state.addCompletedWorkout);
+  const [showSaveWorkout, setShowSaveWorkout] = React.useState(false);
   const [status, setStatus] = React.useState({
     loading: false,
     error: false,
     message: "",
   });
+  const handleShowSaveWorkout = () => {
+    setShowSaveWorkout((prev) => !prev);
+  };
 
   const handleSaveWorkout = () => {
     //need to set   loading..  true
@@ -42,6 +47,7 @@ const RenderWorkout = memo(({ screenOptions }) => {
   useEffect(() => {
     navigation.setOptions({
       title: `Workout: ${startWorkout?.name}`,
+
       titleStyle: {
         textAlign: "center",
         justifyContent: "flex-start",
@@ -50,11 +56,9 @@ const RenderWorkout = memo(({ screenOptions }) => {
       headerRight: () => (
         <IconButton
           icon="close"
-          iconColor="white"
+          iconColor="red"
           onPress={() => {
             setStartWorkout({});
-            navigation.goBack();
-
           }}
         />
       ),
@@ -62,12 +66,29 @@ const RenderWorkout = memo(({ screenOptions }) => {
     });
 
     return () => {
-      navigation.setOptions(screenOptions);
+      navigation.setOptions({
+        ...screenOptions,
+        tabBarActiveTintColor: "rgb(8, 97, 164)",
+        tabBarInactiveTintColor: "white",
+        tabBarStyle: {
+          backgroundColor: "black",
+          borderTopWidth: 2,
+          borderTopColor: "rgb(8, 97, 164)",
+          elevation: 3,
+          shadowOpacity: 0,
+          height: 60,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          marginBottom: 5,
+        },
+      });
     };
   }, [startWorkout, navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
+      <SaveWorkout visible={showSaveWorkout} hideDialog={handleShowSaveWorkout} handleSaveWorkout={handleSaveWorkout} />
       <ScrollView style={styles.ScrollView}>
         <RenderExercises />
       </ScrollView>
@@ -80,7 +101,7 @@ const RenderWorkout = memo(({ screenOptions }) => {
             onPress={() => setAddExercises((prev) => !prev)}
             mode="contained"
             style={{ margin: 5 }}
-            buttonColor="#ebab34"
+            buttonColor="#326fa8"
           >
             Add Exercises
           </Button>
@@ -88,9 +109,9 @@ const RenderWorkout = memo(({ screenOptions }) => {
             mode="contained"
             style={{ margin: 5 }}
             buttonColor="green"
-            onPress={handleSaveWorkout}
+            onPress={handleShowSaveWorkout}
           >
-            Save Workout
+            Complete Workout
           </Button>
         </View>
       )}
@@ -118,7 +139,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: "black",
     borderBottomColor: "black",
     borderTopWidth: 4,
     width: "100%",

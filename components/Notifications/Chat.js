@@ -12,7 +12,6 @@ const Chat = ({ route }) => {
   const messages = useProfile((state) => state.messages);
   const profile = useProfile((state) => state.profile);
   const addNotification = useProfile((state) => state.addNotification);
-  const trainer = useProfile((state) => state.trainer);
   const axiosPrivate = useAxiosPrivate();
   const navigation = useNavigation();
 
@@ -25,6 +24,8 @@ const Chat = ({ route }) => {
   });
   const [chat, setChat] = useState([]);
   const flatList = useRef();
+
+
 
   useEffect(() => {
 
@@ -118,8 +119,13 @@ const Chat = ({ route }) => {
             mode="outlined"
           />
 
-          <Button style={styles.button} onPress={handleSend}>
+          <Button 
+          mode="text"
+          buttonColor="#000"
+          icon={reply ? "send" : "camera"}
+          style={styles.button} onPress={handleSend}>
             Send
+          
           </Button>
         </View>
       </View>
@@ -154,10 +160,14 @@ const styles = StyleSheet.create({
     maxWidth: "20%",
     width: "20%",
     alignSelf: "flex-end",
+    borderRadius: 0,
   },
   input: {
     flexDirection: "row",
     justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: "white",
+    marginTop: 0,
   },
   sender: {
     fontWeight: "bold",

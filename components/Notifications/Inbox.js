@@ -8,13 +8,11 @@ import {
   Title,
   Paragraph,
   List,
-  
 } from "react-native-paper";
 import { BASE_URL } from "../../assets/BASE_URL";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
 import { getNotifications, updateSingleNotification } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-
 
 const Inbox = ({ navigation }) => {
   const messages = useProfile((state) => state.messages);
@@ -75,9 +73,8 @@ const Inbox = ({ navigation }) => {
   return (
     <ScrollView>
       <View style={styles.container}>
-      <Text style={styles.title}> Inbox</Text>
+        <Text style={styles.title}> Inbox</Text>
         {inbox?.length > 0 ? (
-        
           inbox?.map((message) => {
             return (
               <Card
@@ -92,7 +89,7 @@ const Inbox = ({ navigation }) => {
                 <Card.Title
                   title={message.sender.name}
                   titleStyle={styles.title}
-                  subtitle={'New Message'}
+                  subtitle={"New Message"}
                   left={(props) => {
                     let client = clients.filter(
                       (client) => client._id === message.sender.id
@@ -142,11 +139,11 @@ const Inbox = ({ navigation }) => {
                 <Card
                   style={styles.card}
                   elevation={3}
-                  key={client._id + "card"}
+                  key={client?._id + "card"}
                 >
                   <List.Item
-                    key={client._id}
-                    title={client.firstname + " " + client.lastname}
+                    key={client?._id}
+                    title={client?.firstname + " " + client?.lastname}
                     titleNumberOfLines={3}
                     left={(props) =>
                       client?.avatar ? (
@@ -173,28 +170,39 @@ const Inbox = ({ navigation }) => {
               );
             })
           ) : (
-            <List.Item
-              title={trainer?.firstname + " " + trainer?.lastname}
-              titleNumberOfLines={3}
-              left={(props) =>
-                trainer?.avatar ? (
-                  <Avatar.Image
-                    size={50}
-                    source={{
-                      uri: `${BASE_URL}/avatar/${trainer?.avatar}`,
-                    }}
-                    style={styles.avatar}
-                  />
-                ) : (
-                  <Avatar.Text
-                    size={50}
-                    label={trainer?.firstName[0] + trainer?.lastName[0]}
-                    style={styles.avatar}
-                  />
-                )
-              }
-              onPress={() => navigation.navigate("Message", { trainer })}
-            />
+            <Card style={styles.card} elevation={3}>
+              <List.Item
+                title={trainer?.firstname + " " + trainer?.lastname}
+                description={"Trainer"}
+                titleNumberOfLines={3}
+                left={(props) =>
+                  trainer?.avatar ? (
+                    <Avatar.Image
+                      size={50}
+                      source={{
+                        uri: `${BASE_URL}/avatar/${trainer?.avatar}`,
+                      }}
+                      style={styles.avatar}
+                    />
+                  ) : (
+                    <Avatar.Text
+                      size={50}
+                      label={
+                        trainer?.firstName
+                          ? trainer?.firstName[0] + trainer?.lastName[0]
+                          : "Loading.. "
+                      }
+                      style={styles.avatar}
+                    />
+                  )
+                }
+                onPress={() =>
+                  navigation.navigate("Chat", {
+                    user: { ...trainer, _id: trainer.id },
+                  })
+                }
+              />
+            </Card>
           )}
         </View>
       </View>
@@ -212,7 +220,7 @@ const styles = StyleSheet.create({
   },
   card: {
     margin: 10,
-
+    backgroundColor: "#fff",
     borderRadius: 10,
   },
   title: {
@@ -230,6 +238,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "orange",
     fontWeight: "bold",
+    borderRadius: 20,
+    margin: 10,
   },
   userList: {},
   avatar: {

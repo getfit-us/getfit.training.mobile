@@ -214,7 +214,7 @@ const HomeScreen = ({ navigation }) => {
           justifyContent: "center",
         }}
       >
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", margin: 20 }}>
           <Text
           style={{fontFamily: 'Roboto', fontSize: 20, color: '#000'}}
           >Welcome to GETFIT Personal Training</Text>
@@ -252,24 +252,27 @@ const HomeScreen = ({ navigation }) => {
           />
           {formError.password && <Text>{formError.message}</Text>}
         </View>
-        <View style={{ alignItems: "center", flex:1 , flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={{ alignItems: "center",  flexDirection: 'row', justifyContent: 'center' }}>
           <Text>Remember Me</Text>
           <Switch value={persist} onValueChange={onToggleSwitch} />
           <Text>{themeType === 'light' ? 'Light Mode' : 'Dark Mode'}</Text>
           <Switch value={themeType} onValueChange={onToggleTheme} />
         </View>
+        <Button mode="text" onPress={() => navigation.navigate("Forgot Password")}>Forgot Password</Button>
         {loading ? <ActivityIndicator animating={true} color={'blue'} /> :  <Button
           icon="login"
           mode="contained"
           buttonColor={loginStatus.error ? "red" : "#03A9F4"}
           style={{
             margin: 20,
+            width: "80%",
+            alignSelf: "center",
           }}
           onPress={onSubmit}
         >
           {loginStatus.error ? loginStatus.message : "Login"}
         </Button>}
-        <View style={{ alignItems: "center", marginTop: 3 }}>
+        <View style={{ alignItems: "center", marginTop: 3, }}>
           <Text style={{marginTop: 3, marginBottom: 10,}}>Don't have an account?</Text>
           <Button
           
@@ -277,7 +280,7 @@ const HomeScreen = ({ navigation }) => {
             
             onPress={() => navigation.navigate("Sign Up")}
           >Sign Up</Button>
-          <Button mode="text" onPress={() => navigation.navigate("Forgot Password")}>Forgot Password</Button>
+        
       </View>
     </View>
   );

@@ -206,7 +206,9 @@ export const useWorkouts = create((set, get) => ({
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
-  startWorkout: {},
+  startWorkout: {
+    exercises: [],
+  },
   setStartWorkout: (startWorkout) => set({ startWorkout }),
   updateStartWorkoutExercise: (exercise, exerciseIndex) =>
     set((state) => ({

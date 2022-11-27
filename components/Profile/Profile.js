@@ -12,6 +12,8 @@ const Profile = () => {
 
   if (measurements?.length !== 0) {
     setCurrentWeight(measurements[0].weight);
+  } else {
+    setCurrentWeight('No weight recorded');
   }
 
   }, [measurements]);

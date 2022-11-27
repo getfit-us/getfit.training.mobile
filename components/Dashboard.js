@@ -55,6 +55,20 @@ const Dashboard = ({ navigation }) => {
             headerShown: false,
           }}
         />
+         <Drawer.Screen
+          name="Create Workout"
+          options={{
+            drawerIcon: (props) => (
+              <List.Icon
+                icon="pencil"
+                color={props.focused ? "black" : "white"}
+              />
+            ),
+            headerVisible: false,
+            headerShown: false,
+          }}
+          component={CreateWorkout}
+        />
         <Drawer.Screen
           name="Activity Feed"
           component={ActivityFeed}
@@ -88,20 +102,7 @@ const Dashboard = ({ navigation }) => {
             headerShown: false,
           }}
         />
-        <Drawer.Screen
-          name="Create Workout"
-          options={{
-            drawerIcon: (props) => (
-              <List.Icon
-                icon="pencil"
-                color={props.focused ? "black" : "white"}
-              />
-            ),
-            headerVisible: false,
-            headerShown: false,
-          }}
-          component={CreateWorkout}
-        />
+       
         {/* <Drawer.Screen name="View Workout" component={ViewWorkout} /> */}
         <Drawer.Screen
           options={{

@@ -8,8 +8,7 @@ import {
   IconButton,
   Provider as PaperProvider,
   Text,
-  MD3Colors,
-  Button,
+ 
 } from "react-native-paper";
 import { useTheme, Badge } from "react-native-paper";
 import { useProfile } from "./Store/Store";
@@ -145,6 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     flexDirection: "row",
     marginBottom: 10,
+    height: 50,
   },
   title: {
     marginLeft: 10,
