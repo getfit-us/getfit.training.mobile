@@ -51,8 +51,7 @@ const Messages = () => {
         tabBarInactiveTintColor: "white",
         tabBarStyle: {
           backgroundColor: "black",
-          borderTopWidth: 2,
-          borderTopColor: "rgb(8, 97, 164)",
+        
           elevation: 3,
           shadowOpacity: 0,
           height: 60,

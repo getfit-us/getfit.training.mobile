@@ -31,16 +31,16 @@ const useAxiosPrivate = () => {
     const responseInterceptor = axiosPrivate.interceptors.response.use(
       (response) => response,
       async (err) => {
+        err.config.retryCount = err.config.retryCount || 0;
         console.log(err.config.retryCount);
-        if (err.response?.status === 403 && err.config?.retryCount > 1) {
+        if (err.response?.status === 403) {
           console.log("refreshing token", err.config?.retryCount);
 
-          const result = await refresh();
-          err.config.retryCount -= 1;
+          const token = await refresh();
 
-          err.config.headers["Authorization"] = "Bearer " + accessToken;
+          err.config.headers["Authorization"] = "Bearer " + token;
         }
-        if (err.config.retryCount < 1) {
+        if (err.config.retryCount > 1) {
           //already tried to refresh token remove all tokens and redirect to login
           console.log("already tried to refresh token");
           resetProfileState();

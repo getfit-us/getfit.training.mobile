@@ -25,7 +25,9 @@ const initialWorkoutState = {
   newWorkout: {},
   manageWorkout: [],
   exercises: [],
-  startWorkout: {},
+  startWorkout: {
+    exercises: [],
+  },
 };
 
 export const useProfile = create((set, get) => ({
@@ -45,6 +47,7 @@ export const useProfile = create((set, get) => ({
   messages: [],
   trainer: {},
   activeChat: [],
+  calendar: [], // going to contain the calendar data events tasks goals
   persist: async () =>
     (await AsyncStorage.getItem("persist")) === "true" ? true : false,
   setPersist: async (persist) => {
@@ -54,8 +57,8 @@ export const useProfile = create((set, get) => ({
     set({ persist });
   },
   setThemeType: (themeType) => set({ themeType }),
-
-  calendar: [], // going to contain the calendar data events tasks goals
+  setAccessToken: (accessToken) =>
+    set((state) => ({ profile: { ...state.profile, accessToken } })),
 
   setProfile: (profile) => set({ profile: profile }),
   setMeasurements: (measurements) => set({ measurements }),
@@ -209,8 +212,11 @@ export const useWorkouts = create((set, get) => ({
   startWorkout: {
     exercises: [],
   },
-  setStartWorkout: (startWorkout) => set({ startWorkout }),
-  updateStartWorkoutExercise: (exercise, exerciseIndex) =>
+  setStartWorkout: (startWorkout) => set({ startWorkout }), // set whole object
+  updateStartWorkoutExercise: (
+    exercise,
+    exerciseIndex // update one exercise
+  ) =>
     set((state) => ({
       startWorkout: {
         ...state.startWorkout,
@@ -219,7 +225,9 @@ export const useWorkouts = create((set, get) => ({
         ),
       },
     })),
-  setStartWorkoutExercises: (exercises) =>
+  setStartWorkoutExercises: (
+    exercises // set all exercises
+  ) =>
     set((state) => ({
       startWorkout: {
         ...state.startWorkout,
@@ -227,7 +235,7 @@ export const useWorkouts = create((set, get) => ({
       },
     })),
   updateStartWorkoutSuperSet: (exercise, superSetIndex, exerciseIndex) =>
-    //need to spread the exercise array and then only update the superset array
+    //update one superset
 
     set((state) => {
       const newExerciseArray = [...state.startWorkout.exercises];
@@ -277,7 +285,10 @@ export const useWorkouts = create((set, get) => ({
         };
       }
     }),
-  addStartWorkoutExercise: (exercise, superSetIndex) =>
+  addStartWorkoutExercise: (
+    exercise,
+    superSetIndex //add exercise to superset or main array
+  ) =>
     set((state) => {
       if (superSetIndex !== undefined) {
         const newExerciseArray = [...state.startWorkout.exercises];
@@ -297,6 +308,13 @@ export const useWorkouts = create((set, get) => ({
         };
       }
     }),
+  setStartWorkoutName: (name) =>
+    set((state) => ({
+      startWorkout: {
+        ...state.startWorkout,
+        name: name,
+      },
+    })),
 
   setCurrentWorkout: (workout) => set({ currentWorkout: workout }),
   setCompletedWorkouts: (completedWorkouts) => set({ completedWorkouts }),

@@ -11,7 +11,7 @@ const useAxios = () => {
             withCredentials: true,
             Authorization: "Bearer " + accessToken,
         },
-        retryCount: 3,
+        retryCount: 0,
     });
     return axiosPrivate;
 
@@ -21,19 +21,4 @@ const useAxios = () => {
 export default useAxios;
 
 
-// const refreshAuthLogic = (failedRequest) => {
-//   axios
-//     .post("/refresh", {
-//       headers: {
-//         "Content-Type": "application/json",
-//         withCredentials: true,
-//       },
-//     })
-//     .then((tokenRefreshResponse) => {
-//       failedRequest.response.config.headers["Authorization"] =
-//         "Bearer " + tokenRefreshResponse.data.accessToken;
-//       return Promise.resolve();
-//     });
-// };
 
-// createAuthRefreshInterceptor(axiosPrivate, refreshAuthLogic);

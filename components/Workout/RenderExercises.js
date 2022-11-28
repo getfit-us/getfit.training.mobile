@@ -122,6 +122,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flex: 1,
     width: 50,
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 2 },
   },
   buttons: {
     flexDirection: "row",

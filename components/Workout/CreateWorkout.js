@@ -10,6 +10,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 const CreateWorkout = ({ navigation }) => {
   const [showAddExercises, setShowAddExercises] = React.useState(false);
   const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
+  const setStartWorkoutName = useWorkouts((state) => state.setStartWorkoutName);
   const startWorkout = useWorkouts((state) => state.startWorkout);
   const axiosPrivate = useAxiosPrivate();
   const clientId = useProfile((state) => state.profile.clientId);
@@ -21,13 +22,9 @@ const CreateWorkout = ({ navigation }) => {
     message: "",
   });
 
-  useEffect(() => {
-    setStartWorkout({ name: "New Workout", exercises: [] });
 
-   
-  }, []);
 
-console.log(startWorkout)
+
 
   const handleSaveWorkout = () => {
     if (startWorkout.name === "" || startWorkout?.exercises?.length === 0) {
@@ -41,9 +38,18 @@ console.log(startWorkout)
       (res) => {
         if (!res.error && !res.loading) {
           setStatus({ ...status, loading: false });
-          setStartWorkout({});
+          setStartWorkout({
+            name: "",
+            exercises: [],
+          });
+          console.log(res.data)
           addCustomWorkout(res.data);
           navigation.navigate("Activity Feed");
+        }
+        if (res.error) {
+          setStatus({ ...status, loading: false, error: true, message: res.message });
+          console.log("error", res.message);
+          setBannerVisible(true);
         }
       }
     );
@@ -78,8 +84,10 @@ console.log(startWorkout)
           name="workoutName"
           label="Workout Name"
           value={startWorkout?.name}
-          onChangeText={(text) =>
-            setStartWorkout({ ...startWorkout, name: text })
+          onChangeText={(text) => {
+            setStartWorkoutName(text);
+          }
+           
           }
           mode="outlined"
           style={{ margin: 15 }}

@@ -50,7 +50,10 @@ const CustomWorkouts = ({ navigation }) => {
     setStartWorkout({ name: "New Workout", exercises: [] });
 
     const unsubscribe = navigation.addListener("focus", () => {
-      setStartWorkout({});
+      setStartWorkout({
+        name: "",
+        exercises: [],
+      });
     });
 
     return unsubscribe;
@@ -93,7 +96,7 @@ const CustomWorkouts = ({ navigation }) => {
 
   return status.loading ? (
     <ProgressBar loading={status.loading} />
-  ) : startWorkout?.name ? (
+  ) :startWorkout?.exercises?.length > 0 ? (
     <RenderWorkout screenOptions={customWorkoutOptions} />
   ) : (
     <View style={styles.container}>
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
   },
   listItem: {
     backgroundColor: "white",
-    border: "1px solid black",
+   
     marginTop: 5,
     marginBottom: 5,
     elevation: 3,

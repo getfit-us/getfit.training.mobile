@@ -4,6 +4,7 @@ import * as SecureStore from "expo-secure-store";
 
 const useRefreshToken = () => {
   const setProfile = useProfile((state) => state.setProfile);
+  const setAccessToken = useProfile((state) => state.setAccessToken);
   const axiosPrivate = useAxios();
   const persist = useProfile((state) => state.persist);
   const setPersist = useProfile((state) => state.setPersist);
@@ -42,8 +43,8 @@ const useRefreshToken = () => {
         },
         withCredentials: true,
       });
-
-      setProfile(response.data);
+      
+      setAccessToken(response.data.accessToken);
       if (persist) {
         console.log("AccessToken Profile");
         const profile = await SecureStore.setItemAsync(
@@ -51,7 +52,7 @@ const useRefreshToken = () => {
           JSON.stringify(response.data)
         );
       }
-
+      return response.data.accessToken;
       
     } catch (error) {
       console.log("error inside refresh token", error);

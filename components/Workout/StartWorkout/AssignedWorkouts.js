@@ -53,7 +53,10 @@ const AssignedWorkouts = ({navigation}) => {
     setStartWorkout({ name: "New Workout", exercises: [] });
 
     const unsubscribe = navigation.addListener("focus", () => {
-      setStartWorkout({});
+      setStartWorkout({
+        name: "",
+        exercises: [],
+      });
     });
 
     return unsubscribe;
@@ -104,7 +107,7 @@ const AssignedWorkouts = ({navigation}) => {
         You have no trainer assigned workouts.
       </Text>
     </View>
-  ) : startWorkout?.name ? (
+  ) : startWorkout?.exercises?.length > 0 ? (
     <RenderWorkout screenOptions={assingedWorkoutOptions} />
   ) : (
     <View style={styles.container}>

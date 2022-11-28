@@ -8,6 +8,7 @@ import {
   Title,
   Paragraph,
   List,
+  IconButton,
 } from "react-native-paper";
 import { BASE_URL } from "../../assets/BASE_URL";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
@@ -50,7 +51,11 @@ const Inbox = ({ navigation }) => {
       });
       setInbox(unique);
     }
-  }, [messages, loadingMessages]);
+
+    return () => {
+      setInbox([]);
+    };
+  }, [loadingMessages, activeNotifications]);
 
   const handleUpdate = (notification) => {
     setStatus({ loading: true });
@@ -70,6 +75,7 @@ const Inbox = ({ navigation }) => {
       }
     });
   };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -78,29 +84,47 @@ const Inbox = ({ navigation }) => {
           inbox?.map((message) => {
             return (
               <Card
-                style={styles.card}
+                style={styles.newMessageCard}
                 elevation={3}
                 key={message._id}
                 onPress={() => {
-                  handleUpdate(message);
+                  //check for amount of unread messages from sender and update all to read
+                  const unread = activeNotifications?.filter(
+                    (item) =>
+                      item.sender.id === message.sender.id &&
+                      item.is_read === false
+                  );
+                  if (unread?.length > 1) {
+                    unread?.forEach((message) => {
+                      handleUpdate(message);
+                    });
+                  } else {
+                    handleUpdate(message);
+                  }
+
                   navigation.navigate("Chat", { message: message });
                 }}
               >
                 <Card.Title
-                  title={message.sender.name}
-                  titleStyle={styles.title}
-                  subtitle={"New Message"}
+                  title={'New Message'}
+                  titleStyle={styles.Sender}
+                  subtitle={`FROM: ${message.sender.name}`}
+                  subtitleStyle={styles.Subtitle}
                   left={(props) => {
                     let client = clients.filter(
                       (client) => client._id === message.sender.id
                     );
 
-                    if (client[0]?.avatar) {
+                    if (client[0]?.avatar || trainer?.avatar) {
                       return (
                         <Avatar.Image
                           size={50}
                           source={{
-                            uri: `${BASE_URL}/avatar/${client[0]?.avatar}`,
+                            uri: `${BASE_URL}/avatar/${
+                              client[0]?.avatar
+                                ? client[0]?.avatar
+                                : trainer?.avatar
+                            }`,
                           }}
                           onError={(e) => {
                             console.log(e);
@@ -111,14 +135,11 @@ const Inbox = ({ navigation }) => {
                       return <Avatar.Icon size={50} icon="account" />;
                     }
                   }}
-                  // right={(props) => (
-                  //   <Icon  name='message' size={30} color='#000' />
-                  // )}
                 />
                 <Card.Content>
                   <Paragraph style={styles.date}>
                     {" "}
-                    Date: {message.createdAt}
+                    Sent: {message.createdAt}
                   </Paragraph>
                 </Card.Content>
               </Card>
@@ -126,7 +147,8 @@ const Inbox = ({ navigation }) => {
           })
         ) : (
           <>
-            <View style={styles.container}>
+            <View style={styles.emptyInbox}>
+              <IconButton icon="inbox" size={100} />
               <Text style={styles.noMessages}>No New Messages</Text>
             </View>
           </>
@@ -218,31 +240,56 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
   },
+  emptyInbox: {
+    flex: 1,
+    justifyContent: "center",
+
+    alignItems: "center",
+  },
+  newMessageCard: {
+    margin: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderColor: '#3483eb',
+    borderWidth: 2,
+  },
+  Subtitle: {
+    alignSelf: "center",
+    fontSize: 16,
+  },
   card: {
     margin: 10,
     backgroundColor: "#fff",
     borderRadius: 10,
+   
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
+    margin: 10,
+    backgroundColor: "orange",
+    padding: 1,
+    width: "50%",
+    alignSelf: "center",
+    borderRadius: 10,
+    color: "#fff",
   },
   date: {
     fontSize: 15,
     textAlign: "center",
   },
   noMessages: {
-    textAlign: "center",
     fontSize: 20,
-    padding: 10,
-    backgroundColor: "orange",
+
     fontWeight: "bold",
-    borderRadius: 20,
-    margin: 10,
   },
   userList: {},
   avatar: {
     marginLeft: 10,
+  },
+  Sender: {
+    fontSize: 20,
+    alignSelf: "center",
   },
 });

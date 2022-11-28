@@ -210,7 +210,6 @@ export const getSingleCompletedWorkout = async (axiosPrivate, idOfWorkout) => {
     data: null,
   };
 
-  console.log(idOfWorkout);
   if (!idOfWorkout) return status;
   const controller = new AbortController();
   try {

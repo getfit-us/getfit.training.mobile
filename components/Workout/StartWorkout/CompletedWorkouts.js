@@ -57,7 +57,10 @@ const CompletedWorkouts = ({navigation}) => {
     setStartWorkout({ name: "New Workout", exercises: [] });
 
     const unsubscribe = navigation.addListener("focus", () => {
-      setStartWorkout({});
+      setStartWorkout({
+        name: "",
+        exercises: [],
+      });
     });
 
     return unsubscribe;
@@ -100,7 +103,7 @@ const CompletedWorkouts = ({navigation}) => {
   };
 
   return status.loading ? (    <ProgressBar loading={status.loading} />
-  ) : startWorkout?.name ? (
+  ) : startWorkout?.exercises?.length > 0 ? (
     <RenderWorkout screenOptions={completedWorkoutOptions} />
   ) : (
     <View style={styles.container}>

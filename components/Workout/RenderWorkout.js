@@ -29,7 +29,7 @@ const RenderWorkout = memo(({ screenOptions }) => {
     setShowSaveWorkout((prev) => !prev);
   };
 
-  const handleSaveWorkout = () => {
+  const handleSaveWorkout = (Feedback) => {
     //need to set   loading..  true
     setStatus({ ...status, loading: true });
 
@@ -39,7 +39,10 @@ const RenderWorkout = memo(({ screenOptions }) => {
       if (!res.error && !res.loading) {
         setStatus({ ...status, loading: false });
         addCompletedWorkout(res.data); // add to local state
-        setStartWorkout(null); // clear workout
+        setStartWorkout({
+          name: "",
+          exercises: [],
+        }); // clear workout
         navigation.goBack();
       }
     });
@@ -59,7 +62,10 @@ const RenderWorkout = memo(({ screenOptions }) => {
           icon="close"
           iconColor="red"
           onPress={() => {
-            setStartWorkout({});
+            setStartWorkout({
+              name: "",
+              exercises: [],
+            });
           }}
         />
       ),
