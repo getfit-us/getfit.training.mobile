@@ -8,7 +8,6 @@ const useRefreshToken = () => {
   const axiosPrivate = useAxios();
   const persist = useProfile((state) => state.persist);
   const setPersist = useProfile((state) => state.setPersist);
-  
 
   const refresh = async () => {
     const refreshToken = await SecureStore.getItemAsync("refreshToken");
@@ -29,7 +28,10 @@ const useRefreshToken = () => {
         return;
       }
     } else if (!refreshTokenExpiration) {
-      console.log("No refresh token");  
+      console.log("No refresh token expiration");
+      await SecureStore.deleteItemAsync("refreshToken");
+      await SecureStore.deleteItemAsync("refreshTokenExpiration");
+      await SecureStore.deleteItemAsync("profile");
       setProfile({});
       setPersist(false);
 
@@ -39,11 +41,11 @@ const useRefreshToken = () => {
       const response = await axiosPrivate.get("/refresh", {
         headers: {
           "Content-Type": "application/json",
-          "refreshToken": refreshToken,
+          refreshToken: refreshToken,
         },
         withCredentials: true,
       });
-      
+
       setAccessToken(response.data.accessToken);
       if (persist) {
         console.log("AccessToken Profile");
@@ -53,13 +55,17 @@ const useRefreshToken = () => {
         );
       }
       return response.data.accessToken;
-      
     } catch (error) {
       console.log("error inside refresh token", error);
-    } 
+      console.log("No refresh token");
+      setProfile({});
+      setPersist(false);
+      await SecureStore.deleteItemAsync("refreshToken");
+      await SecureStore.deleteItemAsync("refreshTokenExpiration");
+      await SecureStore.deleteItemAsync("profile");
+    }
   };
   return refresh;
-  
 };
 
 export default useRefreshToken;

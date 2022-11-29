@@ -9,6 +9,7 @@ import SearchExercises from "../Exercises/SearchExercises";
 import { saveCompletedWorkout } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SaveWorkout from "./Dialogs/SaveWorkout";
+import FabGroup from "../utils/FabGroup";
 
 const RenderWorkout = memo(({ screenOptions }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
@@ -25,16 +26,38 @@ const RenderWorkout = memo(({ screenOptions }) => {
     error: false,
     message: "",
   });
+  const [fabOpen, setFabOpen] = React.useState(false);
+
   const handleShowSaveWorkout = () => {
     setShowSaveWorkout((prev) => !prev);
   };
 
+  const handleFabOpen = () => {
+    setFabOpen((prev) => !prev);
+  };
+
+  const fabActions = [
+    {
+      icon: "plus",
+      label: "Add Exercises",
+      onPress: () => {
+        setAddExercises(true);
+      },
+    },
+    {
+      icon: "content-save",
+      label: "Save Workout",
+      color: "green",
+      onPress: () => {
+        handleShowSaveWorkout();
+      },
+    },
+  ];
+
   const handleSaveWorkout = (Feedback) => {
     //need to set   loading..  true
     setStatus({ ...status, loading: true });
-
     const completedWorkout = { ...startWorkout, id: clientId };
-
     saveCompletedWorkout(axiosPrivate, completedWorkout).then((res) => {
       if (!res.error && !res.loading) {
         setStatus({ ...status, loading: false });
@@ -95,10 +118,9 @@ const RenderWorkout = memo(({ screenOptions }) => {
     };
   }, [startWorkout, navigation]);
 
-
   React.useEffect(
     () =>
-      navigation.addListener('beforeRemove', (e) => {
+      navigation.addListener("beforeRemove", (e) => {
         if (!hasUnsavedChanges) {
           // If we don't have unsaved changes, then we don't need to do anything
           return;
@@ -109,13 +131,13 @@ const RenderWorkout = memo(({ screenOptions }) => {
 
         // Prompt the user before leaving the screen
         Alert.alert(
-          'Discard changes?',
-          'You have unsaved changes. Are you sure to discard them and leave the screen?',
+          "Discard changes?",
+          "You have unsaved changes. Are you sure to discard them and leave the screen?",
           [
-            { text: "Don't leave", style: 'cancel', onPress: () => {} },
+            { text: "Don't leave", style: "cancel", onPress: () => {} },
             {
-              text: 'Discard',
-              style: 'destructive',
+              text: "Discard",
+              style: "destructive",
               // If the user confirmed, then we dispatch the action we blocked earlier
               // This will continue the action that had triggered the removal of the screen
               onPress: () => navigation.dispatch(e.data.action),
@@ -128,33 +150,23 @@ const RenderWorkout = memo(({ screenOptions }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <SaveWorkout visible={showSaveWorkout} hideDialog={handleShowSaveWorkout} handleSaveWorkout={handleSaveWorkout} />
+      <SaveWorkout
+        visible={showSaveWorkout}
+        hideDialog={handleShowSaveWorkout}
+        handleSaveWorkout={handleSaveWorkout}
+      />
       <ScrollView style={styles.ScrollView}>
         <RenderExercises />
+        <FabGroup
+          visible={true}
+          handleOpen={handleFabOpen}
+          open={fabOpen}
+          actions={fabActions}
+        />
       </ScrollView>
       {addExercises ? (
         <SearchExercises setAddExercises={setAddExercises} />
-      ) : (
-        <View style={styles.buttonContainer}>
-          <ProgressBar indeterminate visible={status.loading} />
-          <Button
-            onPress={() => setAddExercises((prev) => !prev)}
-            mode="contained"
-            style={{ margin: 5 }}
-            buttonColor="#326fa8"
-          >
-            Add Exercises
-          </Button>
-          <Button
-            mode="contained"
-            style={{ margin: 5 }}
-            buttonColor="green"
-            onPress={handleShowSaveWorkout}
-          >
-            Complete Workout
-          </Button>
-        </View>
-      )}
+      ) : null}
     </SafeAreaView>
   );
 });

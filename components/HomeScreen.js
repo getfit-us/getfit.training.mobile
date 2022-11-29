@@ -38,6 +38,7 @@ const HomeScreen = ({ navigation }) => {
     try {
      
       const userInfo = await SecureStore.getItemAsync('profile');
+
       if (userInfo) {
       setProfile(JSON.parse(userInfo));
       //check if token is expired
@@ -53,7 +54,7 @@ const HomeScreen = ({ navigation }) => {
           setProfile(null);
         }
       }
-      }
+      } 
     } catch (error) {
       console.log(`Keychain Error: ${error.message}`);
     }
@@ -105,7 +106,7 @@ const HomeScreen = ({ navigation }) => {
     
       //save refresh token to keychain
       if (response.headers["set-cookie"]) {
-        console.log('Saving refresh token to keychain');
+        console.log('Saving refresh token to key chain');
         const refreshToken = response.headers["set-cookie"][0].split(';')[0].split('=')[1];
         const refreshTokenExpiration = response.headers["set-cookie"][0].split(';')[3].split('=')[1]
        
@@ -174,38 +175,7 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const showNetInfo = async () => {
-    const connectionInfo = await NetInfo.fetch();
-
-    Platform.OS === "ios"
-      ? Alert.alert("Initial Network Connectivity Type:", connectionInfo.type)
-      : ToastAndroid.show(
-          "Initial Network Connectivity Type: " + connectionInfo.type,
-          ToastAndroid.LONG
-        );
-  };
-
-  const handleConnectivityChange = (connectionInfo) => {
-    let connectionMsg = "You are now connected to an active network.";
-    switch (connectionInfo.type) {
-      case "none":
-        connectionMsg = "No network connection is active.";
-        break;
-      case "unknown":
-        connectionMsg = "The network connection state is now unknown.";
-        break;
-      case "cellular":
-        connectionMsg = "You are now connected to a cellular network.";
-        break;
-      case "wifi":
-        connectionMsg = "You are now connected to a WiFi network.";
-        break;
-    }
-    Platform.OS === "ios"
-      ? Alert.alert("Connection change:", connectionMsg)
-      : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
-  };
-
+ 
 
   return (
       <View

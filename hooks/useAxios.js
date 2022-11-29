@@ -6,12 +6,13 @@ const useAxios = () => {
     const accessToken = useProfile((state) => state.profile?.accessToken);
     const axiosPrivate = axios.create({
         baseURL: BASE_URL,
+        retryCount: 0,
         headers: {
             "Content-Type": "application/json",
             withCredentials: true,
             Authorization: "Bearer " + accessToken,
         },
-        retryCount: 0,
+       
     });
     return axiosPrivate;
 

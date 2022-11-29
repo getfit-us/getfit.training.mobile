@@ -5,10 +5,10 @@ import { List, Searchbar, Avatar } from "react-native-paper";
 import RenderWorkout from "../RenderWorkout";
 import ProgressBar from "../../UserFeedback/ProgressBar";
 import { useEffect, useState } from "react";
-import { View,  FlatList, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const CompletedWorkouts = ({navigation}) => {
+const CompletedWorkouts = ({ navigation }) => {
   const stateCompletedWorkouts = useWorkouts(
     (state) => state.completedWorkouts
   );
@@ -52,21 +52,6 @@ const CompletedWorkouts = ({navigation}) => {
       });
   }, [loadingCompletedWorkouts, completedWorkouts, stateCompletedWorkouts]);
 
-
-  useEffect(() => {
-    setStartWorkout({ name: "New Workout", exercises: [] });
-
-    const unsubscribe = navigation.addListener("focus", () => {
-      setStartWorkout({
-        name: "",
-        exercises: [],
-      });
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-
-
   const handleSearch = (query) => {
     const filteredData = stateCompletedWorkouts.filter((item) => {
       return item.name.toLowerCase().includes(query.toLowerCase());
@@ -80,21 +65,28 @@ const CompletedWorkouts = ({navigation}) => {
         style={styles.listItem}
         titleStyle={styles.listItemTitle}
         titleNumberOfLines={2}
-
         descriptionStyle={styles.listItemDescription}
         key={item._id}
         title={item.name}
         description={
           "Date Completed:" + new Date(item.dateCompleted).toLocaleDateString()
         }
-        left={(props) => <Avatar.Icon {...props} 
-      color="white"
-      icon={item?.exercises[0]?.type === 'cardio' ? 'run' : 'dumbbell'} 
-      size={40}
-      style={{backgroundColor: item?.exercises[0]?.type === 'cardio' ? '#f9a825' : 'rgb(8, 97, 164)',
-      marginLeft: 10,
-      alignSelf: 'center',
-    }}/>}
+        left={(props) => (
+          <Avatar.Icon
+            {...props}
+            color="white"
+            icon={item?.exercises[0]?.type === "cardio" ? "run" : "dumbbell"}
+            size={40}
+            style={{
+              backgroundColor:
+                item?.exercises[0]?.type === "cardio"
+                  ? "#f9a825"
+                  : "rgb(8, 97, 164)",
+              marginLeft: 10,
+              alignSelf: "center",
+            }}
+          />
+        )}
         onPress={() => {
           setStartWorkout(item);
         }}
@@ -102,7 +94,8 @@ const CompletedWorkouts = ({navigation}) => {
     );
   };
 
-  return status.loading ? (    <ProgressBar loading={status.loading} />
+  return status.loading ? (
+    <ProgressBar loading={status.loading} />
   ) : startWorkout?.exercises?.length > 0 ? (
     <RenderWorkout screenOptions={completedWorkoutOptions} />
   ) : (
@@ -124,7 +117,7 @@ const CompletedWorkouts = ({navigation}) => {
 
 const styles = StyleSheet.create({
   headerStyle: {
-    backgroundColor: "black",
+    backgroundColor: "orange",
     height: 40,
   },
   headerTitleStyle: {
@@ -152,7 +145,6 @@ const styles = StyleSheet.create({
   listItemTitle: {
     fontSize: 20,
     padding: 5,
-   
   },
   searchBar: {
     backgroundColor: "white",

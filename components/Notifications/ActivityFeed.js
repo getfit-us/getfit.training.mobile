@@ -152,6 +152,11 @@ const ActivityFeed = ({ navigation }) => {
       getNotifications(axiosPrivate, {
         profile: { clientId: clientId },
         setNotifications,
+      }).then((status) => {
+        console.log(status)
+        if (status.error) {
+          console.log(status.error);
+        }
       });
     }, 10000);
     return () => clearInterval(interval);
