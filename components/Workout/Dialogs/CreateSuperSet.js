@@ -65,7 +65,6 @@ const CreateSuperSet = ({
         });
         _startWorkout.exercises.splice(superSetIndex, 1);
       } else {
-        console.log(_superSet);
         _startWorkout.exercises[superSetIndex] = _superSet;
       }
 

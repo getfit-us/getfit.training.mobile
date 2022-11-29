@@ -10,6 +10,8 @@ import { saveCompletedWorkout } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import SaveWorkout from "./Dialogs/SaveWorkout";
 import FabGroup from "../utils/FabGroup";
+import { colors } from "../../Store/colors";
+import { useIsFocused } from "@react-navigation/native";
 
 const RenderWorkout = memo(({ screenOptions }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
@@ -18,9 +20,13 @@ const RenderWorkout = memo(({ screenOptions }) => {
   const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   const [addExercises, setAddExercises] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
+  const exercises = useWorkouts((state) => state.exercises);
   const addCompletedWorkout = useWorkouts((state) => state.addCompletedWorkout);
   const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
   const [showSaveWorkout, setShowSaveWorkout] = React.useState(false);
+  const [checked, setChecked] = React.useState([]);
+
+  const screenFocused = useIsFocused();
   const [status, setStatus] = React.useState({
     loading: false,
     error: false,
@@ -39,9 +45,32 @@ const RenderWorkout = memo(({ screenOptions }) => {
   const fabActions = [
     {
       icon: "plus",
-      label: "Add Exercises",
+      label: addExercises ? "Close Add Exercise" : "Add Exercises",
+      style: addExercises ? styles.fabClose : styles.fabOpen,
       onPress: () => {
-        setAddExercises(true);
+        setAddExercises((prev) => !prev);
+      },
+    },
+     {
+      icon: "plus-circle",
+      label: "Add Selected Exercises",
+
+      onPress: () => {
+        exercises.forEach((exercise) => {
+          if (checked.includes(exercise._id)) {
+            // console.log("exercise", exercise);
+            addStartWorkoutExercise({
+              ...exercise,
+              numOfSets: [
+                { weight: 0, reps: 0 },
+                { weight: 0, reps: 0 },
+                { weight: 0, reps: 0 },
+              ],
+            });
+          }
+        });
+        //clear checked array after adding exercises
+        setChecked([]);
       },
     },
     {
@@ -158,14 +187,14 @@ const RenderWorkout = memo(({ screenOptions }) => {
       <ScrollView style={styles.ScrollView}>
         <RenderExercises />
         <FabGroup
-          visible={true}
+          visible={screenFocused ? true : false}
           handleOpen={handleFabOpen}
           open={fabOpen}
           actions={fabActions}
         />
       </ScrollView>
       {addExercises ? (
-        <SearchExercises setAddExercises={setAddExercises} />
+        <SearchExercises setAddExercises={setAddExercises} checked={checked} />
       ) : null}
     </SafeAreaView>
   );
@@ -182,6 +211,13 @@ const styles = StyleSheet.create({
   ScrollView: {
     width: "100%",
   },
+  fabOpen: {
+    backgroundColor: colors.primaryLight,
+  },
+  fabClose: {
+    backgroundColor: colors.error,
+  },
+
   title: {
     fontSize: 20,
     fontWeight: "bold",

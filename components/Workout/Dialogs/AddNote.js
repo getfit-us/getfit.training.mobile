@@ -1,6 +1,8 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { Button, Dialog, Portal, TextInput } from "react-native-paper";
 import { useWorkouts } from "../../../Store/Store";
+import { StyleSheet } from "react-native";
+import { colors } from "../../../Store/colors";
 
 const AddNote = ({
   notesVisible,
@@ -22,7 +24,6 @@ const AddNote = ({
     if (inSuperSet) {
       const _exercise = { ...exercise };
       _exercise.notes = note;
-      console.log(_exercise);
       updateStartWorkoutSuperSet(_exercise, superSetIndex, exerciseIndex);
     } else {
       const _exercise = { ...exercise };
@@ -48,13 +49,36 @@ const AddNote = ({
             onChangeText={(text) => setNote(text)}
           />
         </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={handleAddNote}>Save</Button>
-          <Button onPress={hideNotesDialog}>Exit</Button>
+        <Dialog.Actions style={styles.buttons}>
+          <Button 
+          icon={'content-save'}
+          labelStyle={styles.buttonText}
+          buttonColor={colors.success}
+          textColor={colors.white}
+           
+          mode="elevated" onPress={handleAddNote}>
+            Save
+          </Button>
+          <Button mode="elevated" 
+          buttonColor={colors.error}
+          textColor={colors.white}
+          onPress={hideNotesDialog}>
+            Exit
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
   );
 };
+
+const styles = StyleSheet.create({
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  buttonText: {
+    width: 60,
+  },
+});
 
 export default AddNote;

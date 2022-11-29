@@ -6,6 +6,7 @@ import { useWorkouts } from "../../Store/Store";
 import ExerciseMenu from "./ExerciseMenu";
 import RenderSuperSet from "./RenderSuperSet";
 import RenderCardio from "./RenderCardio";
+import {colors} from '../../Store/colors'
 
 const RenderExercises = memo(() => {
   const startWorkoutExercises = useWorkouts(
@@ -53,6 +54,7 @@ const RenderExercises = memo(() => {
           padding: 10,
           borderRadius: 10,
           position: "relative",
+          marginBottom: index === startWorkoutExercises.length - 1 ? 100 : 10,
         }}
       >
         <Card.Title
@@ -90,8 +92,9 @@ const RenderExercises = memo(() => {
             <Button
               key={index + "add"}
               style={styles.add}
-              buttonColor='#3483eb'
-              mode="contained"
+              buttonColor={colors.primary}
+              mode="elevated"
+              textColor="white"
               icon="plus"
               onPress={() => handleAddSet(index)}
               
@@ -101,8 +104,10 @@ const RenderExercises = memo(() => {
             <Button
               key={index + "history"}
               style={styles.history}
+              buttonColor={colors.primary}
+              textColor="white"
               icon="history"
-              mode="contained"
+              mode="elevated"
               onPress={() => console.log("Pressed")}
             >
               EXERCISE HISTORY
@@ -122,8 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flex: 1,
     width: 50,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
+    color: "white",
   },
   buttons: {
     flexDirection: "row",

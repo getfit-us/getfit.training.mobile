@@ -1,9 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text } from "react-native";
-import { TextInput, Switch, Button, ActivityIndicator } from "react-native-paper";
+import {
+  TextInput,
+  Switch,
+  Button,
+  ActivityIndicator,
+} from "react-native-paper";
 import { useProfile } from "../Store/Store";
 import useAxios from "../hooks/useAxios";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
+import {colors} from "../Store/colors";
 
 const HomeScreen = ({ navigation }) => {
   const axiosPrivate = useAxios();
@@ -32,43 +38,44 @@ const HomeScreen = ({ navigation }) => {
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
   const onToggleSwitch = () => setPersist(!persist);
-  const onToggleTheme = () =>  themeType === false ? setThemeType(true) : setThemeType(false);
+  const onToggleTheme = () =>
+    themeType === false ? setThemeType(true) : setThemeType(false);
 
   const loadProfile = useCallback(async () => {
     try {
-     
-      const userInfo = await SecureStore.getItemAsync('profile');
+      const userInfo = await SecureStore.getItemAsync("profile");
 
       if (userInfo) {
-      setProfile(JSON.parse(userInfo));
-      //check if token is expired
-      const refreshTokenExpiration = await SecureStore.getItemAsync('refreshTokenExpiration');
-      if (refreshTokenExpiration) {
-        const now = new Date().getTime();
-        const expiration = new Date(refreshTokenExpiration).getTime();
-        if (now > expiration) {
-          console.log('Refresh token expired');
-          await SecureStore.deleteItemAsync('refreshToken');
-          await SecureStore.deleteItemAsync('refreshTokenExpiration');
-          await SecureStore.deleteItemAsync('profile');
-          setProfile(null);
+        setProfile(JSON.parse(userInfo));
+        //check if token is expired
+        const refreshTokenExpiration = await SecureStore.getItemAsync(
+          "refreshTokenExpiration"
+        );
+        if (refreshTokenExpiration) {
+          const now = new Date().getTime();
+          const expiration = new Date(refreshTokenExpiration).getTime();
+          if (now > expiration) {
+            console.log("Refresh token expired");
+            await SecureStore.deleteItemAsync("refreshToken");
+            await SecureStore.deleteItemAsync("refreshTokenExpiration");
+            await SecureStore.deleteItemAsync("profile");
+            setProfile(null);
+          }
         }
+      } else {
+        setLoading(false);
       }
-      } 
     } catch (error) {
       console.log(`Keychain Error: ${error.message}`);
     }
-   
-
   }, []);
 
   useEffect(() => {
     if (persist) {
+      setLoading(true);
       console.log("Loading Profile");
       loadProfile();
     }
-
-
   }, [loadProfile, persist]);
 
   const onSubmit = async () => {
@@ -90,7 +97,10 @@ const HomeScreen = ({ navigation }) => {
       return;
     }
     if (!emailRegex.test(email)) {
-      setFormError({ email: true, message: "Please enter a valid email address" });
+      setFormError({
+        email: true,
+        message: "Please enter a valid email address",
+      });
       return;
     }
 
@@ -103,16 +113,21 @@ const HomeScreen = ({ navigation }) => {
         withCredentials: true,
       });
 
-    
       //save refresh token to keychain
       if (response.headers["set-cookie"]) {
-        console.log('Saving refresh token to key chain');
-        const refreshToken = response.headers["set-cookie"][0].split(';')[0].split('=')[1];
-        const refreshTokenExpiration = response.headers["set-cookie"][0].split(';')[3].split('=')[1]
-       
-        await SecureStore.setItemAsync('refreshToken', refreshToken);
-        await SecureStore.setItemAsync('refreshTokenExpiration',  refreshTokenExpiration);
-        
+        console.log("Saving refresh token to key chain");
+        const refreshToken = response.headers["set-cookie"][0]
+          .split(";")[0]
+          .split("=")[1];
+        const refreshTokenExpiration = response.headers["set-cookie"][0]
+          .split(";")[3]
+          .split("=")[1];
+
+        await SecureStore.setItemAsync("refreshToken", refreshToken);
+        await SecureStore.setItemAsync(
+          "refreshTokenExpiration",
+          refreshTokenExpiration
+        );
       }
       setProfile(response.data);
       if (persist) {
@@ -128,7 +143,7 @@ const HomeScreen = ({ navigation }) => {
     } catch (err) {
       //if email unverified show error message for 6seconds
       setLoading(false);
-      console.log('error on login', err);
+      console.log("error on login", err);
 
       if (err?.response?.status === 403)
         // Unauthorized email not verified
@@ -175,61 +190,77 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
- 
-
   return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+      }}
+    >
+      <View style={{ alignItems: "center", margin: 20 }}>
+        <Text style={{ fontFamily: "Roboto", fontSize: 20, color: "#000" }}>
+          Welcome to GETFIT Personal Training
+        </Text>
+      </View>
       <View
         style={{
-          flex: 1,
+          margin: 20,
+        }}
+      >
+        <TextInput
+          label="Email Address"
+          value={email}
+          mode="outlined"
+          left={<TextInput.Icon icon="email" />}
+          onChangeText={(email) => setEmail(email)}
+          error={formError.email}
+          autoFocus
+          name="email"
+        />
+        {formError.email && <Text>{formError.message}</Text>}
+
+        <TextInput
+          value={password}
+          secureTextEntry={showPassword}
+          mode="outlined"
+          right={
+            <TextInput.Icon
+              onPress={() => setShowPassword(!showPassword)}
+              icon={showPassword ? "eye-off" : "eye"}
+            />
+          }
+          error={formError.password}
+          onChangeText={(password) => setPassword(password)}
+          label="Password"
+        />
+        {formError.password && <Text>{formError.message}</Text>}
+      </View>
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
           justifyContent: "center",
         }}
       >
-        <View style={{ alignItems: "center", margin: 20 }}>
-          <Text
-          style={{fontFamily: 'Roboto', fontSize: 20, color: '#000'}}
-          >Welcome to GETFIT Personal Training</Text>
-        </View>
-        <View
-          style={{
-            margin: 20,
-          }}
-        >
-          <TextInput
-            label="Email Address"
-            value={email}
-            mode="outlined"
-            left={<TextInput.Icon icon="email" />}
-            onChangeText={(email) => setEmail(email)}
-            error={formError.email}
-            autoFocus
-            name="email"
-          />
-          {formError.email && <Text>{formError.message}</Text>}
-
-          <TextInput
-            value={password}
-            secureTextEntry={showPassword}
-            mode="outlined"
-            right={
-              <TextInput.Icon
-                onPress={() => setShowPassword(!showPassword)}
-                icon={showPassword ? "eye-off" : "eye"}
-              />
-            }
-            error={formError.password}
-            onChangeText={(password) => setPassword(password)}
-            label="Password"
-          />
-          {formError.password && <Text>{formError.message}</Text>}
-        </View>
-        <View style={{ alignItems: "center",  flexDirection: 'row', justifyContent: 'center' }}>
-          <Text>Remember Me</Text>
-          <Switch value={persist} onValueChange={onToggleSwitch} />
-          <Text>{themeType === 'light' ? 'Light Mode' : 'Dark Mode'}</Text>
-          <Switch value={themeType} onValueChange={onToggleTheme} />
-        </View>
-        <Button mode="text" onPress={() => navigation.navigate("Forgot Password")}>Forgot Password</Button>
-        {loading ? <ActivityIndicator animating={true} color={'blue'} /> :  <Button
+        <Text>Remember Me</Text>
+        <Switch value={persist} onValueChange={onToggleSwitch} />
+        <Text>{themeType === "light" ? "Light Mode" : "Dark Mode"}</Text>
+        <Switch value={themeType} onValueChange={onToggleTheme} />
+      </View>
+      <Button
+        mode="text"
+        onPress={() => navigation.navigate("Forgot Password")}
+      >
+        Forgot Password
+      </Button>
+      {loading ? (
+        <ActivityIndicator
+          animating={loading}
+          color={colors.primary}
+          size={100}
+        />
+      ) : (
+        <Button
           icon="login"
           mode="contained"
           buttonColor={loginStatus.error ? "red" : "#03A9F4"}
@@ -241,16 +272,15 @@ const HomeScreen = ({ navigation }) => {
           onPress={onSubmit}
         >
           {loginStatus.error ? loginStatus.message : "Login"}
-        </Button>}
-        <View style={{ alignItems: "center", marginTop: 3, }}>
-          <Text style={{marginTop: 3, marginBottom: 10,}}>Don't have an account?</Text>
-          <Button
-          
-            mode="text"
-            
-            onPress={() => navigation.navigate("Sign Up")}
-          >Sign Up</Button>
-        
+        </Button>
+      )}
+      <View style={{ alignItems: "center", marginTop: 3 }}>
+        <Text style={{ marginTop: 3, marginBottom: 10 }}>
+          Don't have an account?
+        </Text>
+        <Button mode="text" onPress={() => navigation.navigate("Sign Up")}>
+          Sign Up
+        </Button>
       </View>
     </View>
   );

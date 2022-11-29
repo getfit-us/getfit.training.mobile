@@ -42,7 +42,6 @@ const ExerciseMenu = ({
   const showNotesDialog = () => setNotesVisible(true);
   const hideNotesDialog = () => setNotesVisible(false);
   const handleAddNote = () => {
-    console.log(exercise.name);
     showNotesDialog();
     closeMenu();
   };

@@ -120,7 +120,7 @@ const Chat = ({ route }) => {
         item.is_read === false
     );
     if (unread?.length > 0) {
-      console.log("unread", unread);
+      // console.log("unread", unread);
       unread?.forEach((message) => {
         handleUpdate(message);
       });
