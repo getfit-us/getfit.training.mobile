@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, SafeAreaView } from "react-native";
 import { useProfile, useWorkouts } from "../../Store/Store";
-import { ActivityIndicator, Avatar, Banner, Card, IconButton, List } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Avatar,
+  Banner,
+  Card,
+  IconButton,
+  List,
+} from "react-native-paper";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ProgressBar, MD2Colors } from "react-native-paper";
 import NoNotifications from "./NoNotifications";
@@ -18,8 +25,6 @@ import AnimatedFAB from "../UserFeedback/AnimatedFAB";
 
 const ActivityFeed = ({ navigation }) => {
   const notifications = useProfile((state) => state.notifications);
-  const setNotifications = useProfile((state) => state.setNotifications);
-  const clientId = useProfile((state) => state.profile.clientId);
   const [viewWorkout, setViewWorkout] = useWorkouts((state) => [
     state.viewWorkout,
     state.setViewWorkout,
@@ -34,6 +39,7 @@ const ActivityFeed = ({ navigation }) => {
   );
   const [loadingNotifications, notificationData, error] =
     useApiCallOnMount(getNotifications);
+  const [userActivity, setUserActivity] = useState([]);
 
   const delNotificationState = useProfile((store) => store.deleteNotification);
   const profile = useProfile((store) => store.profile);
@@ -45,15 +51,23 @@ const ActivityFeed = ({ navigation }) => {
     success: false,
   });
 
-  let userActivity = notifications.filter((notification) => {
-    if (notification.type === "activity") {
-      return true;
+  useEffect(() => {
+    if (!loadingNotifications) {
+      setStatus({ loading: false, error: false, success: true });
+      setUserActivity(() => {
+        return notifications
+          .filter((notification) => {
+            if (notification.type === "activity") {
+              return true;
+            }
+          })
+          .sort((a, b) => {
+            if (new Date(a.createdAt) > new Date(b.createdAt)) return -1;
+          });
+      });
     }
-  });
+  }, [loadingNotifications, notificationData, notifications]);
 
-  userActivity = userActivity.sort(function (a, b) {
-    if (new Date(a.createdAt) > new Date(b.createdAt)) return -1;
-  });
 
   const bannerActions = [
     {
@@ -89,7 +103,6 @@ const ActivityFeed = ({ navigation }) => {
       axiosPrivate,
       item?.activityID ? item.activityID : item?.activityId
     ).then((status) => {
-      console.log(status);
       setStatus({ loading: status.loading });
       if (!status.loading) {
         const split = status?.data?.date.split("-");
@@ -148,18 +161,18 @@ const ActivityFeed = ({ navigation }) => {
     setViewMeasurement(null);
     setViewWorkout(null);
 
-    const interval = setInterval(() => {
-      getNotifications(axiosPrivate, {
-        profile: { clientId: clientId },
-        setNotifications,
-      }).then((status) => {
-        console.log(status)
-        if (status.error) {
-          console.log(status.error);
-        }
-      });
-    }, 10000);
-    return () => clearInterval(interval);
+    // const interval = setInterval(() => {
+    //   getNotifications(axiosPrivate, {
+    //     profile: { clientId: clientId },
+    //     setNotifications,
+    //   }).then((status) => {
+    //     console.log(status)
+    //     if (status.error) {
+    //       console.log(status.error);
+    //     }
+    //   });
+    // }, 10000);
+    // return () => clearInterval(interval);
   }, []);
 
   const listItem = ({ item }) => (
@@ -264,7 +277,13 @@ const ActivityFeed = ({ navigation }) => {
           contentContainerStyle={{ flexGrow: 1 }}
           onEndReached={() => setPage(page + 1)}
           onEndReachedThreshold={0.5}
-          ListEmptyComponent={status.loading ? <ActivityIndicator animating={status.loading}/> :  NoNotifications}
+          ListEmptyComponent={
+            status.loading ? (
+              <ActivityIndicator animating={status.loading} />
+            ) : (
+              NoNotifications
+            )
+          }
         />
         <AnimatedFAB
           visible={true}

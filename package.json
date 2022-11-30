@@ -27,6 +27,7 @@
     "react-native-gesture-handler": "~2.5.0",
     "react-native-pager-view": "5.4.24",
     "react-native-paper": "^5.0.0-rc.9",
+    "react-native-ratings": "^8.1.0",
     "react-native-reanimated": "~2.9.1",
     "react-native-tab-view": "^3.3.0",
     "react-native-vector-icons": "^9.2.0",

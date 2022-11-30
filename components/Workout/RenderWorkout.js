@@ -20,12 +20,19 @@ const RenderWorkout = memo(({ screenOptions }) => {
   const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   const [addExercises, setAddExercises] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
-  const exercises = useWorkouts((state) => state.exercises);
   const addCompletedWorkout = useWorkouts((state) => state.addCompletedWorkout);
   const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
   const [showSaveWorkout, setShowSaveWorkout] = React.useState(false);
-  const [checked, setChecked] = React.useState([]);
+  const [rating, setRating] = React.useState(0);
+  const [feedback, setFeedback] = React.useState("");
 
+  const [checkedExercises, setCheckedExercises] = React.useState({
+    exercises: [],
+    checked: [],
+  });
+  const addStartWorkoutExercise = useWorkouts(
+    (state) => state.addStartWorkoutExercise
+  );
   const screenFocused = useIsFocused();
   const [status, setStatus] = React.useState({
     loading: false,
@@ -42,54 +49,71 @@ const RenderWorkout = memo(({ screenOptions }) => {
     setFabOpen((prev) => !prev);
   };
 
+  //icons for floating action button group
+
   const fabActions = [
     {
       icon: "plus",
-      label: addExercises ? "Close Add Exercise" : "Add Exercises",
+      label:
+        addExercises && setCheckedExercises.checked?.length > 0
+          ? "Add Selected"
+          : addExercises && setCheckedExercises.checked?.length === 0
+          ? "Close Exercise Search"
+          : "Add Exercise",
       style: addExercises ? styles.fabClose : styles.fabOpen,
       onPress: () => {
+        if (addExercises && checkedExercises?.checked?.length > 0) {
+          const currentExerciseIds = startWorkout.exercises.map((exercise) => {
+            return exercise._id;
+          });
+          checkedExercises?.exercises.forEach((exercise) => {
+            if (
+              checkedExercises?.checked?.includes(exercise._id) &&
+              !currentExerciseIds.includes(exercise._id)
+            ) {
+              // console.log("exercise", exercise);
+              addStartWorkoutExercise({
+                ...exercise,
+                numOfSets: [
+                  { weight: 0, reps: 0 },
+                  { weight: 0, reps: 0 },
+                  { weight: 0, reps: 0 },
+                ],
+              });
+            }
+          });
+          //clear checked array after adding exercises
+          setCheckedExercises({ exercises: [], checked: [] });
+        }
+
         setAddExercises((prev) => !prev);
       },
     },
-     {
-      icon: "plus-circle",
-      label: "Add Selected Exercises",
 
-      onPress: () => {
-        exercises.forEach((exercise) => {
-          if (checked.includes(exercise._id)) {
-            // console.log("exercise", exercise);
-            addStartWorkoutExercise({
-              ...exercise,
-              numOfSets: [
-                { weight: 0, reps: 0 },
-                { weight: 0, reps: 0 },
-                { weight: 0, reps: 0 },
-              ],
-            });
-          }
-        });
-        //clear checked array after adding exercises
-        setChecked([]);
-      },
-    },
     {
       icon: "content-save",
       label: "Save Workout",
-      color: "green",
+      style: { backgroundColor: colors.success },
       onPress: () => {
         handleShowSaveWorkout();
       },
     },
   ];
 
-  const handleSaveWorkout = (Feedback) => {
+  const handleSaveWorkout = () => {
     //need to set   loading..  true
     setStatus({ ...status, loading: true });
-    const completedWorkout = { ...startWorkout, id: clientId };
+    const completedWorkout = {
+      ...startWorkout,
+      id: clientId,
+      rating: rating,
+      feedback: feedback,
+    };
+
     saveCompletedWorkout(axiosPrivate, completedWorkout).then((res) => {
       if (!res.error && !res.loading) {
         setStatus({ ...status, loading: false });
+        console.log(res.data);
         addCompletedWorkout(res.data); // add to local state
         setStartWorkout({
           name: "",
@@ -101,29 +125,11 @@ const RenderWorkout = memo(({ screenOptions }) => {
   };
 
   useEffect(() => {
-    navigation.setOptions({
-      title: `Workout: ${startWorkout?.name}`,
-
-      titleStyle: {
-        textAlign: "center",
-        justifyContent: "flex-start",
-        alignContent: "center",
-      },
-      headerRight: () => (
-        <IconButton
-          icon="close"
-          iconColor="red"
-          onPress={() => {
-            setStartWorkout({
-              name: "",
-              exercises: [],
-            });
-          }}
-        />
-      ),
-      tabBarStyle: { display: "none" },
-    });
-    setHasUnsavedChanges(true);
+    if (screenFocused) {
+      navigation.setOptions({
+        tabBarStyle: { display: "none" },
+      });
+    }
 
     return () => {
       navigation.setOptions({
@@ -145,37 +151,7 @@ const RenderWorkout = memo(({ screenOptions }) => {
       });
       navigation.navigate("Start Workout");
     };
-  }, [startWorkout, navigation]);
-
-  React.useEffect(
-    () =>
-      navigation.addListener("beforeRemove", (e) => {
-        if (!hasUnsavedChanges) {
-          // If we don't have unsaved changes, then we don't need to do anything
-          return;
-        }
-
-        // Prevent default behavior of leaving the screen
-        e.preventDefault();
-
-        // Prompt the user before leaving the screen
-        Alert.alert(
-          "Discard changes?",
-          "You have unsaved changes. Are you sure to discard them and leave the screen?",
-          [
-            { text: "Don't leave", style: "cancel", onPress: () => {} },
-            {
-              text: "Discard",
-              style: "destructive",
-              // If the user confirmed, then we dispatch the action we blocked earlier
-              // This will continue the action that had triggered the removal of the screen
-              onPress: () => navigation.dispatch(e.data.action),
-            },
-          ]
-        );
-      }),
-    [navigation, hasUnsavedChanges]
-  );
+  }, [navigation, screenFocused]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -183,8 +159,13 @@ const RenderWorkout = memo(({ screenOptions }) => {
         visible={showSaveWorkout}
         hideDialog={handleShowSaveWorkout}
         handleSaveWorkout={handleSaveWorkout}
+        setRating={setRating}
+        rating={rating}
+        feedback={feedback}
+        setFeedback={setFeedback}
       />
       <ScrollView style={styles.ScrollView}>
+        <Text style={styles.title}>{startWorkout?.name.toUpperCase()}</Text>
         <RenderExercises />
         <FabGroup
           visible={screenFocused ? true : false}
@@ -194,7 +175,11 @@ const RenderWorkout = memo(({ screenOptions }) => {
         />
       </ScrollView>
       {addExercises ? (
-        <SearchExercises setAddExercises={setAddExercises} checked={checked} />
+        <SearchExercises
+          setAddExercises={setAddExercises}
+          setCheckedExercises={setCheckedExercises}
+          checkedExercises={checkedExercises}
+        />
       ) : null}
     </SafeAreaView>
   );

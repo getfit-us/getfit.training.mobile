@@ -17,7 +17,8 @@ import SignUp from "./components/SignUp";
 import ResetPassword from "./components/ResetPassword";
 import { darkTheme, lightTheme } from "./theme/theme";
 import { DrawerActions } from '@react-navigation/native';
-
+import useApiCallOnMount from "./hooks/useApiCallOnMount";
+import { getNotifications } from "./components/Api/services";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,8 @@ export default function App() {
 
   function LogoTitle() {
     const navigation = useNavigation();
+    const [loadingNotifications, notificationData, error] =
+    useApiCallOnMount(getNotifications);
     
 
     return (
@@ -74,7 +77,7 @@ export default function App() {
   const theme = useTheme({
     colors: themeType === true ? darkTheme : lightTheme,
     version: 3,
-    mode: "adaptive",
+    mode: "exact",
     roundness: 4,
     fonts: {
       regular: {

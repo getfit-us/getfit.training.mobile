@@ -1,42 +1,40 @@
 import React from "react";
-import {
-  Dialog,
-  Portal,
-  Button,
-  TextInput,
-  ToggleButton,
-} from "react-native-paper";
-import { View } from "react-native";
+import { Dialog, Portal, Button, TextInput } from "react-native-paper";
+import { Text, View, StyleSheet } from "react-native";
+import { colors } from "../../../Store/colors";
+import { Rating } from "react-native-ratings";
 
-const SaveWorkout = ({ visible, hideDialog, handleSaveWorkout }) => {
+const SaveWorkout = ({
+  visible,
+  hideDialog,
+  handleSaveWorkout,
+  rating,
+  setRating,
+  feedback,
+  setFeedback,
+}) => {
   return (
     <Portal>
-      <Dialog style={{}} visible={visible} onDismiss={hideDialog}>
+      <Dialog style={styles.dialog} visible={visible} onDismiss={hideDialog}>
         <Dialog.Title>Save Workout</Dialog.Title>
         <Dialog.Content>
           <TextInput
             label="Workout Feedback"
             mode="outlined"
+            value={feedback}
+            onChangeText={(text) => setFeedback(text)}
             multiline={true}
             numberOfLines={4}
-            style={{ backgroundColor: "white", padding: 10 }}
+            style={{ padding: 10 }}
           />
-          <ToggleButton.Row
-            onValueChange={(value) => console.log(value)}
-            value={null}
-            style={{ marginTop: 10, marginBottom: 10 , justifyContent: 'center'}}
 
-          >
-            <ToggleButton
-             
-              size={40}
-              icon="emoticon-sad"
-              value="sad"
-              style={{ margin: 5, color: 'green' }}
-            />
-            <ToggleButton size={40} icon="emoticon-neutral" value="neutral" />
-            <ToggleButton size={40} icon="emoticon-happy" value="happy" />
-          </ToggleButton.Row>
+          <Rating
+            defaultRating={0}
+            onFinishRating={setRating}
+            style={styles.rating}
+            showRating
+            tintColor="rgb(215, 230, 245)"
+          />
         </Dialog.Content>
 
         <View
@@ -62,5 +60,14 @@ const SaveWorkout = ({ visible, hideDialog, handleSaveWorkout }) => {
     </Portal>
   );
 };
+
+const styles = StyleSheet.create({
+  rating: {
+    paddingVertical: 20,
+    padding: 10,
+    borderRadius: 5,
+  },
+  dialog: {},
+});
 
 export default SaveWorkout;

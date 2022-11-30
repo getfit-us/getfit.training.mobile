@@ -11,7 +11,7 @@ const StartWorkout = () => {
 
   return (
     <Tab.Navigator
-    backBehavior="order"
+      backBehavior="order"
       screenOptions={{
         tabBarActiveTintColor: "rgb(8, 97, 164)",
         tabBarInactiveTintColor: "white",
@@ -27,13 +27,11 @@ const StartWorkout = () => {
           fontSize: 12,
           marginBottom: 5,
         },
-        
       }}
     >
       <Tab.Screen
-        name="Assigned Workouts"
+        name="Assigned"
         options={{
-          backBehavior: "history",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="clipboard-account"
@@ -41,22 +39,12 @@ const StartWorkout = () => {
               size={size}
             />
           ),
-          headerLeft: () => (
-            <MaterialCommunityIcons
-              name="clipboard-account"
-              size={30}
-              color="white"
-              style={{ marginLeft: 10 }}
-            />
-          ),
-
-          headerStyle: styles.headerStyle,
-          headerTitleStyle: styles.headerTitleStyle,
+          headerShown: false,
         }}
         component={AssignedWorkouts}
       />
       <Tab.Screen
-        name="Created Workouts"
+        name="Created"
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="pencil" color={color} size={size} />
@@ -68,15 +56,14 @@ const StartWorkout = () => {
               color="white"
               style={{ marginLeft: 10 }}
             />
-        ),
+          ),
 
-          headerStyle: styles.headerStyle,
-          headerTitleStyle: styles.headerTitleStyle,
+          headerShown: false,
         }}
         component={CustomWorkouts}
       />
       <Tab.Screen
-        name="Completed Workouts"
+        name="Completed"
         component={CompletedWorkouts}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -91,29 +78,15 @@ const StartWorkout = () => {
             />
           ),
 
-          headerStyle: styles.headerStyle,
-          headerTitleStyle: styles.headerTitleStyle,
-          icon: "check",
+          headerShown: false,
         }}
       />
     </Tab.Navigator>
-  ); 
+  );
 };
 
 const styles = StyleSheet.create({
-  headerStyle: {
-    backgroundColor: "black",
 
-    height: 40,
-  },
-  headerTitleStyle: {
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    marginTop: 0,
-  },
 });
 
 export default StartWorkout;

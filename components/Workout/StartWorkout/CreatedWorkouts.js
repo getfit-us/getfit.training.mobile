@@ -21,17 +21,7 @@ const CustomWorkouts = ({ navigation }) => {
     success: false,
   });
 
-  const customWorkoutOptions = {
-    tabBarIcon: ({ color, size }) => (
-      <MaterialCommunityIcons name="pencil" color={color} size={size} />
-    ),
 
-    headerStyle: styles.headerStyle,
-    headerTitleStyle: styles.headerTitleStyle,
-    headerRight: () => null,
-    tabBarStyle: { display: "flex" },
-    title: "Created Workouts",
-  };
 
   useEffect(() => {
     if (!loadingCustomWorkouts) {
@@ -97,12 +87,12 @@ const CustomWorkouts = ({ navigation }) => {
   return status.loading ? (
     <ProgressBar loading={status.loading} />
   ) :startWorkout?.exercises?.length > 0 ? (
-    <RenderWorkout screenOptions={customWorkoutOptions} />
+    <RenderWorkout  />
   ) : (
     <View style={styles.container}>
       <Searchbar
         elevation={3}
-        placeholder="Search"
+        placeholder="Search Created Workouts"
         style={styles.searchBar}
         onChangeText={(query) => handleSearch(query)}
       />
@@ -150,9 +140,10 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     backgroundColor: "white",
-    elevation: 3,
+    elevation: 5,
     borderBottomColor: "black",
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
+   
   },
   listItemDescription: {
     fontSize: 15,

@@ -5,15 +5,16 @@ import { getAllExercises } from "../Api/services";
 import { List, Searchbar, Button, Checkbox } from "react-native-paper";
 import { FlatList, View, StyleSheet } from "react-native";
 
-const SearchExercises = ({ setAddExercises, checked, setChecked }) => {
+const SearchExercises = ({
+  setAddExercises,
+  checkedExercises,
+  setCheckedExercises,
+}) => {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [loadingExercises, latestExercises, errorExercises] =
     useApiCallOnMount(getAllExercises);
   const exercises = useWorkouts((state) => state.exercises);
   const [filteredExercises, setFilteredExercises] = React.useState(null);
-  const addStartWorkoutExercise = useWorkouts(
-    (state) => state.addStartWorkoutExercise
-  );
 
   const onChangeSearch = (query) => {
     setSearchQuery(query);
@@ -25,15 +26,12 @@ const SearchExercises = ({ setAddExercises, checked, setChecked }) => {
   };
 
   return (
-    <View style={{ height: "100%", width: "100%" , backgroundColor: 'white' }}>
-
-    
-      
-
+    <View style={{ height: "100%", width: "100%", backgroundColor: "white" }}>
       <Searchbar
         placeholder="Search Exercises to add"
         onChangeText={(query) => onChangeSearch(query)}
         value={searchQuery}
+        autoFocus
         style={styles.searchBar}
       />
 
@@ -50,13 +48,25 @@ const SearchExercises = ({ setAddExercises, checked, setChecked }) => {
             description={item.description}
             left={(props) => (
               <Checkbox
-                status={checked?.includes(item._id) ? "checked" : "unchecked"}
+                status={checkedExercises.checked?.includes(item._id) ? "checked" : "unchecked"}
                 onPress={() =>
-                  setChecked((prev) => {
-                    if (prev.includes(item._id)) {
-                      return prev.filter((id) => id !== item._id);
+                  setCheckedExercises((prev) => {
+                    if (prev.checked?.includes(item._id)) {
+                      return {
+                        ...prev,
+                        checked: prev.checked.filter(
+                          (exercise) => exercise !== item._id
+                        ),
+                        exercises: prev.exercises.filter(
+                          (exercise) => exercise._id !== item._id
+                        ),
+                      };
                     } else {
-                      return [...prev, item._id];
+                      return {
+                        ...prev,
+                        checked: [...prev.checked, item._id],
+                        exercises: [...prev.exercises, item],
+                      };
                     }
                   })
                 }
@@ -65,32 +75,30 @@ const SearchExercises = ({ setAddExercises, checked, setChecked }) => {
           />
         )}
         keyExtractor={(item) => item._id}
-        style={{ width: "100%", height: "100%",
-      backgroundColor: 'white' }}
+        style={{ width: "100%", height: "100%", backgroundColor: "white" }}
       />
     </View>
   );
 };
 
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   listItem: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
   },
   searchBar: {
-    borderBottomColor: 'black',
+    borderBottomColor: "black",
     borderBottomWidth: 1,
   },
   listItemTitle: {
     fontSize: 16,
-    
-  }
-})
+  },
+});
 
 export default SearchExercises;

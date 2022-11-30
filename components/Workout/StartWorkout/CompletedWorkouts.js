@@ -23,18 +23,7 @@ const CompletedWorkouts = ({ navigation }) => {
     error: false,
     success: false,
   });
-  const completedWorkoutOptions = {
-    tabBarIcon: ({ color, size }) => (
-      <MaterialCommunityIcons name="check" color={color} size={size} />
-    ),
 
-    headerStyle: styles.headerStyle,
-    headerTitleStyle: styles.headerTitleStyle,
-    icon: "check",
-    headerRight: () => null,
-    tabBarStyle: { display: "flex" },
-    title: "Completed Workouts",
-  };
 
   useEffect(() => {
     if (!loadingCompletedWorkouts) {
@@ -97,12 +86,12 @@ const CompletedWorkouts = ({ navigation }) => {
   return status.loading ? (
     <ProgressBar loading={status.loading} />
   ) : startWorkout?.exercises?.length > 0 ? (
-    <RenderWorkout screenOptions={completedWorkoutOptions} />
+    <RenderWorkout  />
   ) : (
     <View style={styles.container}>
       <Searchbar
-        elevation={3}
-        placeholder="Search"
+        elevation={4}
+        placeholder="Search Completed Workouts"
         onChangeText={(query) => handleSearch(query)}
         style={styles.searchBar}
       />
@@ -116,18 +105,7 @@ const CompletedWorkouts = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  headerStyle: {
-    backgroundColor: "orange",
-    height: 40,
-  },
-  headerTitleStyle: {
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    marginTop: 0,
-  },
+
 
   container: {
     backgroundColor: "#d9d5db",
@@ -148,10 +126,9 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     backgroundColor: "white",
-    elevation: 3,
-    marginBottom: 1,
+    elevation: 5,
     borderBottomColor: "black",
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
   },
   listItemDescription: {
     fontSize: 15,

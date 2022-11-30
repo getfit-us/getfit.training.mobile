@@ -88,9 +88,7 @@ export const getNotifications = async (axiosPrivate, state, workoutState) => {
         signal: controller.signal,
       }
     );
-    if (state.notifications?.length !== response.data.length) {
-      state?.setNotifications(response.data);
-    }
+    state?.setNotifications(response.data);
     return response.data;
   } catch (err) {
     console.log('getNotifications', err);

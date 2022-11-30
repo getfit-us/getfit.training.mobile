@@ -5,10 +5,10 @@ import { Avatar, List, Searchbar } from "react-native-paper";
 import RenderWorkout from "../RenderWorkout";
 import ProgressBar from "../../UserFeedback/ProgressBar";
 import { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const AssignedWorkouts = ({navigation}) => {
+const AssignedWorkouts = ({ navigation }) => {
   const stateAssignedWorkouts = useWorkouts(
     (state) => state.assignedCustomWorkouts
   );
@@ -23,7 +23,7 @@ const AssignedWorkouts = ({navigation}) => {
     success: false,
   });
 
-  const assingedWorkoutOptions = {
+  const assignedWorkoutOptions = {
     tabBarIcon: ({ color, size }) => (
       <MaterialCommunityIcons
         name="clipboard-account"
@@ -49,18 +49,31 @@ const AssignedWorkouts = ({navigation}) => {
     }
   }, [loadingAssignedWorkouts, stateAssignedWorkouts, assignedWorkouts]);
 
-  useEffect(() => {
-    setStartWorkout({ name: "New Workout", exercises: [] });
+  useEffect(
+    () =>
+      navigation.addListener("beforeRemove", (e) => {
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+        console.log("before remove");
 
-    const unsubscribe = navigation.addListener("focus", () => {
-      setStartWorkout({
-        name: "",
-        exercises: [],
-      });
-    });
-
-    return unsubscribe;
-  }, [navigation]);
+        // Prompt the user before leaving the screen
+        Alert.alert(
+          "Discard changes?",
+          "You have unsaved changes. Are you sure to discard them and leave the screen?",
+          [
+            { text: "Don't leave", style: "cancel", onPress: () => {} },
+            {
+              text: "Discard",
+              style: "destructive",
+              // If the user confirmed, then we dispatch the action we blocked earlier
+              // This will continue the action that had triggered the removal of the screen
+              onPress: () => navigation.dispatch(e.data.action),
+            },
+          ]
+        );
+      }),
+    [navigation]
+  );
 
   const handleSearch = (query) => {
     if (query === "") setWorkoutData(stateAssignedWorkouts);
@@ -72,7 +85,6 @@ const AssignedWorkouts = ({navigation}) => {
     }
   };
 
-
   const renderList = ({ item }) => {
     return (
       <List.Item
@@ -83,15 +95,22 @@ const AssignedWorkouts = ({navigation}) => {
         key={item._id}
         title={item.name}
         description={new Date(item.Created).toLocaleDateString()}
-      left={(props) => <Avatar.Icon {...props} 
-      color="white"
-      icon={item?.exercises[0]?.type === 'cardio' ? 'run' : 'dumbbell'} 
-      size={40}
-      style={{backgroundColor: item?.exercises[0]?.type === 'cardio' ? '#f9a825' : 'rgb(8, 97, 164)',
-      marginLeft: 10,
-      alignSelf: 'center',
-    }}/>}
-      
+        left={(props) => (
+          <Avatar.Icon
+            {...props}
+            color="white"
+            icon={item?.exercises[0]?.type === "cardio" ? "run" : "dumbbell"}
+            size={40}
+            style={{
+              backgroundColor:
+                item?.exercises[0]?.type === "cardio"
+                  ? "#f9a825"
+                  : "rgb(8, 97, 164)",
+              marginLeft: 10,
+              alignSelf: "center",
+            }}
+          />
+        )}
         onPress={() => {
           setStartWorkout(item);
         }}
@@ -108,12 +127,12 @@ const AssignedWorkouts = ({navigation}) => {
       </Text>
     </View>
   ) : startWorkout?.exercises?.length > 0 ? (
-    <RenderWorkout screenOptions={assingedWorkoutOptions} />
+    <RenderWorkout screenOptions={assignedWorkoutOptions} />
   ) : (
     <View style={styles.container}>
       <Searchbar
         elevation={3}
-        placeholder="Search"
+        placeholder="Search Assigned Workouts"
         style={styles.searchBar}
         onChangeText={(query) => handleSearch(query)}
       />
@@ -127,19 +146,6 @@ const AssignedWorkouts = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  headerStyle: {
-    backgroundColor: "black",
-
-    height: 40,
-  },
-  headerTitleStyle: {
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    marginTop: 0,
-  },
   container: {
     backgroundColor: "#d9d5db",
     flex: 1,
@@ -157,14 +163,12 @@ const styles = StyleSheet.create({
   listItemTitle: {
     fontSize: 20,
     padding: 5,
-   
   },
   searchBar: {
     backgroundColor: "white",
-    elevation: 3,
-    marginBottom: 5,
+    elevation: 5,
     borderBottomColor: "black",
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
   },
   listItemDescription: {
     fontSize: 15,
@@ -175,6 +179,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
 
 export default AssignedWorkouts;
