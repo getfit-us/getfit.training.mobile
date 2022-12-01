@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { IconButton, TextInput } from "react-native-paper";
 import { useWorkouts } from "../../Store/Store";
+import { colors } from "../../Store/colors";
 
 const RenderSets = memo(
   ({ sets, exercise, exerciseIndex, inSuperSet, superSetIndex }) => {
@@ -46,6 +47,7 @@ const RenderSets = memo(
             label="Weight"
             value={startWorkoutExercise.numOfSets[setIndex].weight}
             mode="outlined"
+            selectTextOnFocus={true}
             style={styles.weight}
             keyboardType="number-pad"
             onChangeText={(e) => {
@@ -69,6 +71,8 @@ const RenderSets = memo(
             label="Reps"
             value={startWorkoutExercise.numOfSets[setIndex].reps}
             mode="outlined"
+            selectTextOnFocus={true}
+
             style={styles.rep}
             keyboardType="numeric"
             onChangeText={(e) => {
@@ -92,6 +96,7 @@ const RenderSets = memo(
               icon="delete"
               onPress={() => handleDeleteSet(setIndex)}
               size={20}
+              iconColor={colors.error}
             />
           )}
         </View>

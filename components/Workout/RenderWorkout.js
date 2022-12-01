@@ -54,14 +54,14 @@ const RenderWorkout = memo(({  }) => {
 
   const fabActions = [
     {
-      icon: "plus",
+      icon: addExercises && checkedExercises.checked?.length === 0 ? "close":  "plus",
       label:
         addExercises && checkedExercises.checked?.length > 0
           ? "Add Selected"
           : addExercises && checkedExercises.checked?.length === 0
           ? "Close Exercise Search"
           : "Add Exercise",
-      style: addExercises ? styles.fabClose : styles.fabOpen,
+      style: addExercises && checkedExercises.checked?.length > 0 ? {backgroundColor: colors.secondary} :addExercises && checkedExercises.checked?.length === 0 ? {backgroundColor: colors.error} : {backgroundColor: colors.secondary},
       onPress: () => {
         if (addExercises && checkedExercises?.checked?.length > 0) {
           const currentExerciseIds = startWorkout.exercises.map((exercise) => {
@@ -134,7 +134,7 @@ const RenderWorkout = memo(({  }) => {
 
     return () => {
       navigation.setOptions({
-        ...screenOptions,
+        
         tabBarActiveTintColor: "rgb(8, 97, 164)",
         tabBarInactiveTintColor: "white",
         tabBarStyle: {

@@ -6,7 +6,8 @@ import { useWorkouts } from "../../Store/Store";
 import ExerciseMenu from "./ExerciseMenu";
 import RenderSuperSet from "./RenderSuperSet";
 import RenderCardio from "./RenderCardio";
-import {colors} from '../../Store/colors'
+import { colors } from "../../Store/colors";
+import { isNumber } from "lodash";
 
 const RenderExercises = memo(() => {
   const startWorkoutExercises = useWorkouts(
@@ -25,6 +26,11 @@ const RenderExercises = memo(() => {
     updateStartWorkoutExercise(_exercise);
   };
   const handleChangeOrder = (currentIndex, newIndex) => {
+
+
+    console.log('change order', currentIndex, newIndex)
+  // need to add check for characters.. this should be numbers only
+    if (currentIndex === newIndex || newIndex < 1 || newIndex > startWorkoutExercises.length || !isNumber(newIndex)) return
     const _startWorkoutExercises = [...startWorkoutExercises];
     // remove the exercise from the array and save it in a variable
     const exercise = _startWorkoutExercises.splice(currentIndex, 1);
@@ -43,9 +49,7 @@ const RenderExercises = memo(() => {
         handleChangeOrder={handleChangeOrder}
       />
     ) : exercise?.type === "cardio" ? (
-      <RenderCardio exercise={exercise}
-      key={'Render cardio' + index}
-      />
+      <RenderCardio exercise={exercise} key={"Render cardio" + index} />
     ) : (
       <Card
         key={exercise._id}
@@ -66,16 +70,9 @@ const RenderExercises = memo(() => {
           <ExerciseMenu exercise={exercise} key={exercise._id + "menu"} />
           <TextInput
             label="Set Exercise Order"
-            value={(index + 1).toString()}
+            defaultValue={(index + 1).toString()}
             onChangeText={(text) => {
-              if (
-                text !== "" &&
-                startWorkoutExercises
-                  .map((exercise, index) => index + 1)
-                  .includes(parseInt(text))
-              ) {
-                handleChangeOrder(index, parseInt(text) - 1);
-              }
+              handleChangeOrder(index, parseInt(text) - 1);
             }}
             mode="outlined"
             keyboardType="numeric"
@@ -97,7 +94,6 @@ const RenderExercises = memo(() => {
               textColor="white"
               icon="plus"
               onPress={() => handleAddSet(index)}
-              
             >
               ADD SET
             </Button>

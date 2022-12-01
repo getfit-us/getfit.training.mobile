@@ -1,8 +1,9 @@
-import React, { useRef } from "react";
-import { Menu, Button, Divider, IconButton } from "react-native-paper";
+import React, {  } from "react";
+import { Menu,  Divider, IconButton } from "react-native-paper";
 import { useWorkouts } from "../../Store/Store";
 import AddNote from "./Dialogs/AddNote";
 import CreateSuperSet from "./Dialogs/CreateSuperSet";
+import { colors } from "../../Store/colors";
 
 const ExerciseMenu = ({
   exercise,
@@ -88,6 +89,7 @@ const ExerciseMenu = ({
       {exercise?.notes && (
         <IconButton
           icon="note-text"
+          iconColor={colors.primaryLight}
           onPress={showNotesDialog}
           style={{
             position: "absolute",
