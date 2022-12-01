@@ -55,7 +55,7 @@ const Inbox = ({ navigation }) => {
     return () => {
       setInbox([]);
     };
-  }, [loadingMessages, activeNotifications]);
+  }, [loadingMessages, activeNotifications.length]);
 
   const handleUpdate = (notification) => {
     setStatus({ loading: true });

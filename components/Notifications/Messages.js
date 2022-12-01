@@ -6,9 +6,13 @@ import Inbox from "./Inbox";
 import Chat from "./Chat";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
-import { getNotifications, getClientData , getTrainerInfo} from "../Api/services";
-import ProgressBar from "../../components/UserFeedback/ProgressBar";
-
+import {
+  getNotifications,
+  getClientData,
+  getTrainerInfo,
+} from "../Api/services";
+import { ActivityIndicator } from "react-native-paper";
+import LoadingScreen from "../UserFeedback/LoadingScreen";
 const Tab = createBottomTabNavigator();
 
 const Messages = () => {
@@ -27,12 +31,16 @@ const Messages = () => {
   useEffect(() => {
     if (loadingClientData || loadingTrainerData || loadingNotifications)
       setStatus({ loading: true, error: false, success: false });
-      else if (!loadingClientData && !loadingTrainerData && !loadingNotifications)
+    else if (!loadingClientData && !loadingTrainerData && !loadingNotifications)
       setStatus({ loading: false, error: false, success: true });
   }, [loadingClientData, loadingTrainerData, loadingNotifications]);
 
-  return (<>
-    <ProgressBar loading={status.loading}/>
+  const title = 'Get Fit .... Loading Messages';
+
+  
+    return status.loading ? (
+      <LoadingScreen  title={title} icon='message-reply-text'/>
+      ) : (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
@@ -51,7 +59,7 @@ const Messages = () => {
         tabBarInactiveTintColor: "white",
         tabBarStyle: {
           backgroundColor: "black",
-        
+
           elevation: 3,
           shadowOpacity: 0,
           height: 60,
@@ -62,24 +70,27 @@ const Messages = () => {
         },
       })}
     >
-      <Tab.Screen
-        name="Inbox"
-        component={Inbox}
-        options={{
-          headerVisible: false,
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="Chat"
-        component={Chat}
-        options={{
-          headerVisible: false,
-          headerShown: false,
-        }}
-      />
+     
+        
+          <Tab.Screen
+            name="Inbox"
+            component={Inbox}
+            options={{
+              headerVisible: false,
+              headerShown: false,
+            }}
+          />
+          <Tab.Screen
+            name="Chat"
+            component={Chat}
+            options={{
+              headerVisible: false,
+              headerShown: false,
+            }}
+          />
+        
+    
     </Tab.Navigator>
-    </>
   );
 };
 

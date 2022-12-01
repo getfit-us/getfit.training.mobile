@@ -1,43 +1,54 @@
-import { useWorkouts } from "../../../Store/Store";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
 import useApiCallOnMount from "../../../hooks/useApiCallOnMount";
-import { getAssignedCustomWorkouts } from "../../Api/services";
-import { Avatar, List, Searchbar } from "react-native-paper";
-import RenderWorkout from "../RenderWorkout";
-import ProgressBar from "../../UserFeedback/ProgressBar";
-import { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { getAssignedCustomWorkouts, getSingleCustomWorkout } from "../../Api/services";
+import { useWorkouts } from "../../../Store/Store";
+import { Searchbar, ProgressBar, List, Avatar } from "react-native-paper";
 import { colors } from "../../../Store/colors";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
-const AssignedWorkouts = ({ navigation }) => {
+
+const ViewAssignedWorkouts = ({ navigation }) => {
   const stateAssignedWorkouts = useWorkouts(
     (state) => state.assignedCustomWorkouts
   );
   const [loadingAssignedWorkouts, assignedWorkouts, errorAssignedWorkouts] =
     useApiCallOnMount(getAssignedCustomWorkouts);
+  const [viewWorkout, setViewWorkout] = useWorkouts((state) => [
+    state.viewWorkout,
+    state.setViewWorkout,
+  ]);
   const [workoutData, setWorkoutData] = useState([]);
-  const startWorkout = useWorkouts((state) => state.startWorkout);
-  const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   const [status, setStatus] = useState({
     loading: false,
     error: false,
     success: false,
   });
+  const axiosPrivate = useAxiosPrivate();
 
-  const assignedWorkoutOptions = {
-    tabBarIcon: ({ color, size }) => (
-      <MaterialCommunityIcons
-        name="clipboard-account"
-        color={color}
-        size={size}
-      />
-    ),
-    title: "Assigned Workouts",
+  useEffect(() => {
+    setViewWorkout({});
+  }, []);
 
-    headerStyle: styles.headerStyle,
-    headerTitleStyle: styles.headerTitleStyle,
-    headerRight: () => null,
-    tabBarStyle: { display: "flex" },
+  const handleSearch = (query) => {
+    if (query === "") setWorkoutData(stateAssignedWorkouts);
+    else {
+      const filteredData = stateAssignedWorkouts?.filter((item) => {
+        return item.name.toLowerCase().includes(query.toLowerCase());
+      });
+      setWorkoutData(filteredData);
+    }
+  };
+
+  const handleGetWorkout = (item) => {
+    setStatus({ loading: true });
+    getSingleCustomWorkout(axiosPrivate, item._id).then((status) => {
+      setStatus({ loading: status.loading });
+      if (!status.loading) {
+        setViewWorkout(status.data);
+        navigation.navigate("View Activity", { status });
+      }
+    });
   };
 
   useEffect(() => {
@@ -49,42 +60,6 @@ const AssignedWorkouts = ({ navigation }) => {
       );
     }
   }, [loadingAssignedWorkouts, stateAssignedWorkouts, assignedWorkouts]);
-
-  useEffect(
-    () =>
-      navigation.addListener("beforeRemove", (e) => {
-        // Prevent default behavior of leaving the screen
-        e.preventDefault();
-        console.log("before remove");
-
-        // Prompt the user before leaving the screen
-        Alert.alert(
-          "Discard changes?",
-          "You have unsaved changes. Are you sure to discard them and leave the screen?",
-          [
-            { text: "Don't leave", style: "cancel", onPress: () => {} },
-            {
-              text: "Discard",
-              style: "destructive",
-              // If the user confirmed, then we dispatch the action we blocked earlier
-              // This will continue the action that had triggered the removal of the screen
-              onPress: () => navigation.dispatch(e.data.action),
-            },
-          ]
-        );
-      }),
-    [navigation]
-  );
-
-  const handleSearch = (query) => {
-    if (query === "") setWorkoutData(stateAssignedWorkouts);
-    else {
-      const filteredData = stateAssignedWorkouts?.filter((item) => {
-        return item.name.toLowerCase().includes(query.toLowerCase());
-      });
-      setWorkoutData(filteredData);
-    }
-  };
 
   const renderList = ({ item }) => {
     return (
@@ -113,24 +88,24 @@ const AssignedWorkouts = ({ navigation }) => {
           />
         )}
         onPress={() => {
-          setStartWorkout(item);
+          handleGetWorkout(item);
         }}
       />
     );
   };
 
   return loadingAssignedWorkouts ? (
-    <ProgressBar loading={loadingAssignedWorkouts}
-    color={colors.primaryLight}
-    style={{height: 10}} />
+    <ProgressBar
+      loading={loadingAssignedWorkouts}
+      color={colors.primaryLight}
+      style={{ height: 10 }}
+    />
   ) : stateAssignedWorkouts?.length === 0 && assignedWorkouts?.length === 0 ? (
     <View>
       <Text style={styles.noWorkoutsText}>
         You have no trainer assigned workouts.
       </Text>
     </View>
-  ) : startWorkout?.exercises?.length > 0 ? (
-    <RenderWorkout screenOptions={assignedWorkoutOptions} />
   ) : (
     <View style={styles.container}>
       <Searchbar
@@ -143,6 +118,7 @@ const AssignedWorkouts = ({ navigation }) => {
         data={workoutData}
         renderItem={renderList}
         keyExtractor={(item) => item._id}
+        initialNumToRender={20}
       />
     </View>
   );
@@ -183,4 +159,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AssignedWorkouts;
+export default ViewAssignedWorkouts;

@@ -9,7 +9,7 @@ import {
 import { useProfile } from "../Store/Store";
 import useAxios from "../hooks/useAxios";
 import * as SecureStore from "expo-secure-store";
-import {colors} from "../Store/colors";
+import { colors } from "../Store/colors";
 
 const HomeScreen = ({ navigation }) => {
   const axiosPrivate = useAxios();
@@ -46,6 +46,7 @@ const HomeScreen = ({ navigation }) => {
       const userInfo = await SecureStore.getItemAsync("profile");
 
       if (userInfo) {
+        setLoading(true);
         setProfile(JSON.parse(userInfo));
         //check if token is expired
         const refreshTokenExpiration = await SecureStore.getItemAsync(
@@ -72,7 +73,6 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (persist) {
-      setLoading(true);
       console.log("Loading Profile");
       loadProfile();
     }

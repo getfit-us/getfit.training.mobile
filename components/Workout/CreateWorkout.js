@@ -6,22 +6,36 @@ import { useWorkouts, useProfile } from "../../Store/Store";
 import RenderExercises from "./RenderExercises";
 import { saveNewCustomWorkout } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import FabGroup from "../utils/FabGroup";
+import { useIsFocused } from "@react-navigation/native";
+import { colors } from "../../Store/colors";
+
 
 const CreateWorkout = ({ navigation }) => {
   const [showAddExercises, setShowAddExercises] = React.useState(false);
   const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
   const setStartWorkoutName = useWorkouts((state) => state.setStartWorkoutName);
   const startWorkout = useWorkouts((state) => state.startWorkout);
+  const addStartWorkoutExercise = useWorkouts((state) => state.addStartWorkoutExercise);
   const axiosPrivate = useAxiosPrivate();
   const clientId = useProfile((state) => state.profile.clientId);
   const addCustomWorkout = useWorkouts((state) => state.addCustomWorkout);
   const [bannerVisible, setBannerVisible] = React.useState(false);
+  const screenFocused = useIsFocused();
+  const [fabOpen, setFabOpen] = React.useState(false);
+  const [checkedExercises, setCheckedExercises] = React.useState({
+    exercises: [],
+    checked: [],
+  });
   const [status, setStatus] = React.useState({
     loading: false,
     error: false,
     message: "",
   });
 
+   const handleFabOpen = () => {
+    setFabOpen((prev) => !prev);
+  };
 
 
 
@@ -55,6 +69,56 @@ const CreateWorkout = ({ navigation }) => {
     );
   };
 
+
+  const fabActions = [
+    {
+      icon: "plus",
+      label:
+        showAddExercises && checkedExercises.checked?.length > 0
+          ? "Add Selected"
+          : showAddExercises && checkedExercises.checked?.length === 0
+          ? "Close Exercise Search"
+          : "Add Exercise",
+      style: showAddExercises ? styles.fabClose : styles.fabOpen,
+      onPress: () => {
+        if (showAddExercises && checkedExercises?.checked?.length > 0) {
+          const currentExerciseIds = startWorkout.exercises.map((exercise) => {
+            return exercise._id;
+          });
+          checkedExercises?.exercises.forEach((exercise) => {
+            if (
+              checkedExercises?.checked?.includes(exercise._id) &&
+              !currentExerciseIds.includes(exercise._id)
+            ) {
+              // console.log("exercise", exercise);
+              addStartWorkoutExercise({
+                ...exercise,
+                numOfSets: [
+                  { weight: 0, reps: 0 },
+                  { weight: 0, reps: 0 },
+                  { weight: 0, reps: 0 },
+                ],
+              });
+            }
+          });
+          //clear checked array after adding exercises
+          setCheckedExercises({ exercises: [], checked: [] });
+        }
+
+        setShowAddExercises((prev) => !prev);
+      },
+    },
+
+    {
+      icon: "content-save",
+      label: "Save Workout",
+      style: { backgroundColor: colors.success },
+      onPress: () => {
+        handleSaveWorkout();
+      },
+    },
+  ];
+
   return (
     <><Banner
     visible={bannerVisible}
@@ -65,17 +129,7 @@ const CreateWorkout = ({ navigation }) => {
       },
     
     ]}
-    // icon={({size}) => (
-    //   <Image
-    //     source={{
-    //       uri: 'https://avatars3.githubusercontent.com/u/17571969?s=400&v=4',
-    //     }}
-    //     style={{
-    //       width: size,
-    //       height: size,
-    //     }}
-    //   />
-    // )}
+
     >
     {status.message}
   </Banner>
@@ -94,27 +148,21 @@ const CreateWorkout = ({ navigation }) => {
           placeholder="Workout Name"
         />
         <RenderExercises />
+        <FabGroup
+          visible={screenFocused ? true : false}
+          handleOpen={handleFabOpen}
+          open={fabOpen}
+          actions={fabActions}
+        />
       </ScrollView>
       <View>
         {showAddExercises ? (
-          <SearchExercises setAddExercises={setShowAddExercises} />
+          <SearchExercises 
+          setCheckedExercises={setCheckedExercises}
+          checkedExercises={checkedExercises}
+          setAddExercises={setShowAddExercises} />
         ) : (
-          <View style={styles.buttonContainer}>
-            <Button
-              onPress={() => setShowAddExercises((prev) => !prev)}
-              mode="contained"
-              style={{ margin: 15 }}
-            >
-              Add Exercises
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleSaveWorkout}
-              style={{ margin: 15 }}
-            >
-              Save Workout
-            </Button>
-          </View>
+        null
         )}
       </View>
     </>
@@ -133,6 +181,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#d9d5db",
     flexDirection: "row",
+  },
+  fabOpen: {
+    backgroundColor: colors.primaryLight,
+  },
+  fabClose: {
+    backgroundColor: colors.error,
   },
 });
 

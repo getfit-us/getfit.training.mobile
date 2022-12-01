@@ -6,7 +6,7 @@ import RenderWorkout from "../RenderWorkout";
 import ProgressBar from "../../UserFeedback/ProgressBar";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { colors } from "../../../Store/colors";
 
 const CustomWorkouts = ({ navigation }) => {
   const [loadingCustomWorkouts, customWorkouts, errorCustomWorkouts] =
@@ -85,7 +85,9 @@ const CustomWorkouts = ({ navigation }) => {
   };
 
   return status.loading ? (
-    <ProgressBar loading={status.loading} />
+    <ProgressBar loading={status.loading}
+    color={colors.primaryLight}
+    style={{height: 10}} />
   ) :startWorkout?.exercises?.length > 0 ? (
     <RenderWorkout  />
   ) : (

@@ -1,13 +1,16 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, Text } from "react-native";
 import React from "react";
-import { StyleSheet } from "react-native";
-import CompletedWorkouts from "./StartWorkout/CompletedWorkouts";
-import CustomWorkouts from "./StartWorkout/CreatedWorkouts";
-import AssignedWorkouts from "./StartWorkout/AssignedWorkouts";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import ViewAssignedWorkouts from "./ViewAssignedWorkouts";
+import ViewCreatedWorkouts from "./ViewCreatedWorkouts";
+import ViewCompletedWorkouts from "./ViewCompletedWorkouts";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const StartWorkout = () => {
+const ViewWorkouts = () => {
   const Tab = createBottomTabNavigator();
+  
+
+
 
   return (
     <Tab.Navigator
@@ -17,7 +20,7 @@ const StartWorkout = () => {
         tabBarInactiveTintColor: "white",
         tabBarStyle: {
           backgroundColor: "black",
-          borderTopWidth: 3,
+          borderTopWidth: 4,
           borderTopColor: "rgb(8, 97, 164)",
           elevation: 3,
           shadowOpacity: 0,
@@ -41,7 +44,7 @@ const StartWorkout = () => {
           ),
           headerShown: false,
         }}
-        component={AssignedWorkouts}
+        component={ViewAssignedWorkouts}
       />
       <Tab.Screen
         name="Created"
@@ -60,11 +63,11 @@ const StartWorkout = () => {
 
           headerShown: false,
         }}
-        component={CustomWorkouts}
+        component={ViewCreatedWorkouts}
       />
       <Tab.Screen
         name="Completed"
-        component={CompletedWorkouts}
+        component={ViewCompletedWorkouts}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="check" color={color} size={size} />
@@ -85,8 +88,4 @@ const StartWorkout = () => {
   );
 };
 
-const styles = StyleSheet.create({
-
-});
-
-export default StartWorkout;
+export default ViewWorkouts;

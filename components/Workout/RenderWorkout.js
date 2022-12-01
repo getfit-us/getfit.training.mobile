@@ -12,8 +12,9 @@ import SaveWorkout from "./Dialogs/SaveWorkout";
 import FabGroup from "../utils/FabGroup";
 import { colors } from "../../Store/colors";
 import { useIsFocused } from "@react-navigation/native";
+import shallow from "zustand/shallow";
 
-const RenderWorkout = memo(({ screenOptions }) => {
+const RenderWorkout = memo(({  }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);
   const navigation = useNavigation();
   const clientId = useProfile((state) => state.profile.clientId);
@@ -55,9 +56,9 @@ const RenderWorkout = memo(({ screenOptions }) => {
     {
       icon: "plus",
       label:
-        addExercises && setCheckedExercises.checked?.length > 0
+        addExercises && checkedExercises.checked?.length > 0
           ? "Add Selected"
-          : addExercises && setCheckedExercises.checked?.length === 0
+          : addExercises && checkedExercises.checked?.length === 0
           ? "Close Exercise Search"
           : "Add Exercise",
       style: addExercises ? styles.fabClose : styles.fabOpen,

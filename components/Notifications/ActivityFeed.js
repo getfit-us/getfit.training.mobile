@@ -22,9 +22,12 @@ import {
 } from "../Api/services";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
 import AnimatedFAB from "../UserFeedback/AnimatedFAB";
+import { colors } from "../../Store/colors";
 
 const ActivityFeed = ({ navigation }) => {
   const notifications = useProfile((state) => state.notifications);
+  const clientId = useProfile((state) => state.profile?.clientId);
+  const setNotifications = useProfile((state) => state.setNotifications);
   const [viewWorkout, setViewWorkout] = useWorkouts((state) => [
     state.viewWorkout,
     state.setViewWorkout,
@@ -46,10 +49,15 @@ const ActivityFeed = ({ navigation }) => {
   let [page, setPage] = useState(1);
   const [showBanner, setShowBanner] = useState(false);
   const [status, setStatus] = useState({
-    loading: false,
+    loading: true,
     error: false,
     success: false,
   });
+
+  useEffect(() => {
+    setViewMeasurement(null);
+    setViewWorkout(null);
+  }, []);
 
   useEffect(() => {
     if (!loadingNotifications) {
@@ -66,8 +74,25 @@ const ActivityFeed = ({ navigation }) => {
           });
       });
     }
-  }, [loadingNotifications, notificationData, notifications]);
 
+    const pingNotifications = setInterval(() => {
+      getNotifications(axiosPrivate, {
+        setNotifications: setNotifications,
+        profile: { clientId: clientId },
+      }).catch((err) => {
+        console.log("inside catch of interval for notifications", err);
+        clearInterval(pingNotifications); //stop the interval probably still running with the old access token
+        pingNotifications(); // restart the interval with the new access token
+        setStatus({ loading: false, error: true, success: false });
+      });
+    }, 5000);
+
+    
+
+    return () => {
+      clearInterval(pingNotifications);
+    };
+  }, [loadingNotifications, notificationData, notifications]);
 
   const bannerActions = [
     {
@@ -133,7 +158,7 @@ const ActivityFeed = ({ navigation }) => {
   };
 
   const handleGetCustomWorkout = (item) => {
-    setStatus({ loading: true });
+    setStatus({ loading: true, itemId: item._id });
     getSingleCustomWorkout(
       axiosPrivate,
       item?.activityID ? item.activityID : item?.activityId
@@ -157,24 +182,6 @@ const ActivityFeed = ({ navigation }) => {
     });
   };
 
-  useEffect(() => {
-    setViewMeasurement(null);
-    setViewWorkout(null);
-
-    // const interval = setInterval(() => {
-    //   getNotifications(axiosPrivate, {
-    //     profile: { clientId: clientId },
-    //     setNotifications,
-    //   }).then((status) => {
-    //     console.log(status)
-    //     if (status.error) {
-    //       console.log(status.error);
-    //     }
-    //   });
-    // }, 10000);
-    // return () => clearInterval(interval);
-  }, []);
-
   const listItem = ({ item }) => (
     <View style={styles.list} key={item._id}>
       <Card style={styles.card} elevation={3}>
@@ -182,7 +189,11 @@ const ActivityFeed = ({ navigation }) => {
           key={item._id}
           style={styles.listItem}
           titleNumberOfLines={3}
-          title={item.message}
+          title={
+            status.loading && status?.itemId === item._id
+              ? "Loading.."
+              : item.message
+          }
           left={(props) => (
             <>
               <Avatar.Icon
@@ -202,6 +213,7 @@ const ActivityFeed = ({ navigation }) => {
             <IconButton
               {...props}
               icon="delete"
+              iconColor={colors.error}
               onPress={() => {
                 setStatus({ loading: true });
                 deleteSingleNotification(axiosPrivate, item._id).then(
@@ -258,13 +270,16 @@ const ActivityFeed = ({ navigation }) => {
     </View>
   );
 
-  return (
+  return status.loading && notifications?.length === 0 ? (
+    <ActivityIndicator animating={status.loading} />
+  ) : (
     <SafeAreaView>
       <View style={styles.container}>
         <ProgressBar
           indeterminate
-          color={MD2Colors.blue500}
+          color={colors.primaryLight}
           visible={status.loading || loadingNotifications ? true : false}
+          style={{ height: 10 }}
         />
         <Banner visible={showBanner} actions={bannerActions}>
           Clear all notifications?
@@ -277,13 +292,7 @@ const ActivityFeed = ({ navigation }) => {
           contentContainerStyle={{ flexGrow: 1 }}
           onEndReached={() => setPage(page + 1)}
           onEndReachedThreshold={0.5}
-          ListEmptyComponent={
-            status.loading ? (
-              <ActivityIndicator animating={status.loading} />
-            ) : (
-              NoNotifications
-            )
-          }
+          ListEmptyComponent={NoNotifications}
         />
         <AnimatedFAB
           visible={true}

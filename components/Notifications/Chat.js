@@ -7,7 +7,7 @@ import { useProfile } from "../../Store/Store";
 import { sendMessage } from "../Api/services";
 import { useNavigation } from "@react-navigation/native";
 import { updateSingleNotification } from "../Api/services";
-
+import { colors } from "../../Store/colors";
 const Chat = ({ route }) => {
   const clientId = useProfile((state) => state.profile.clientId);
   const messages = useProfile((state) => state.messages);
@@ -138,7 +138,7 @@ const Chat = ({ route }) => {
               : styles.messageReceived
           }
         >
-          <Text style={styles.sender}>
+          <Text style={clientId === item?.sender.id ? styles.sender : styles.receiver}>
             {clientId !== item?.sender.id ? item?.sender.name : null}
           </Text>
           <Text style={styles.date}>{item?.createdAt}</Text>
@@ -168,6 +168,8 @@ const Chat = ({ route }) => {
             value={reply}
             style={{ width: "75%", height: 40 }}
             mode="flat"
+            underlineColor="transparent"
+            activeUnderlineColor="transparent"
           />
 
           <Button
@@ -196,20 +198,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messageSent: {
-    backgroundColor: "rgb(8, 97, 164)",
+    backgroundColor: colors.primaryLight,
 
     padding: 10,
     margin: 10,
     borderRadius: 20,
     alignSelf: "flex-end",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   messageReceived: {
-    backgroundColor: "white",
+    backgroundColor: colors.success,
     color: "black",
     padding: 10,
     margin: 10,
     borderRadius: 20,
     alignSelf: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sender: {
+    fontWeight: "bold",
+    fontSize: 12,
+    color: colors.white,
+    
+  },
+  receiver: {
+    fontWeight: "bold",
+    fontSize: 12,
+    color: colors.black,
   },
   button: {
     maxWidth: "25%",
@@ -226,10 +243,7 @@ const styles = StyleSheet.create({
 
     marginTop: 0,
   },
-  sender: {
-    fontWeight: "bold",
-    fontSize: 12,
-  },
+ 
   msg: {
     fontSize: 18,
     textAlign: "left",

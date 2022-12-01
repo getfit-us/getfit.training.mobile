@@ -10,6 +10,7 @@ import ViewActivity from "./Notifications/ViewActivity";
 import { Badge, List } from "react-native-paper";
 import StartWorkout from "./Workout/StartWorkout";
 import CreateWorkout from "./Workout/CreateWorkout";
+import ViewWorkouts from "./Workout/ViewWorkouts/ViewWorkouts";
 
 const Drawer = createDrawerNavigator();
 
@@ -48,38 +49,6 @@ const Dashboard = () => {
       }}
     >
       <Drawer.Screen
-        name="Start Workout"
-        component={StartWorkout}
-        options={{
-          drawerIcon: (props) => (
-            <List.Icon
-              icon="weight-lifter"
-              color={props.focused ? "black" : "white"}
-            />
-          ),
-          title: "Start Workout",
-          titleStyle: {
-            backgroundColor: "blue",
-          },
-          headerVisible: false,
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="Create Workout"
-        options={{
-          drawerIcon: (props) => (
-            <List.Icon
-              icon="pencil"
-              color={props.focused ? "black" : "white"}
-            />
-          ),
-          headerVisible: false,
-          headerShown: false,
-        }}
-        component={CreateWorkout}
-      />
-      <Drawer.Screen
         name="Activity Feed"
         component={ActivityFeed}
         options={{
@@ -113,6 +82,53 @@ const Dashboard = () => {
         }}
       />
       <Drawer.Screen
+        name="Start Workout"
+        component={StartWorkout}
+        options={{
+          drawerIcon: (props) => (
+            <List.Icon
+              icon="weight-lifter"
+              color={props.focused ? "black" : "white"}
+            />
+          ),
+          title: "Start Workout",
+          titleStyle: {
+            backgroundColor: "blue",
+          },
+          headerVisible: false,
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="Create Workout"
+        options={{
+          drawerIcon: (props) => (
+            <List.Icon
+              icon="pencil"
+              color={props.focused ? "black" : "white"}
+            />
+          ),
+          headerVisible: false,
+          headerShown: false,
+        }}
+        component={CreateWorkout}
+      />
+
+      <Drawer.Screen name="View Workouts"
+        options={{
+          drawerIcon: (props) => (
+            <List.Icon
+              icon="history"
+              color={props.focused ? "black" : "white"}
+            />
+          ),
+          headerVisible: false,
+          headerShown: false,
+        }}
+      
+      component={ViewWorkouts} />
+
+      <Drawer.Screen
         name="Messages"
         component={Messages}
         options={{
@@ -139,19 +155,6 @@ const Dashboard = () => {
           headerVisible: false,
           headerShown: false,
         }}
-      />
-
-      {/* <Drawer.Screen name="View Workout" component={ViewWorkout} /> */}
-      <Drawer.Screen
-        options={{
-          drawerItemStyle: {
-            display: "none",
-          },
-          headerVisible: false,
-          headerShown: false,
-        }}
-        name="View Activity"
-        component={ViewActivity}
       />
 
       {/* <Drawer.Screen name="Measurements" component={Measurements} /> */}
@@ -183,6 +186,17 @@ const Dashboard = () => {
           headerVisible: false,
           headerShown: false,
         }}
+      />
+      <Drawer.Screen
+        options={{
+          drawerItemStyle: {
+            display: "none",
+          },
+          headerVisible: false,
+          headerShown: false,
+        }}
+        name="View Activity"
+        component={ViewActivity}
       />
     </Drawer.Navigator>
   );

@@ -1,33 +1,36 @@
-import { useWorkouts } from "../../../Store/Store";
+import { View, Text , StyleSheet, FlatList} from "react-native";
+import { useCallback, useState, useEffect } from "react";
 import useApiCallOnMount from "../../../hooks/useApiCallOnMount";
-import { getCompletedWorkouts } from "../../Api/services";
-import { List, Searchbar, Avatar } from "react-native-paper";
-import RenderWorkout from "../RenderWorkout";
-import ProgressBar from "../../UserFeedback/ProgressBar";
-import { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
-
+import {
+  getCompletedWorkouts,
+  getSingleCompletedWorkout,
+} from "../../Api/services";
+import { useWorkouts } from "../../../Store/Store";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+import { ProgressBar, Searchbar, List, Avatar } from "react-native-paper";
 import { colors } from "../../../Store/colors";
 
-const CompletedWorkouts = ({ navigation }) => {
+const ViewCompletedWorkouts = ({navigation}) => {
+  const [loadingCompletedWorkouts, completedWorkouts, errorCompletedWorkouts] =
+    useApiCallOnMount(getCompletedWorkouts);
   const stateCompletedWorkouts = useWorkouts(
     (state) => state.completedWorkouts
   );
-  const [loadingCompletedWorkouts, completedWorkouts, errorCompletedWorkouts] =
-    useApiCallOnMount(getCompletedWorkouts);
-  const [workoutData, setWorkoutData] = useState([]);
-  const startWorkout = useWorkouts((state) => state.startWorkout);
-  const setStartWorkout = useWorkouts((state) => state.setStartWorkout);
 
+  const [viewWorkout, setViewWorkout] = useWorkouts((state) => [
+    state.viewWorkout,
+    state.setViewWorkout,
+  ]);
+  const [workoutData, setWorkoutData] = useState([]);
   const [status, setStatus] = useState({
     loading: false,
     error: false,
     success: false,
   });
-
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
-    if (!loadingCompletedWorkouts) {
+    if (!loadingCompletedWorkouts || stateCompletedWorkouts?.length > 0) {
       setStatus({ loading: false, error: false, success: true });
       setWorkoutData(
         stateCompletedWorkouts?.sort(
@@ -49,7 +52,22 @@ const CompletedWorkouts = ({ navigation }) => {
     setWorkoutData(filteredData);
   };
 
-  const renderList = ({ item }) => {
+  
+  const handleGetWorkout = (item) => {
+    setStatus({ loading: true });
+    getSingleCompletedWorkout(
+      axiosPrivate,
+        item._id
+    ).then((status) => {
+      setStatus({ loading: status.loading });
+      if (!status.loading) {
+        setViewWorkout(status.data);
+        navigation.navigate("View Activity", { status });
+      }
+    });
+  };
+
+  const renderList = useCallback(({ item }) => {
     return (
       <List.Item
         style={styles.listItem}
@@ -78,11 +96,11 @@ const CompletedWorkouts = ({ navigation }) => {
           />
         )}
         onPress={() => {
-          setStartWorkout(item);
+          handleGetWorkout(item);
         }}
       />
     );
-  };
+  }, [workoutData]);
 
   return status.loading ? (
     <ProgressBar loading={status.loading}
@@ -90,8 +108,6 @@ const CompletedWorkouts = ({ navigation }) => {
     style={{height: 10}}
 
     />
-  ) : startWorkout?.exercises?.length > 0 ? (
-    <RenderWorkout  />
   ) : (
     <View style={styles.container}>
       <Searchbar
@@ -104,40 +120,46 @@ const CompletedWorkouts = ({ navigation }) => {
         data={workoutData}
         renderItem={renderList}
         keyExtractor={(item) => item._id}
+        initialNumToRender={20}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+    container: {
+      backgroundColor: "#d9d5db",
+      flex: 1,
+    },
+    listItem: {
+      backgroundColor: "white",
+      border: "1px solid black",
+      marginBottom: 5,
+      marginTop: 5,
+      elevation: 3,
+      borderRadius: 5,
+      marginLeft: 10,
+      marginRight: 10,
+    },
+    listItemTitle: {
+      fontSize: 20,
+      padding: 5,
+    },
+    searchBar: {
+      backgroundColor: "white",
+      elevation: 5,
+      borderBottomColor: "black",
+      borderBottomWidth: 1,
+    },
+    listItemDescription: {
+      fontSize: 15,
+    },
+    noWorkoutsText: {
+      fontSize: 20,
+      textAlign: "center",
+      marginTop: 20,
+    },
+  });
 
 
-  container: {
-    backgroundColor: "#d9d5db",
-  },
-  listItem: {
-    backgroundColor: "white",
-    border: "1px solid black",
-    marginBottom: 5,
-    marginTop: 5,
-    elevation: 3,
-    borderRadius: 5,
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  listItemTitle: {
-    fontSize: 20,
-    padding: 5,
-  },
-  searchBar: {
-    backgroundColor: "white",
-    elevation: 5,
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-  },
-  listItemDescription: {
-    fontSize: 15,
-  },
-});
-
-export default CompletedWorkouts;
+export default ViewCompletedWorkouts;
