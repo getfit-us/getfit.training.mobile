@@ -2,6 +2,7 @@
 
 import create from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import persist from "zustand/middleware";
 
 const initialProfileState = {
   profile: {},
@@ -28,10 +29,23 @@ const initialWorkoutState = {
   startWorkout: {
     exercises: [],
   },
+  status: {
+    success: false,
+    error: false,
+    message: "",
+    loading: false,
+  },
 };
 
 export const useProfile = create((set, get) => ({
   profile: {}, // going to contain the profile data and auth data (token , roles, etc)
+  status: {
+    success: false,
+    error: false,
+    message: "",
+    loading: false,
+  }, 
+  setStatus: (status) => set({ status }),
   measurements: [],
   notifications: [],
   clients: [],

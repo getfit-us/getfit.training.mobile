@@ -11,7 +11,6 @@ import {
   getClientData,
   getTrainerInfo,
 } from "../Api/services";
-import { ActivityIndicator } from "react-native-paper";
 import LoadingScreen from "../UserFeedback/LoadingScreen";
 const Tab = createBottomTabNavigator();
 

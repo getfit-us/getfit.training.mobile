@@ -16,8 +16,9 @@ import SignUp from "./components/SignUp";
 import ResetPassword from "./components/ResetPassword";
 import { darkTheme, lightTheme } from "./theme/theme";
 import { DrawerActions } from "@react-navigation/native";
-import useApiCallOnMount from "./hooks/useApiCallOnMount";
-import { getNotifications } from "./components/Api/services";
+import LoadingScreen from "./components/UserFeedback/LoadingScreen";
+
+import { colors } from "./Store/colors";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
   const accessToken = useProfile((state) => state.profile?.accessToken);
   const activeNotifications = useProfile((state) => state.activeNotifications);
   const themeType = useProfile((state) => state.themeType);
+  const status = useProfile((state) => state.status);
 
   function LogoTitle() {
     const navigation = useNavigation();
@@ -32,7 +34,7 @@ export default function App() {
     return (
       <View style={styles.container}>
         <TouchableHighlight
-          underlayColor={"rgb(8, 97, 164)"}
+          underlayColor={colors.primary}
           onPress={() =>
             accessToken
               ? navigation.dispatch(DrawerActions.toggleDrawer())
@@ -100,7 +102,7 @@ export default function App() {
                 options={{
                   headerTitle: (props) => <LogoTitle {...props} />,
                   headerStyle: {
-                    backgroundColor: "rgb(8, 97, 164)",
+                    backgroundColor: colors.primary,
                     borderBottomWidth: 2,
                     borderBottomColor: "black",
                   },
@@ -118,7 +120,7 @@ export default function App() {
                 headerTitle: ({ navigation, ...props }) => (
                   <LogoTitle {...props} />
                 ),
-                headerStyle: { backgroundColor: "rgb(8, 97, 164)" },
+                headerStyle: { backgroundColor: colors.primary },
               }}
             />
           )}
@@ -131,7 +133,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(8, 97, 164)",
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "flex-start",
     flexDirection: "row",

@@ -8,6 +8,7 @@ const useRefreshToken = () => {
   const axiosPrivate = useAxios();
   const persist = useProfile((state) => state.persist);
   const setPersist = useProfile((state) => state.setPersist);
+  const setStatus = useProfile((state) => state.setStatus);
 
   const refresh = async () => {
     const refreshToken = await SecureStore.getItemAsync("refreshToken");
@@ -34,6 +35,8 @@ const useRefreshToken = () => {
       await SecureStore.deleteItemAsync("profile");
       setProfile({});
       setPersist(false);
+      setStatus({loading: false, success: false, error: true, message: "Your session has expired. Please log in again."})
+
 
       return;
     }
@@ -58,6 +61,7 @@ const useRefreshToken = () => {
     } catch (error) {
       console.log("error inside refresh token", error);
       console.log("No refresh token");
+      setStatus({loading: false, success: false, error: true, message: "Your session has expired. Please log in again."})
       setProfile({});
       setPersist(false);
       await SecureStore.deleteItemAsync("refreshToken");

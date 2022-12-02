@@ -10,21 +10,20 @@ import { useProfile } from "../Store/Store";
 import useAxios from "../hooks/useAxios";
 import * as SecureStore from "expo-secure-store";
 import { colors } from "../Store/colors";
+import { set } from "lodash";
 
 const HomeScreen = ({ navigation }) => {
   const axiosPrivate = useAxios();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginStatus, setLoginStatus] = useState({
-    message: "",
-    error: false,
-  });
+  const setStatus = useProfile((state) => state.setStatus);
+  const status = useProfile((state) => state.status);
+
   const [formError, setFormError] = useState({
     message: "",
     email: false,
     password: false,
   });
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const setProfile = useProfile((state) => state.setProfile);
   const [persist, setPersist] = useProfile((state) => [
@@ -46,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
       const userInfo = await SecureStore.getItemAsync("profile");
 
       if (userInfo) {
-        setLoading(true);
+        setStatus({ loading: true });
         setProfile(JSON.parse(userInfo));
         //check if token is expired
         const refreshTokenExpiration = await SecureStore.getItemAsync(
@@ -61,12 +60,17 @@ const HomeScreen = ({ navigation }) => {
             await SecureStore.deleteItemAsync("refreshTokenExpiration");
             await SecureStore.deleteItemAsync("profile");
             setProfile(null);
+            setStatus({
+              loading: false,
+              success: false,
+              error: true,
+              message: "Your session has expired. Please log in again.",
+            });
           }
         }
-      } else {
-        setLoading(false);
       }
     } catch (error) {
+      setStatus({loading: false, success: false, error: true, message: error.message})
       console.log(`Keychain Error: ${error.message}`);
     }
   }, []);
@@ -79,6 +83,8 @@ const HomeScreen = ({ navigation }) => {
   }, [loadProfile, persist]);
 
   const onSubmit = async () => {
+    setStatus({ loading: true, success: false, error: false, message: "" });
+
     let data = { email, password };
     if (!email || !password) {
       email?.length > 0
@@ -104,7 +110,6 @@ const HomeScreen = ({ navigation }) => {
       return;
     }
 
-    setLoading(true);
     try {
       const response = await axiosPrivate.post("/login", data, {
         headers: {
@@ -138,54 +143,52 @@ const HomeScreen = ({ navigation }) => {
         );
       }
 
-      setLoginStatus({ message: "Login Successful", error: false });
-      setLoading(false);
+      setStatus({
+        loading: false,
+        success: true,
+        error: false,
+        message: "Login Successful",
+      });
     } catch (err) {
       //if email unverified show error message for 6seconds
-      setLoading(false);
-      console.log("error on login", err);
+      console.log(err.message);
 
-      if (err?.response?.status === 403)
+      if (err?.response?.status === 403) {
         // Unauthorized email not verified
-        setLoginStatus((prev) => ({
-          ...prev,
+        setStatus({
+          loading: false,
           message: "Please verify your email address",
           error: true,
-        }));
-      setTimeout(() => {
-        setLoginStatus((prev) => ({
-          ...prev,
-          message: "",
-          error: false,
-        }));
-      }, 6000);
+          success: false,
+        });
+      }
 
-      if (err?.response?.status === 401)
-        setLoginStatus((prev) => ({
-          ...prev,
+      if (err?.response?.status === 401) {
+        console.log("Unauthorized", status);
+        setStatus({
           message: "Unauthorized",
           error: true,
-        }));
-      setTimeout(() => {
-        setLoginStatus((prev) => ({
-          ...prev,
-          message: "",
-          error: false,
-        }));
-      }, 6000);
+          loading: false,
+        });
+      }
 
-      if (err?.response?.status === 423)
-        setLoginStatus((prev) => ({
-          ...prev,
+      if (err?.response?.status === 423) {
+        setStatus({
+          loading: false,
+
           message: "Account Disabled",
           error: true,
-        }));
+        });
+      }
+
+      console.log(status.message);
       setTimeout(() => {
-        setLoginStatus((prev) => ({
-          ...prev,
+        setStatus({
+          loading: false,
+
           message: "",
-          show: false,
-        }));
+          error: false,
+        });
       }, 6000);
     }
   };
@@ -253,17 +256,17 @@ const HomeScreen = ({ navigation }) => {
       >
         Forgot Password
       </Button>
-      {loading ? (
+      {status.loading ? (
         <ActivityIndicator
-          animating={loading}
+          animating={status.loading}
           color={colors.primary}
-          size={100}
+          size={70}
         />
       ) : (
         <Button
           icon="login"
           mode="contained"
-          buttonColor={loginStatus.error ? "red" : "#03A9F4"}
+          buttonColor={status.error ? colors.error : colors.primaryLight}
           style={{
             margin: 20,
             width: "80%",
@@ -271,7 +274,7 @@ const HomeScreen = ({ navigation }) => {
           }}
           onPress={onSubmit}
         >
-          {loginStatus.error ? loginStatus.message : "Login"}
+          {status.error ? status.message : "Login"}
         </Button>
       )}
       <View style={{ alignItems: "center", marginTop: 3 }}>
