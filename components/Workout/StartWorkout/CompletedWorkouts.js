@@ -6,7 +6,6 @@ import RenderWorkout from "../RenderWorkout";
 import ProgressBar from "../../UserFeedback/ProgressBar";
 import { useEffect, useState } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
-
 import { colors } from "../../../Store/colors";
 
 const CompletedWorkouts = ({ navigation }) => {
@@ -84,7 +83,7 @@ const CompletedWorkouts = ({ navigation }) => {
     );
   };
 
-  return status.loading ? (
+  return status.loading && stateCompletedWorkouts?.length === 0 ? (
     <ProgressBar loading={status.loading}
     color={colors.primaryLight}
     style={{height: 10}}

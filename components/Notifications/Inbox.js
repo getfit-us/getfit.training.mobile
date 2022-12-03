@@ -16,7 +16,6 @@ import { getNotifications, updateSingleNotification } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const Inbox = ({ navigation }) => {
-  const messages = useProfile((state) => state.messages);
   const clients = useProfile((state) => state.clients);
   const trainer = useProfile((state) => state.trainer);
   const activeNotifications = useProfile((state) => state.activeNotifications);

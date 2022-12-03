@@ -181,7 +181,6 @@ const HomeScreen = ({ navigation }) => {
         });
       }
 
-      console.log(status.message);
       setTimeout(() => {
         setStatus({
           loading: false,

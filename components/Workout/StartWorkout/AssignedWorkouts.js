@@ -47,34 +47,15 @@ const AssignedWorkouts = ({ navigation }) => {
           (a, b) => new Date(b.Created) - new Date(a.Created)
         )
       );
+    } else if (loadingAssignedWorkouts && stateAssignedWorkouts?.length > 0) {
+      setWorkoutData(
+        stateAssignedWorkouts?.sort(
+          (a, b) => new Date(b.Created) - new Date(a.Created)
+        )
+      );
     }
   }, [loadingAssignedWorkouts, stateAssignedWorkouts, assignedWorkouts]);
 
-  useEffect(
-    () =>
-      navigation.addListener("beforeRemove", (e) => {
-        // Prevent default behavior of leaving the screen
-        e.preventDefault();
-        console.log("before remove");
-
-        // Prompt the user before leaving the screen
-        Alert.alert(
-          "Discard changes?",
-          "You have unsaved changes. Are you sure to discard them and leave the screen?",
-          [
-            { text: "Don't leave", style: "cancel", onPress: () => {} },
-            {
-              text: "Discard",
-              style: "destructive",
-              // If the user confirmed, then we dispatch the action we blocked earlier
-              // This will continue the action that had triggered the removal of the screen
-              onPress: () => navigation.dispatch(e.data.action),
-            },
-          ]
-        );
-      }),
-    [navigation]
-  );
 
   const handleSearch = (query) => {
     if (query === "") setWorkoutData(stateAssignedWorkouts);
@@ -119,7 +100,7 @@ const AssignedWorkouts = ({ navigation }) => {
     );
   };
 
-  return loadingAssignedWorkouts ? (
+  return loadingAssignedWorkouts && stateAssignedWorkouts?.length === 0 ? (
     <ProgressBar loading={loadingAssignedWorkouts}
     color={colors.primaryLight}
     style={{height: 10}} />

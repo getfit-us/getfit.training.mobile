@@ -45,7 +45,6 @@ const ActivityFeed = ({ navigation }) => {
   const [userActivity, setUserActivity] = useState([]);
 
   const delNotificationState = useProfile((store) => store.deleteNotification);
-  const profile = useProfile((store) => store.profile);
   let [page, setPage] = useState(1);
   const [showBanner, setShowBanner] = useState(false);
   const [status, setStatus] = useState({
@@ -73,6 +72,20 @@ const ActivityFeed = ({ navigation }) => {
             if (new Date(a.createdAt) > new Date(b.createdAt)) return -1;
           });
       });
+      //instead of wait for the api call to finish, we may have notifications in the store already so load those.
+    } else if (loadingNotifications && notifications?.length > 0) {
+      setStatus({ loading: false, error: false, success: true });
+      setUserActivity(() => {
+        return notifications
+          .filter((notification) => {
+            if (notification.type === "activity") {
+              return true;
+            }
+          })
+          .sort((a, b) => {
+            if (new Date(a.createdAt) > new Date(b.createdAt)) return -1;
+          });
+      });
     }
 
     const pingNotifications = setInterval(() => {
@@ -87,12 +100,12 @@ const ActivityFeed = ({ navigation }) => {
       });
     }, 5000);
 
-    
-
     return () => {
       clearInterval(pingNotifications);
     };
   }, [loadingNotifications, notificationData, notifications]);
+
+ //actions for fab Group
 
   const bannerActions = [
     {
@@ -269,6 +282,8 @@ const ActivityFeed = ({ navigation }) => {
       </Card>
     </View>
   );
+
+
 
   return status.loading && notifications?.length === 0 ? (
     <ActivityIndicator animating={status.loading} />

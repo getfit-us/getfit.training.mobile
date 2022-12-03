@@ -16,6 +16,7 @@ const useRefreshToken = () => {
     const refreshTokenExpiration = await SecureStore.getItemAsync(
       "refreshTokenExpiration"
     );
+    // check for expired refresh token
     if (refreshTokenExpiration) {
       const now = new Date().getTime();
       const expiration = new Date(refreshTokenExpiration).getTime();
@@ -25,7 +26,7 @@ const useRefreshToken = () => {
         await SecureStore.deleteItemAsync("refreshTokenExpiration");
         await SecureStore.deleteItemAsync("profile");
 
-        setProfile({});
+        setAccessToken(null);
         return;
       }
     } else if (!refreshTokenExpiration) {
@@ -33,10 +34,14 @@ const useRefreshToken = () => {
       await SecureStore.deleteItemAsync("refreshToken");
       await SecureStore.deleteItemAsync("refreshTokenExpiration");
       await SecureStore.deleteItemAsync("profile");
-      setProfile({});
+      setAccessToken(null);
       setPersist(false);
-      setStatus({loading: false, success: false, error: true, message: "Your session has expired. Please log in again."})
-
+      setStatus({
+        loading: false,
+        success: false,
+        error: true,
+        message: "Your session has expired. Please log in again.",
+      });
 
       return;
     }
@@ -51,22 +56,26 @@ const useRefreshToken = () => {
 
       setAccessToken(response.data.accessToken);
       if (persist) {
-        console.log("AccessToken Profile");
+        console.log("AccessToken Profile Saving to secure store");
         const profile = await SecureStore.setItemAsync(
           "profile",
           JSON.stringify(response.data)
         );
       }
-      return response.data.accessToken;
+      return response.data.accessToken; // return the new access token
     } catch (error) {
-      console.log("error inside refresh token", error);
-      console.log("No refresh token");
-      setStatus({loading: false, success: false, error: true, message: "Your session has expired. Please log in again."})
-      setProfile({});
+      console.log("Unable to get refresh token", error);
+      setStatus({
+        loading: false,
+        success: false,
+        error: true,
+        message: "Your session has expired. Please log in again.",
+      });
       setPersist(false);
       await SecureStore.deleteItemAsync("refreshToken");
       await SecureStore.deleteItemAsync("refreshTokenExpiration");
       await SecureStore.deleteItemAsync("profile");
+      setAccessToken(null);
     }
   };
   return refresh;

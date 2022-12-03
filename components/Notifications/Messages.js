@@ -28,7 +28,7 @@ const Messages = () => {
   });
 
   useEffect(() => {
-    if (loadingClientData || loadingTrainerData || loadingNotifications)
+    if (loadingClientData || loadingTrainerData || loadingNotifications )
       setStatus({ loading: true, error: false, success: false });
     else if (!loadingClientData && !loadingTrainerData && !loadingNotifications)
       setStatus({ loading: false, error: false, success: true });

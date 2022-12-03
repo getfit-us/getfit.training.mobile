@@ -21,8 +21,6 @@ const CustomWorkouts = ({ navigation }) => {
     success: false,
   });
 
-
-
   useEffect(() => {
     if (!loadingCustomWorkouts) {
       setStatus({ loading: false, error: false, success: false });
@@ -32,22 +30,28 @@ const CustomWorkouts = ({ navigation }) => {
           (a, b) => new Date(b.Created) - new Date(a.Created)
         )
       );
-    } else if (loadingCustomWorkouts)
-      setStatus({ loading: true, error: false, success: false });
+    } else if (loadingCustomWorkouts && stateCustomWorkouts?.length > 0) {
+      setStatus({ loading: false, error: false, success: false });
+      setWorkoutData(
+        stateCustomWorkouts?.sort(
+          (a, b) => new Date(b.Created) - new Date(a.Created)
+        )
+      );
+    }
   }, [loadingCustomWorkouts, stateCustomWorkouts, customWorkouts]);
 
-  useEffect(() => {
-    setStartWorkout({ name: "New Workout", exercises: [] });
+  // useEffect(() => {
+  //   setStartWorkout({ name: "New Workout", exercises: [] });
 
-    const unsubscribe = navigation.addListener("focus", () => {
-      setStartWorkout({
-        name: "",
-        exercises: [],
-      });
-    });
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     setStartWorkout({
+  //       name: "",
+  //       exercises: [],
+  //     });
+  //   });
 
-    return unsubscribe;
-  }, [navigation]);
+  //   return unsubscribe;
+  // }, [navigation]);
 
   const handleSearch = (query) => {
     const filteredData = stateCustomWorkouts?.filter((item) => {
@@ -62,21 +66,28 @@ const CustomWorkouts = ({ navigation }) => {
         style={styles.listItem}
         titleStyle={styles.listItemTitle}
         titleNumberOfLines={2}
-
         descriptionStyle={styles.listItemDescription}
         key={item._id}
         title={item.name}
         description={
           "Date Created: " + new Date(item.Created).toLocaleDateString()
         }
-        left={(props) => <Avatar.Icon {...props} 
-      color="white"
-      icon={item?.exercises[0]?.type === 'cardio' ? 'run' : 'dumbbell'} 
-      size={40}
-      style={{backgroundColor: item?.exercises[0]?.type === 'cardio' ? '#f9a825' : 'rgb(8, 97, 164)',
-      marginLeft: 10,
-      alignSelf: 'center',
-    }}/>}
+        left={(props) => (
+          <Avatar.Icon
+            {...props}
+            color="white"
+            icon={item?.exercises[0]?.type === "cardio" ? "run" : "dumbbell"}
+            size={40}
+            style={{
+              backgroundColor:
+                item?.exercises[0]?.type === "cardio"
+                  ? "#f9a825"
+                  : "rgb(8, 97, 164)",
+              marginLeft: 10,
+              alignSelf: "center",
+            }}
+          />
+        )}
         onPress={() => {
           setStartWorkout(item);
         }}
@@ -85,11 +96,13 @@ const CustomWorkouts = ({ navigation }) => {
   };
 
   return status.loading ? (
-    <ProgressBar loading={status.loading}
-    color={colors.primaryLight}
-    style={{height: 10}} />
-  ) :startWorkout?.exercises?.length > 0 ? (
-    <RenderWorkout  />
+    <ProgressBar
+      loading={status.loading}
+      color={colors.primaryLight}
+      style={{ height: 10 }}
+    />
+  ) : startWorkout?.exercises?.length > 0 ? (
+    <RenderWorkout />
   ) : (
     <View style={styles.container}>
       <Searchbar
@@ -127,7 +140,7 @@ const styles = StyleSheet.create({
   },
   listItem: {
     backgroundColor: "white",
-   
+
     marginTop: 5,
     marginBottom: 5,
     elevation: 3,
@@ -138,14 +151,12 @@ const styles = StyleSheet.create({
   listItemTitle: {
     fontSize: 20,
     padding: 5,
-  
   },
   searchBar: {
     backgroundColor: "white",
     elevation: 5,
     borderBottomColor: "black",
     borderBottomWidth: 1,
-   
   },
   listItemDescription: {
     fontSize: 15,

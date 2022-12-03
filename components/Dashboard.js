@@ -11,6 +11,7 @@ import { Badge, List } from "react-native-paper";
 import StartWorkout from "./Workout/StartWorkout";
 import CreateWorkout from "./Workout/CreateWorkout";
 import ViewWorkouts from "./Workout/ViewWorkouts/ViewWorkouts";
+import Measurements from "./Measurements/Measurements";
 
 const Drawer = createDrawerNavigator();
 
@@ -157,7 +158,17 @@ const Dashboard = () => {
         }}
       />
 
-      {/* <Drawer.Screen name="Measurements" component={Measurements} /> */}
+      <Drawer.Screen name="Measurements" 
+       options={{
+        drawerIcon: (props) => (
+          <List.Icon
+            icon="account-circle"
+            color={props.focused ? "black" : "white"}
+          />
+        ),
+        headerVisible: false,
+        headerShown: false,
+      }}component={Measurements} />
       <Drawer.Screen
         name="Profile"
         component={Profile}
