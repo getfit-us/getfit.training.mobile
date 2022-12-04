@@ -1,6 +1,13 @@
-import { View, Text, ScrollView, StyleSheet, Image , SafeAreaView} from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+} from "react-native";
 import React from "react";
-import { Button, TextInput } from "react-native-paper";
+import { Button, RadioButton, TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -10,6 +17,13 @@ const MeasurementForm = () => {
   const [cameraPermission, setCameraPermission] = React.useState(null);
   const [date, setDate] = React.useState(new Date());
   const [show, setShow] = React.useState(false);
+  const [imageViewPoint, setImageViewPoint] = React.useState({});
+
+  const handleImageViewChange = (value, index) => {
+    console.log(imageViewPoint);
+
+    setImageViewPoint((prev) => ({ ...prev, [index]: value }));
+  };
 
   const handleFileUpload = async () => {
     try {
@@ -86,83 +100,101 @@ const MeasurementForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-      <View style={styles.form}>
-      
-        <Button icon={"calendar"} mode="contained" onPress={showDatepicker}>
-          Select Date
-        </Button>
-        {show ? (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode="date"
-            is24Hour={true}
-            onChange={handleDateChange}
+        <View style={styles.form}>
+          <Button icon={"calendar"} mode="contained" onPress={showDatepicker}>
+            Select Date
+          </Button>
+          {show ? (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode="date"
+              is24Hour={true}
+              onChange={handleDateChange}
+            />
+          ) : (
+            <Text style={{ alignSelf: "center", margin: 10 }}>
+              {date.toDateString()}
+            </Text>
+          )}
+          <TextInput
+            keyboardType="numeric"
+            right={<TextInput.Affix text="lbs" />}
+            label={"Weight"}
+            mode="outlined"
+            style={styles.input}
           />
-        ) : (
-          <Text style={{ alignSelf: "center", margin: 10 }}>{date.toDateString()}</Text>
-        )}
-        <TextInput
-          keyboardType="numeric"
-          right={<TextInput.Affix text="lbs" />}
-          label={"Weight"}
-          mode="outlined"
-          style={styles.input}
-        />
-        <TextInput
-          keyboardType="numeric"
-          right={<TextInput.Affix text="Percent" />}
-          label={"Body Fat"}
-          mode="outlined"
-          style={styles.input}
-        />
+          <TextInput
+            keyboardType="numeric"
+            right={<TextInput.Affix text="Percent" />}
+            label={"Body Fat"}
+            mode="outlined"
+            style={styles.input}
+          />
 
-        <Button
-          mode="elevated"
-          onPress={handleFileUpload}
-          style={styles.button}
-          icon="image"
-        >
-          Add Image
-        </Button>
-        <Button
-          mode="elevated"
-          onPress={handleTakePhoto}
-          style={styles.button}
-          icon="camera"
-        >
-          Take Photo
-        </Button>
+          <Button
+            mode="elevated"
+            onPress={handleFileUpload}
+            style={styles.button}
+            icon="image"
+          >
+            Add Image
+          </Button>
+          <Button
+            mode="elevated"
+            onPress={handleTakePhoto}
+            style={styles.button}
+            icon="camera"
+          >
+            Take Photo
+          </Button>
 
-        {files?.length > 0 ? (
-          <View style={styles.imageContainer}>
-            {files?.map((file) => (
-              <Image
-                key={file.uri}
-                source={{ uri: file.uri }}
-                style={styles.image}
-              />
-            ))}
-          </View>
-        ) : files?.uri ? (
-          <Image source={{ uri: files.uri }} style={styles.image} />
-        ) : null}
-      </View>
+          {files?.length > 0 ? (
+            <View style={styles.imageContainer}>
+              {files?.map((file, index) => (
+                <View style={styles.singleImage}>
+                  <Image
+                    key={file.uri}
+                    source={{ uri: file.uri }}
+                    style={styles.image}
+                    resizeMethod="resize"
+                    resizeMode="contain"
+                  />
+                  <RadioButton.Group
+                    onValueChange={(value) => handleImageViewChange(value, index)}
+                    value={imageViewPoint[index]}
+
+                  >
+                    <View style={styles.radioGroup}>
+                      <Text>Front</Text>
+                      <RadioButton value="front" 
+                      
+                      />
+                      <Text>Side</Text>
+                      <RadioButton value="side" />
+                      <Text>Back</Text>
+                      <RadioButton value="Back" />
+                    </View>
+                 
+                  </RadioButton.Group>
+                </View>
+              ))}
+            </View>
+          ) : files?.uri ? (
+            <Image source={{ uri: files.uri }} style={styles.image} />
+          ) : null}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-   
-   
-  },
+  container: {},
   form: {
     margin: 10,
     justifyContent: "center",
     alignItems: "center",
-   
   },
   button: {
     margin: 10,
@@ -175,20 +207,26 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center",
-
-
-
-    
-   
-
-
   },
   image: {
-    width: 100,
-    height: 100,
+    width: "100%",
+    height: 200,
     margin: 5,
   },
+  singleImage: {
+    borderWidth: 1,
+    borderColor: "black",
+    margin: 5,
+    padding: 5,
+  },
+  radioGroup: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+
+  
 });
 export default MeasurementForm;
