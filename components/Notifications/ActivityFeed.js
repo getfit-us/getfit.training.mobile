@@ -95,7 +95,7 @@ const ActivityFeed = ({ navigation }) => {
       }).catch((err) => {
         console.log("inside catch of interval for notifications", err);
         clearInterval(pingNotifications); //stop the interval probably still running with the old access token
-        pingNotifications(); // restart the interval with the new access token
+       
         setStatus({ loading: false, error: true, success: false });
       });
     }, 5000);
@@ -286,15 +286,15 @@ const ActivityFeed = ({ navigation }) => {
 
 
   return status.loading && notifications?.length === 0 ? (
-    <ActivityIndicator animating={status.loading} />
+    <ActivityIndicator animating={status.loading}  />
   ) : (
     <SafeAreaView>
       <View style={styles.container}>
         <ProgressBar
           indeterminate
           color={colors.primaryLight}
-          visible={status.loading || loadingNotifications ? true : false}
-          style={{ height: 10 }}
+          visible={loadingNotifications}
+          style={{ height: 10, display: loadingNotifications ? "flex" : "none" }}
         />
         <Banner visible={showBanner} actions={bannerActions}>
           Clear all notifications?

@@ -64,7 +64,7 @@ const HomeScreen = ({ navigation }) => {
               loading: false,
               success: false,
               error: true,
-              message: "Your session has expired. Please log in again.",
+              message: "Your session has expired.  in again.",
             });
           }
         }
@@ -246,8 +246,8 @@ const HomeScreen = ({ navigation }) => {
       >
         <Text>Remember Me</Text>
         <Switch value={persist} onValueChange={onToggleSwitch} />
-        <Text>{themeType === "light" ? "Light Mode" : "Dark Mode"}</Text>
-        <Switch value={themeType} onValueChange={onToggleTheme} />
+        {/* <Text>{themeType === "light" ? "Light Mode" : "Dark Mode"}</Text>
+        <Switch value={themeType} onValueChange={onToggleTheme} /> */}
       </View>
       <Button
         mode="text"

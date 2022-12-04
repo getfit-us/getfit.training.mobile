@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React from "react";
 import { getMeasurements } from "../Api/services";
 import useApiCallOnMount from "../../hooks/useApiCallOnMount";
@@ -11,10 +11,10 @@ const Measurements = () => {
     useApiCallOnMount(getMeasurements);
   const stateMeasurements = useProfile((state) => state.measurements);
   return (
-    <View>
+    <ScrollView>
       <Text style={styles.title}>Measurements</Text>
       <MeasurementForm />
-    </View>
+    </ScrollView>
   );
 };
 

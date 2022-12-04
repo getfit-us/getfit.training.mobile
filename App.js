@@ -1,5 +1,4 @@
 import "react-native-gesture-handler";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Image, View, TouchableHighlight } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
@@ -16,7 +15,6 @@ import SignUp from "./components/SignUp";
 import ResetPassword from "./components/ResetPassword";
 import { darkTheme, lightTheme } from "./theme/theme";
 import { DrawerActions } from "@react-navigation/native";
-import LoadingScreen from "./components/UserFeedback/LoadingScreen";
 
 import { colors } from "./Store/colors";
 

@@ -12,6 +12,7 @@ import StartWorkout from "./Workout/StartWorkout";
 import CreateWorkout from "./Workout/CreateWorkout";
 import ViewWorkouts from "./Workout/ViewWorkouts/ViewWorkouts";
 import Measurements from "./Measurements/Measurements";
+import CustomDrawer from "./CustomDrawer";
 
 const Drawer = createDrawerNavigator();
 
@@ -37,18 +38,21 @@ const Dashboard = () => {
     <Drawer.Navigator
       initialRouteName="Activity Feed"
       backBehavior="history"
+      drawerContent={props => <CustomDrawer {...props} />}
       screenOptions={{
         drawerStyle: {
           backgroundColor: "#0a0a0a",
           width: "60%",
-          borderRightWidth: 1,
-          borderRightColor: "#f2f2f2",
+         
         },
+        headerShown: false,
+        headerVisible: false,
         drawerActiveBackgroundColor: "#3483eb",
         drawerActiveTintColor: "#f2f2f2",
         drawerInactiveTintColor: "#f2f2f2",
       }}
     >
+      
       <Drawer.Screen
         name="Activity Feed"
         component={ActivityFeed}
@@ -78,8 +82,7 @@ const Dashboard = () => {
             color: "red",
             backgroundColor: "blue",
           },
-          headerVisible: false,
-          headerShown: false,
+         
         }}
       />
       <Drawer.Screen
@@ -96,8 +99,7 @@ const Dashboard = () => {
           titleStyle: {
             backgroundColor: "blue",
           },
-          headerVisible: false,
-          headerShown: false,
+        
         }}
       />
       <Drawer.Screen
@@ -109,8 +111,7 @@ const Dashboard = () => {
               color={props.focused ? "black" : "white"}
             />
           ),
-          headerVisible: false,
-          headerShown: false,
+        
         }}
         component={CreateWorkout}
       />
@@ -123,8 +124,7 @@ const Dashboard = () => {
               color={props.focused ? "black" : "white"}
             />
           ),
-          headerVisible: false,
-          headerShown: false,
+        
         }}
       
       component={ViewWorkouts} />
@@ -153,8 +153,7 @@ const Dashboard = () => {
               </Badge>
             </>
           ),
-          headerVisible: false,
-          headerShown: false,
+        
         }}
       />
 
@@ -162,13 +161,15 @@ const Dashboard = () => {
        options={{
         drawerIcon: (props) => (
           <List.Icon
-            icon="account-circle"
+            icon="chart-line"
             color={props.focused ? "black" : "white"}
           />
         ),
         headerVisible: false,
         headerShown: false,
-      }}component={Measurements} />
+      }}
+      component={Measurements} />
+
       <Drawer.Screen
         name="Profile"
         component={Profile}
@@ -179,8 +180,7 @@ const Dashboard = () => {
               color={props.focused ? "black" : "white"}
             />
           ),
-          headerVisible: false,
-          headerShown: false,
+        
         }}
       />
       {/* <Drawer.Screen name="Settings" component={Settings} /> */}
@@ -194,8 +194,7 @@ const Dashboard = () => {
               color={props.focused ? "black" : "white"}
             />
           ),
-          headerVisible: false,
-          headerShown: false,
+        
         }}
       />
       <Drawer.Screen

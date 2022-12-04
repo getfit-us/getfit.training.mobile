@@ -69,7 +69,7 @@ const useRefreshToken = () => {
         loading: false,
         success: false,
         error: true,
-        message: "Your session has expired. Please log in again.",
+        message: "Your session has expired. ",
       });
       setPersist(false);
       await SecureStore.deleteItemAsync("refreshToken");
