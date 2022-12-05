@@ -1,20 +1,12 @@
 import useAxios from "../hooks/useAxios";
-import React from "react";
 import * as SecureStore from "expo-secure-store";
 import { useProfile, useWorkouts } from "../Store/Store";
-import { useNavigation } from "@react-navigation/native";
-
-
 
 const Logout = () => {
   const resetProfileState = useProfile((state) => state.resetProfileState);
   const resetWorkoutState = useWorkouts((state) => state.resetWorkoutState);
-  const navigation = useNavigation();
-  const [persist, setPersist] = useProfile((state) => [
-    state.persist,
-    state.setPersist,
-  ]);
-   const axiosPrivate = useAxios();
+ const setPersist = useProfile((state) => state.setPersist);
+  const axiosPrivate = useAxios();
   const onLogout = async () => {
     let isMounted = true;
     const controller = new AbortController();
@@ -22,16 +14,13 @@ const Logout = () => {
       const response = await axiosPrivate.get("/logout", {
         signal: controller.signal,
       });
-      // console.log(response.data);
-      
+
+      const remove = await SecureStore.deleteItemAsync("profile");
       resetProfileState();
       resetWorkoutState();
       setPersist(false);
-      const remove = await SecureStore.deleteItemAsync("profile");
-      
-        // console.log(remove);
+      // console.log(remove);
     } catch (err) {
-
       console.log("logout error", err);
     }
 
@@ -43,7 +32,6 @@ const Logout = () => {
   };
 
   onLogout();
-
 };
 
 export default Logout;

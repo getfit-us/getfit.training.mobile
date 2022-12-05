@@ -10,7 +10,6 @@ import { useProfile } from "../Store/Store";
 import useAxios from "../hooks/useAxios";
 import * as SecureStore from "expo-secure-store";
 import { colors } from "../Store/colors";
-import { set } from "lodash";
 
 const HomeScreen = ({ navigation }) => {
   const axiosPrivate = useAxios();
@@ -68,9 +67,16 @@ const HomeScreen = ({ navigation }) => {
             });
           }
         }
+      } else {
+        setStatus({ loading: false });
       }
     } catch (error) {
-      setStatus({loading: false, success: false, error: true, message: error.message})
+      setStatus({
+        loading: false,
+        success: false,
+        error: true,
+        message: error.message,
+      });
       console.log(`Keychain Error: ${error.message}`);
     }
   }, []);

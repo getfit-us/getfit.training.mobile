@@ -13,7 +13,6 @@ export const getCalendarData = async (axiosPrivate, state, workoutState) => {
   } catch (error) {
     console.log(error);
   }
- 
 };
 
 export const getCustomWorkouts = async (axiosPrivate, state, workoutState) => {
@@ -91,7 +90,7 @@ export const getNotifications = async (axiosPrivate, state, workoutState) => {
     state?.setNotifications(response.data);
     return response.data;
   } catch (err) {
-    console.log('getNotifications', err);
+    console.log("getNotifications", err);
     throw new Error(err.message);
   }
 };
@@ -132,7 +131,7 @@ export const getCompletedWorkouts = async (
     workoutState?.setCompletedWorkouts(response.data);
     return response.data;
   } catch (err) {
-    console.log('getCompletedWorkouts', err);
+    console.log("getCompletedWorkouts", err);
   }
 };
 
@@ -148,7 +147,7 @@ export const getTrainerInfo = async (axiosPrivate, state, workoutState) => {
     );
     state?.setTrainer(response.data);
   } catch (err) {
-    console.log('getTrainerInfo', err);
+    console.log("getTrainerInfo", err);
     throw new Error(err.message);
   }
   return () => {
@@ -269,7 +268,6 @@ export const getSingleCustomWorkout = async (
 };
 
 export const updateSingleNotification = async (axiosPrivate, message) => {
- 
   //if liked set to true
   let status = { loading: true, error: false, data: null };
   if (!message) return status;
@@ -400,4 +398,29 @@ export const sendMessage = async (axiosPrivate, message) => {
     status = { loading: false, error: true, data: err };
   }
   return status;
-}
+};
+
+export const saveNewProfileImage = async (axiosPrivate, image) => {
+  let status = { loading: true, error: false, data: null };
+  if (!image) return status;
+
+  const controller = new AbortController();
+  try {
+    const response = await axiosPrivate.post(
+      "/upload",
+      image,
+
+      {
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    status = { loading: false, error: false, data: response.data };
+  } catch (err) {
+    console.log(err);
+    status = { loading: false, error: true, data: err };
+  }
+  return status;
+};

@@ -152,7 +152,9 @@ const MeasurementForm = () => {
           {files?.length > 0 ? (
             <View style={styles.imageContainer}>
               {files?.map((file, index) => (
-                <View style={styles.singleImage}>
+                <View style={styles.singleImage}
+                key={file.uri + 'View'}>
+                
                   <Image
                     key={file.uri}
                     source={{ uri: file.uri }}
@@ -163,6 +165,7 @@ const MeasurementForm = () => {
                   <RadioButton.Group
                     onValueChange={(value) => handleImageViewChange(value, index)}
                     value={imageViewPoint[index]}
+                    key={file.uri + 'Radio'}
 
                   >
                     <View style={styles.radioGroup}>
@@ -181,7 +184,10 @@ const MeasurementForm = () => {
               ))}
             </View>
           ) : files?.uri ? (
-            <Image source={{ uri: files.uri }} style={styles.image} />
+            <Image 
+            resizeMode="contain"
+
+            source={{ uri: files.uri }} style={styles.image} />
           ) : null}
         </View>
       </ScrollView>
