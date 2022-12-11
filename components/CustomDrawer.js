@@ -1,18 +1,16 @@
 import {
   ImageBackground,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import React from "react";
 import {
   DrawerContentScrollView,
-  DrawerItem,
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { useProfile } from "../Store/Store";
-import { Avatar, Card, Paragraph, Title } from "react-native-paper";
+import { Avatar,  Paragraph, Title } from "react-native-paper";
 import { BASE_URL } from "../assets/BASE_URL";
 
 const CustomDrawer = (props) => {
@@ -40,15 +38,16 @@ const CustomDrawer = (props) => {
               )}
               <Title style={styles.name}>
                 {" "}
-                {profile.firstName[0].toUpperCase() +
-                  profile.firstName.slice(1)}{" "}
-                {profile.lastName[0].toUpperCase() + profile.lastName.slice(1)}
+                {profile?.firstName[0].toUpperCase() +
+                  profile?.firstName.slice(1)}{" "}
+                {profile?.lastName[0].toUpperCase() +
+                  profile?.lastName.slice(1)}
               </Title>
               <Paragraph style={styles.account}>
                 {" "}
-                {roles.includes(2)
+                {roles?.includes(2)
                   ? "Client"
-                  : roles.includes(10)
+                  : roles?.includes(10)
                   ? "Admin"
                   : "Trainer"}
               </Paragraph>
@@ -71,7 +70,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderWidth: 2,
     borderColor: "white",
-   
   },
   card: {
     backgroundColor: "transparent",
@@ -82,9 +80,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderBottomColor: 'white',
+    borderBottomColor: "white",
     borderBottomWidth: 2,
-  
   },
   name: {
     color: "white",

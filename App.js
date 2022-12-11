@@ -24,7 +24,6 @@ export default function App() {
   const accessToken = useProfile((state) => state.profile?.accessToken);
   const activeNotifications = useProfile((state) => state.activeNotifications);
   const themeType = useProfile((state) => state.themeType);
-  const status = useProfile((state) => state.status);
 
   function LogoTitle() {
     const navigation = useNavigation();

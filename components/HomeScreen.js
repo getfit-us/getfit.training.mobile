@@ -7,196 +7,33 @@ import {
   ActivityIndicator,
 } from "react-native-paper";
 import { useProfile } from "../Store/Store";
-import useAxios from "../hooks/useAxios";
-import * as SecureStore from "expo-secure-store";
 import { colors } from "../Store/colors";
+import usePersist from "../hooks/usePersist";
+import useAuthLogin from "../hooks/useAuthLogin";
 
 const HomeScreen = ({ navigation }) => {
-  const axiosPrivate = useAxios();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const setStatus = useProfile((state) => state.setStatus);
   const status = useProfile((state) => state.status);
+  const loadProfile = usePersist();
+  const { formError, onSubmit } = useAuthLogin({ email, password, persist });
 
-  const [formError, setFormError] = useState({
-    message: "",
-    email: false,
-    password: false,
-  });
   const [showPassword, setShowPassword] = useState(true);
-  const setProfile = useProfile((state) => state.setProfile);
   const [persist, setPersist] = useProfile((state) => [
     state.persist,
     state.setPersist,
   ]);
   const themeType = useProfile((state) => state.themeType);
   const setThemeType = useProfile((state) => state.setThemeType);
-
-  const emailRegex =
-    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-
   const onToggleSwitch = () => setPersist(!persist);
   const onToggleTheme = () =>
     themeType === false ? setThemeType(true) : setThemeType(false);
 
-  const loadProfile = useCallback(async () => {
-    try {
-      const userInfo = await SecureStore.getItemAsync("profile");
-
-      if (userInfo) {
-        setStatus({ loading: true });
-        setProfile(JSON.parse(userInfo));
-        //check if token is expired
-        const refreshTokenExpiration = await SecureStore.getItemAsync(
-          "refreshTokenExpiration"
-        );
-        if (refreshTokenExpiration) {
-          const now = new Date().getTime();
-          const expiration = new Date(refreshTokenExpiration).getTime();
-          if (now > expiration) {
-            console.log("Refresh token expired");
-            await SecureStore.deleteItemAsync("refreshToken");
-            await SecureStore.deleteItemAsync("refreshTokenExpiration");
-            await SecureStore.deleteItemAsync("profile");
-            setProfile(null);
-            setStatus({
-              loading: false,
-              success: false,
-              error: true,
-              message: "Your session has expired.  in again.",
-            });
-          }
-        }
-      } else {
-        setStatus({ loading: false });
-      }
-    } catch (error) {
-      setStatus({
-        loading: false,
-        success: false,
-        error: true,
-        message: error.message,
-      });
-      console.log(`Keychain Error: ${error.message}`);
-    }
-  }, []);
-
   useEffect(() => {
     if (persist) {
-      console.log("Loading Profile");
       loadProfile();
     }
-  }, [loadProfile, persist]);
-
-  const onSubmit = async () => {
-    setStatus({ loading: true, success: false, error: false, message: "" });
-
-    let data = { email, password };
-    if (!email || !password) {
-      email?.length > 0
-        ? setFormError({
-            ...formError,
-            email: false,
-            password: true,
-            message: "Password is required",
-          })
-        : setFormError({
-            ...formError,
-            email: true,
-            password: false,
-            message: "Please enter a valid email",
-          });
-      return;
-    }
-    if (!emailRegex.test(email)) {
-      setFormError({
-        email: true,
-        message: "Please enter a valid email address",
-      });
-      return;
-    }
-
-    try {
-      const response = await axiosPrivate.post("/login", data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
-
-      //save refresh token to keychain
-      if (response.headers["set-cookie"]) {
-        console.log("Saving refresh token to key chain");
-        const refreshToken = response.headers["set-cookie"][0]
-          .split(";")[0]
-          .split("=")[1];
-        const refreshTokenExpiration = response.headers["set-cookie"][0]
-          .split(";")[3]
-          .split("=")[1];
-
-        await SecureStore.setItemAsync("refreshToken", refreshToken);
-        await SecureStore.setItemAsync(
-          "refreshTokenExpiration",
-          refreshTokenExpiration
-        );
-      }
-      setProfile(response.data);
-      if (persist) {
-        console.log("Saving Profile");
-        const profile = await SecureStore.setItemAsync(
-          "profile",
-          JSON.stringify(response.data)
-        );
-      }
-
-      setStatus({
-        loading: false,
-        success: true,
-        error: false,
-        message: "Login Successful",
-      });
-    } catch (err) {
-      //if email unverified show error message for 6seconds
-      console.log(err.message);
-
-      if (err?.response?.status === 403) {
-        // Unauthorized email not verified
-        setStatus({
-          loading: false,
-          message: "Please verify your email address",
-          error: true,
-          success: false,
-        });
-      }
-
-      if (err?.response?.status === 401) {
-        console.log("Unauthorized", status);
-        setStatus({
-          message: "Unauthorized",
-          error: true,
-          loading: false,
-        });
-      }
-
-      if (err?.response?.status === 423) {
-        setStatus({
-          loading: false,
-
-          message: "Account Disabled",
-          error: true,
-        });
-      }
-
-      setTimeout(() => {
-        setStatus({
-          loading: false,
-
-          message: "",
-          error: false,
-        });
-      }, 6000);
-    }
-  };
+  }, [persist]);
 
   return (
     <View

@@ -3,7 +3,6 @@ import useAxios from "../hooks/useAxios";
 import * as SecureStore from "expo-secure-store";
 
 const useRefreshToken = () => {
-  const setProfile = useProfile((state) => state.setProfile);
   const setAccessToken = useProfile((state) => state.setAccessToken);
   const axiosPrivate = useAxios();
   const persist = useProfile((state) => state.persist);
@@ -16,6 +15,7 @@ const useRefreshToken = () => {
     const refreshTokenExpiration = await SecureStore.getItemAsync(
       "refreshTokenExpiration"
     );
+    if (!refreshToken) return;
     // check for expired refresh token
     if (refreshTokenExpiration) {
       const now = new Date().getTime();
@@ -29,21 +29,6 @@ const useRefreshToken = () => {
         setAccessToken(null);
         return;
       }
-    } else if (!refreshTokenExpiration) {
-      console.log("No refresh token expiration");
-      await SecureStore.deleteItemAsync("refreshToken");
-      await SecureStore.deleteItemAsync("refreshTokenExpiration");
-      await SecureStore.deleteItemAsync("profile");
-      setAccessToken(null);
-      setPersist(false);
-      setStatus({
-        loading: false,
-        success: false,
-        error: true,
-        message: "Your session has expired. ",
-      });
-
-      return;
     }
     try {
       const response = await axiosPrivate.get("/refresh", {
@@ -64,12 +49,11 @@ const useRefreshToken = () => {
       }
       return response.data.accessToken; // return the new access token
     } catch (error) {
-      console.log("Unable to get refresh token", error);
       setStatus({
         loading: false,
         success: false,
         error: true,
-        message: "Your session has expired. ",
+        message: "Unauthorized",
       });
       setPersist(false);
       await SecureStore.deleteItemAsync("refreshToken");

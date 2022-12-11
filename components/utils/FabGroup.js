@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FAB, Portal, Provider } from 'react-native-paper';
+import { FAB, Portal, } from 'react-native-paper';
 
 const FabGroup = ({handleOpen, open,visible, actions }) => {
    

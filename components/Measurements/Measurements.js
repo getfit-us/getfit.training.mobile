@@ -1,30 +1,48 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { StyleSheet } from "react-native";
 import React from "react";
-import { getMeasurements } from "../Api/services";
-import useApiCallOnMount from "../../hooks/useApiCallOnMount";
-import MeasurementForm from "./MeasurementForm";
-import { useProfile } from "../../Store/Store";
+
+import AddMeasurement from "./AddMeasurement";
+import ViewMeasurements from "./ViewMeasurements";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 // component to add a new measurement
+const Tab = createBottomTabNavigator();
 
 const Measurements = () => {
-  const [loadingMeasurements, measurements, errorMeasurements] =
-    useApiCallOnMount(getMeasurements);
-  const stateMeasurements = useProfile((state) => state.measurements);
   return (
-    <ScrollView>
-      <Text style={styles.title}>Measurements</Text>
-      <MeasurementForm />
-    </ScrollView>
+    <Tab.Navigator
+      initialRouteName="View Measurements"
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          const icons = {
+            "View Measurements": "view-list",
+            "Add Measurement": "plus-circle",
+          };
+
+          return (
+            <MaterialCommunityIcons
+              name={icons[route.name]}
+              color={color}
+              size={size}
+            />
+          );
+        },
+      })}
+    >
+      <Tab.Screen name="View Measurements" component={ViewMeasurements} />
+      <Tab.Screen
+        name="Add Measurement"
+        component={AddMeasurement}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    alignSelf: "center",
-    margin: 30,
-  },
-});
+const styles = StyleSheet.create({});
 
 export default Measurements;

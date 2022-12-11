@@ -358,6 +358,9 @@ export const addMeasurementApi = async (axiosPrivate, measurement) => {
   try {
     const response = await axiosPrivate.post("/measurements", measurement, {
       signal: controller.signal,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     status = { loading: false, error: false, data: response.data };
   } catch (err) {

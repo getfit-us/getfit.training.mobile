@@ -61,7 +61,6 @@ const Profile = () => {
     }
   };
 
-  console.log(profile);
 
   return (
     <ScrollView style={styles.container}>

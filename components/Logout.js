@@ -6,6 +6,7 @@ const Logout = () => {
   const resetProfileState = useProfile((state) => state.resetProfileState);
   const resetWorkoutState = useWorkouts((state) => state.resetWorkoutState);
  const setPersist = useProfile((state) => state.setPersist);
+ const setStatus = useProfile((state) => state.setStatus);
   const axiosPrivate = useAxios();
   const onLogout = async () => {
     let isMounted = true;
@@ -19,6 +20,8 @@ const Logout = () => {
       resetProfileState();
       resetWorkoutState();
       setPersist(false);
+      setStatus({loading: false});
+      
       // console.log(remove);
     } catch (err) {
       console.log("logout error", err);

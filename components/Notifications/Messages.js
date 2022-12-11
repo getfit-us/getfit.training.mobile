@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useProfile } from "../../Store/Store";
-import { View, Text, StyleSheet } from "react-native";
+import {  StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Inbox from "./Inbox";
 import Chat from "./Chat";
