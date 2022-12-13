@@ -15,13 +15,32 @@ import { useProfile } from "../../Store/Store";
 import { addMeasurementApi } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { colors } from "../../Store/colors";
+import { measure } from "react-native-reanimated";
 
 const AddMeasurement = ({ navigation }) => {
   const [files, setFiles] = React.useState({});
   const [cameraPermission, setCameraPermission] = React.useState(null);
   const [date, setDate] = React.useState(null);
   const [show, setShow] = React.useState(false);
-  const [measurement, setMeasurement] = React.useState({});
+  const initialMeasurementState = {
+    weight: null,
+    date: null,
+    image: [
+      {
+        uri: null,
+        view: "front",
+      },
+      {
+        uri: null,
+        view: "side",
+      },
+      {
+        uri: null,
+        view: "back",
+      },
+    ],
+  };
+  const [measurement, setMeasurement] = React.useState(initialMeasurementState);
   const clientId = useProfile((state) => state.profile.clientId);
 
   const setStatus = useProfile((state) => state.setStatus);
@@ -41,15 +60,9 @@ const AddMeasurement = ({ navigation }) => {
     }
     if (measurement?.image?.length > 1) {
       //check if view points are filled
-      measurement.image.forEach((img, index) => {
-        if (!measurement.imageViewPoint[index]) {
-          alert("Please select a view point image #" + index + 1);
-          return false;
-        }
-      });
 
       //check if all view points are filled with different views
-      const viewPoints = Object.values(measurement.imageViewPoint);
+      const viewPoints = measurement.image.map((img) => img.view);
       const uniqueViewPoints = [...new Set(viewPoints)];
       if (uniqueViewPoints.length !== viewPoints.length) {
         alert("Please select a different view point for each image");
@@ -63,38 +76,51 @@ const AddMeasurement = ({ navigation }) => {
     //verify if all fields are filled
 
     if (validateMeasurement()) {
-      console.log("measurement", measurement.image);
-      return;
-
       const formData = new FormData();
-      if (measurement?.image) {
+      if (Array.isArray(measurement.image)) {
+        //need to loop over images and append based on view point
+
+        measurement.image.forEach((img, i) => {
+          formData.append(
+            "image",
+
+            {
+              uri:
+                Platform.OS === "android"
+                  ? img.uri
+                  : img.uri.replace("file://", ""),
+              type: "image/jpeg",
+              name: "measurement.jpg",
+            }
+          );
+        });
+      } else {
         formData.append("image", {
           uri:
             Platform.OS === "android"
               ? measurement.image.uri
               : measurement.image.uri.replace("file://", ""),
           type: "image/jpeg",
-          name: "profileImg.jpg",
+          name: "measurement.jpg",
         });
-        if (measurement?.imageViewPoint) {
-          //need to loop over images and append based on view point
-
-          measurement.image.forEach((img, index) => {
-            if (img.view === "front") formData.append("front", img.uri);
-            if (img.view === "side") formData.append("side", img.uri);
-            if (img.view === "back") formData.append("back", img.uri);
-          });
-        }
       }
+      formData.append("front", "front.jpg");
+      formData.append("side", "side.jpg");
+      formData.append("back", "back.jpg");
+
       formData.append("weight", measurement.weight);
       formData.append("date", new Date(measurement.date).toISOString());
       formData.append("id", clientId);
+
+      console.log("formData", formData);
 
       addMeasurementApi(axiosPrivate, formData).then((status) => {
         if (!status.loading && !status.error) {
           setStatus({ loading: false, error: null, success: true });
           setTimeout(() => {
             setStatus({ loading: false, error: null, success: false });
+            setFiles(null);
+            setMeasurement(initialMeasurementState);
             navigation.navigate("Activity Feed");
           }, 3000);
         } else {
@@ -115,7 +141,7 @@ const AddMeasurement = ({ navigation }) => {
   const handleImageViewChange = (value, index) => {
     setMeasurement((prev) => ({
       ...prev,
-      files: [...files, files[index].view = value],
+      files: [...files, (files[index].view = value)],
     }));
   };
 
@@ -135,7 +161,6 @@ const AddMeasurement = ({ navigation }) => {
         result?.selected &&
         result?.selected.length <= 3
       ) {
-       
         //add view point to each image need to fix this! -----------------
         result.selected.forEach((img, index, arr) => {
           arr[index].view =
@@ -280,7 +305,7 @@ const AddMeasurement = ({ navigation }) => {
 
           {files?.length > 0 ? (
             <View style={styles.imageContainer}>
-              {files?.map((file, index) => (
+              {files?.map((file, fileIndex) => (
                 <View style={styles.singleImage} key={file.uri + "View"}>
                   <Image
                     key={file.uri}
@@ -290,17 +315,17 @@ const AddMeasurement = ({ navigation }) => {
                     resizeMode="contain"
                   />
                   <Text style={{ alignSelf: "center" }}>
-                    {measurement?.image[index].view === "front"
+                    {measurement?.image[fileIndex].view === "front"
                       ? "Orientation: Front"
-                      : measurement?.image[index].view === "side"
+                      : measurement?.image[fileIndex].view === "side"
                       ? "Orientation: Side"
                       : "Orientation: Back"}
                   </Text>
                   <RadioButton.Group
                     onValueChange={(value) =>
-                      handleImageViewChange(value, index)
+                      handleImageViewChange(value, fileIndex)
                     }
-                    value={measurement?.image[index]?.view}
+                    value={measurement?.image[fileIndex]?.view}
                     key={file.uri + "Radio"}
                   >
                     <View style={styles.radioGroup}>
@@ -322,16 +347,18 @@ const AddMeasurement = ({ navigation }) => {
               style={styles.image}
             />
           ) : null}
-          <Button
-            mode="elevated"
-            onPress={handleSaveWorkout}
-            icon="content-save"
-            textColor="white"
-            buttonColor={colors.success}
-            style={styles.button}
-          >
-            Save{" "}
-          </Button>
+          {measurement?.date && measurement?.weight && (
+            <Button
+              mode="elevated"
+              onPress={handleSaveWorkout}
+              icon="content-save"
+              textColor="white"
+              buttonColor={colors.success}
+              style={styles.button}
+            >
+              Save{" "}
+            </Button>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

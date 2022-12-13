@@ -14,7 +14,11 @@ import { Avatar,  Paragraph, Title } from "react-native-paper";
 import { BASE_URL } from "../assets/BASE_URL";
 
 const CustomDrawer = (props) => {
-  const profile = useProfile((state) => state.profile);
+  const profile = useProfile((state) => state.profile) || {
+    firstName: "Loading...",
+    lastName: "Loading...",
+    
+  }
   const roles = useProfile((state) => state.profile.roles);
   return (
     <View style={{ flex: 1 }}>

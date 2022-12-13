@@ -4,7 +4,7 @@ import { getAssignedCustomWorkouts } from "../../Api/services";
 import { Avatar, List, Searchbar } from "react-native-paper";
 import RenderWorkout from "../RenderWorkout";
 import ProgressBar from "../../UserFeedback/ProgressBar";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { colors } from "../../../Store/colors";
@@ -67,7 +67,7 @@ const AssignedWorkouts = ({ navigation }) => {
     }
   };
 
-  const renderList = ({ item }) => {
+  const renderList = useMemo(({ item }) => {
     return (
       <List.Item
         style={styles.listItem}
@@ -98,7 +98,7 @@ const AssignedWorkouts = ({ navigation }) => {
         }}
       />
     );
-  };
+  }, [stateAssignedWorkouts?.length]);
 
   return loadingAssignedWorkouts && stateAssignedWorkouts?.length === 0 ? (
     <ProgressBar loading={loadingAssignedWorkouts}

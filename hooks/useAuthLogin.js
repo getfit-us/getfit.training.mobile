@@ -81,6 +81,15 @@ const useAuthLogin = ({ email, password, persist }) => {
         error: false,
         message: "Login Successful",
       });
+
+      setTimeout(() => {
+        setStatus({
+          loading: false,
+          success: false,
+          error: false,
+          message: "",
+        });
+      }, 2000);
     } catch (err) {
       //if email unverified show error message for 6seconds
       console.log(err.message);

@@ -60,7 +60,7 @@ const ActivityFeed = ({ navigation }) => {
 
   useEffect(() => {
     if (!loadingNotifications) {
-      setStatus({ loading: false, error: false, success: true });
+      setStatus({ loading: false, error: false,  });
       setUserActivity(() => {
         return notifications
           .filter((notification) => {
@@ -74,7 +74,7 @@ const ActivityFeed = ({ navigation }) => {
       });
       //instead of wait for the api call to finish, we may have notifications in the store already so load those.
     } else if (loadingNotifications && notifications?.length > 0) {
-      setStatus({ loading: false, error: false, success: true });
+      setStatus({ loading: false, error: false,  });
       setUserActivity(() => {
         return notifications
           .filter((notification) => {

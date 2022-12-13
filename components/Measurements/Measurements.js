@@ -3,6 +3,7 @@ import React from "react";
 
 import AddMeasurement from "./AddMeasurement";
 import ViewMeasurements from "./ViewMeasurements";
+import ViewProgressPhotos from "./ViewProgressPhotos";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -19,6 +20,7 @@ const Measurements = () => {
           const icons = {
             "View Measurements": "view-list",
             "Add Measurement": "plus-circle",
+            "Progress Photos": "image",
           };
 
           return (
@@ -31,7 +33,11 @@ const Measurements = () => {
         },
       })}
     >
-      <Tab.Screen name="View Measurements" component={ViewMeasurements} />
+      <Tab.Screen name="View Measurements" component={ViewMeasurements} 
+       options={{
+        headerShown: false,
+      }}
+      />
       <Tab.Screen
         name="Add Measurement"
         component={AddMeasurement}
@@ -39,6 +45,14 @@ const Measurements = () => {
           headerShown: false,
         }}
       />
+      <Tab.Screen
+       name="Progress Photos"
+       component={ViewProgressPhotos}
+        options={{
+          headerShown: false,
+        }}
+      />
+
     </Tab.Navigator>
   );
 };
