@@ -81,8 +81,15 @@ const AddMeasurement = ({ navigation }) => {
         //need to loop over images and append based on view point
 
         measurement.image.forEach((img, i) => {
+          //add names of files based on views
+          if (img.view === "front")
+            formData.append("front", img.uri.split("/").pop());
+          if (img.view === "side")
+            formData.append("side", img.uri.split("/").pop());
+          if (img.view === "back")
+            formData.append("back", img.uri.split("/").pop());
           formData.append(
-            "image",
+            "image" + i,
 
             {
               uri:
@@ -90,7 +97,7 @@ const AddMeasurement = ({ navigation }) => {
                   ? img.uri
                   : img.uri.replace("file://", ""),
               type: "image/jpeg",
-              name: "measurement.jpg",
+              name: img.uri.split("/").pop(),
             }
           );
         });
@@ -104,15 +111,13 @@ const AddMeasurement = ({ navigation }) => {
           name: "measurement.jpg",
         });
       }
-      formData.append("front", "front.jpg");
-      formData.append("side", "side.jpg");
-      formData.append("back", "back.jpg");
 
       formData.append("weight", measurement.weight);
-      formData.append("date", new Date(measurement.date).toISOString());
+      formData.append(
+        "date",
+        new Date(measurement.date).toISOString().split("T")[0]
+      );
       formData.append("id", clientId);
-
-      console.log("formData", formData);
 
       addMeasurementApi(axiosPrivate, formData).then((status) => {
         if (!status.loading && !status.error) {
@@ -133,6 +138,9 @@ const AddMeasurement = ({ navigation }) => {
                 ? "Measurement already exists"
                 : "Something went wrong",
           });
+          setTimeout(() => {
+            setStatus({ loading: false, error: false, success: false, message: "" });
+          }, 3000);
         }
       });
     }
@@ -293,16 +301,6 @@ const AddMeasurement = ({ navigation }) => {
             </Button>
           </View>
 
-          {status.success ? (
-            <Text style={{ color: "green", alignSelf: "center" }}>
-              Measurement Added Successfully
-            </Text>
-          ) : status.error ? (
-            <Text style={{ color: "red", alignSelf: "center" }}>
-              {status.message}
-            </Text>
-          ) : null}
-
           {files?.length > 0 ? (
             <View style={styles.imageContainer}>
               {files?.map((file, fileIndex) => (
@@ -353,10 +351,14 @@ const AddMeasurement = ({ navigation }) => {
               onPress={handleSaveWorkout}
               icon="content-save"
               textColor="white"
-              buttonColor={colors.success}
+              buttonColor={status.error ? "red" : "green"}
               style={styles.button}
             >
-              Save{" "}
+              {status.success
+                ? "Saved Successfully"
+                : status.error
+                ? status.message
+                : "Save Measurement"}
             </Button>
           )}
         </View>
