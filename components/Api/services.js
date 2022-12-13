@@ -427,3 +427,20 @@ export const saveNewProfileImage = async (axiosPrivate, image) => {
   }
   return status;
 };
+
+export const updateProfile = async (axiosPrivate, profile) => {
+  let status = { loading: true, error: false, data: null };
+  if (!profile) return status;
+
+  const controller = new AbortController();
+  try {
+    const response = await axiosPrivate.put(`/users/${profile.id}`,  profile, {
+      signal: controller.signal,
+    });
+    status = { loading: false, error: false, data: response.data };
+  } catch (err) {
+    console.log(err);
+    status = { loading: false, error: true, data: err };
+  }
+  return status;
+};

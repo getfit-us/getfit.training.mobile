@@ -190,11 +190,11 @@ export const useProfile = create(
             email: profileUpdate.email
               ? profileUpdate.email
               : state.profile.email,
-            firstName: profileUpdate.firstname
-              ? profileUpdate.firstname
+            firstName: profileUpdate.firstName
+              ? profileUpdate.firstName
               : state.profile.firstName,
-            lastName: profileUpdate.lastname
-              ? profileUpdate.lastname
+            lastName: profileUpdate.lastName
+              ? profileUpdate.lastName
               : state.profile.lastName,
             goals: profileUpdate.goals
               ? profileUpdate.goals

@@ -4,7 +4,6 @@ import { StyleSheet, SafeAreaView, Text, View } from "react-native";
 import RenderExercises from "./RenderExercises";
 import { useProfile, useWorkouts } from "../../Store/Store";
 import { useNavigation } from "@react-navigation/native";
-import { Button, IconButton, ProgressBar } from "react-native-paper";
 import SearchExercises from "../Exercises/SearchExercises";
 import { saveCompletedWorkout } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -12,7 +11,6 @@ import SaveWorkout from "./Dialogs/SaveWorkout";
 import FabGroup from "../utils/FabGroup";
 import { colors } from "../../Store/colors";
 import { useIsFocused } from "@react-navigation/native";
-import shallow from "zustand/shallow";
 
 const RenderWorkout = memo(({  }) => {
   const startWorkout = useWorkouts((state) => state.startWorkout);

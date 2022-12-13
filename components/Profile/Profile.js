@@ -13,15 +13,34 @@ import { colors } from "../../Store/colors";
 import * as ImagePicker from "expo-image-picker";
 import { saveNewProfileImage } from "../Api/services";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import CustomLabel from "../utils/CustomLabel";
-
+import { updateProfile as updateProfileApi } from "../Api/services";
 const Profile = () => {
   const profile = useProfile((state) => state.profile);
   const updateProfile = useProfile((state) => state.updateProfile);
   const measurements = useProfile((state) => state.measurements);
   const [loading, setLoading] = React.useState(false);
   const axiosPrivate = useAxiosPrivate();
-  const [allowsEditing, setAllowsEditing] = React.useState(false);
+  const [accountEdit, setAccountEdit] = React.useState(false);
+
+  const handleUpdateProfile = async () => {
+    setLoading(true);
+
+    updateProfileApi(axiosPrivate, {
+      id: profile.clientId,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      email: profile.email,
+      age: profile.age,
+      phone: profile.phone,
+    }).then((status) => {
+      if (!status.loading && !status.error) {
+        setLoading(false);
+        setAccountEdit(false);
+      } else {
+        setLoading(false);
+      }
+    });
+  };
 
   const handleFileUpload = async () => {
     try {
@@ -61,7 +80,6 @@ const Profile = () => {
     }
   };
 
-
   return (
     <ScrollView style={styles.container}>
       <ImageBackground
@@ -79,24 +97,11 @@ const Profile = () => {
           >
             {profile?.avatar ? "Change Profile Image" : "Add Profile Image"}
           </Button>
-          <Button
-            style={styles.button}
-            mode="text"
-            textColor="white"
-            icon="account-edit"
-            onPress={() => {setAllowsEditing(prev => !prev)}}
-          >
-            Edit Profile
-          </Button>
+         
         </View>
-        <Text
-          variant="titleSmall"
-          style={styles.title
-          }
-        >
+        <Text variant="titleSmall" style={styles.title}>
           Joined: {profile.startDate}
         </Text>
-       
 
         {loading ? (
           <ActivityIndicator animating={loading} color={colors.white} />
@@ -112,44 +117,74 @@ const Profile = () => {
       </ImageBackground>
 
       <View style={styles.infoContainer}>
+        <Text style={styles.title}>Account Details</Text>
         <TextInput
-          mode="outlined"
+          mode="flat"
           label="First Name"
-      
+          onChangeText={(text) => {
+            console.log(text);
+            updateProfile({ firstName: text.toString() });
+            setAccountEdit(true);
+          }}
           defaultValue={profile?.firstName}
+          placeholderTextColor={colors.white}
           style={styles.input}
-          disabled={allowsEditing ? false : true}
-          
         />
         <TextInput
-          mode="outlined"
+          mode="flat"
           label="Last Name"
           defaultValue={profile?.lastName}
+          onChangeText={(text) => {
+            updateProfile({ lastName: text });
+            setAccountEdit(true);
+          }}
           style={styles.input}
-          disabled={allowsEditing ? false : true}
         />
         <TextInput
-          mode="outlined"
+          mode="flat"
           label="Email"
           defaultValue={profile?.email}
+          onChangeText={(text) => {
+            updateProfile({ email: text });
+            setAccountEdit(true);
+          }}
           style={styles.input}
-          disabled={allowsEditing ? false : true}
         />
         <TextInput
-          mode="outlined"
+          mode="flat"
           label="Phone Number"
           defaultValue={profile?.phone}
+          onChangeText={(text) => {
+            updateProfile({ phone: text });
+            setAccountEdit(true);
+          }}
           style={styles.input}
-          disabled={allowsEditing ? false : true}
         />
         <TextInput
-          mode="outlined"
+          mode="flat"
           label="Age"
           defaultValue={profile?.age.toString()}
+          onChangeText={(text) => {
+            updateProfile({ age: text });
+            setAccountEdit(true);
+          }}
           style={styles.input}
-          disabled={allowsEditing ? false : true}
         />
       </View>
+
+      {accountEdit && (
+        <Button
+          mode="elevated"
+          style={{ alignSelf: "center", margin: 10 }}
+          textColor={colors.white}
+          buttonColor={colors.success}
+          onPress={() => {
+            handleUpdateProfile();
+          }}
+        >
+          Save Changes
+        </Button>
+      )}
     </ScrollView>
   );
 };
@@ -198,7 +233,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginLeft: 10,
     backgroundColor: "transparent",
-    
+    color: "white",
   },
   button: {
     margin: 5,

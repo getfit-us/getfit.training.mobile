@@ -63,8 +63,10 @@ const ViewProgressPhotos = () => {
       /> */}
       <View style={styles.singleMeasurement}>
         <Text style={{ fontSize: 20, fontWeight: "bold", alignSelf: "center" }}>
-          Most Current Measurement Date:
-          {new Date(currentMeasurement.date).toLocaleDateString()}
+          Current Measurement 
+        </Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold", alignSelf: "center" }}>
+        {new Date(currentMeasurement.date).toLocaleDateString()}
         </Text>
         {currentMeasurement.images.length > 0 && (
           <View style={styles.progressPhotos}>
@@ -84,8 +86,10 @@ const ViewProgressPhotos = () => {
       </View>
       <View style={styles.singleMeasurement}>
         <Text style={{ fontSize: 20, fontWeight: "bold", alignSelf: "center" }}>
-          Oldest Measurement Date:
-          {new Date(oldestMeasurement.date).toLocaleDateString()}
+          Oldest Measurement 
+        </Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold", alignSelf: "center" }}>
+        {new Date(oldestMeasurement.date).toLocaleDateString()}
         </Text>
         {oldestMeasurement.images.length > 0 && (
           <View style={styles.progressPhotos}>

@@ -33,13 +33,13 @@ const ViewMeasurements = ({ navigation }) => {
     ).then((status) => {
       setStatus({ loading: status.loading });
       if (!status.loading) {
-        const split = status?.data?.date.split("-");
-        const year = split.splice(0, 1);
-        let newDate = [...split, ...year].join("-");
+        // const split = status?.data?.date.split("-");
+        // const year = split.splice(0, 1);
+        // let newDate = [...split, ...year].join("-");
         setViewMeasurement({
           ...status.data,
           message: item.message,
-          date: newDate,
+          // date: newDate,
         });
         navigation.navigate("View Activity", { status });
       }
